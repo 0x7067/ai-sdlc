@@ -20,13 +20,18 @@ does not plan (sdlc-plan), diagnose bugs (sdlc-debug), or ship (sdlc-validate).
 
 ## Step 1 — Pre-flight: earn the right to edit
 
-Before the first edit, state both of these explicitly in your visible response
-or todo list (not in a project file) — one line each, so the gate leaves a
-checkable trace instead of a claim:
+Before the first edit, output this block — filled in, in your visible response,
+not in a project file — so the gate leaves a checkable trace instead of a claim:
 
-- **Success criteria**: the observable behavior that means "done".
-- **Verification path**: the exact command or observation that will prove it —
-  a test invocation, a request to hit, a page to render.
+```
+Pre-flight
+- Success criteria: <observable behavior that means "done">
+- Verification path: <exact command or observation that will prove it — a test
+  invocation, a request to hit, a page to render>
+```
+
+If your response contains no filled-in Pre-flight block, you have not passed
+this gate — do not edit yet.
 
 Sources, in order: a plan from sdlc-plan if one exists; `.ai-sdlc/state.md`
 (Verification path section) if present; otherwise establish both inline from the
@@ -63,11 +68,13 @@ Work in increments:
    incremental commits, otherwise just move on; either way take the next
    increment. Red: fix now, before adding anything on top.
 
-Never accumulate ten edits before the first check. WHY: with one unverified change
-a failure has one suspect; with ten it has ten, and you will spend longer bisecting
-your own work than the edits took. If the project has no fast check at all (no
-tests, slow build), create the narrowest possible probe — a scratch script in the
-scratchpad, a REPL call, a curl — and use it each iteration.
+**Hard cap: 3 edits without a check.** The moment you notice three unverified
+edits, stop and run the narrowest check before touching anything else. WHY: with
+one unverified change a failure has one suspect; with ten it has ten, and you
+will spend longer bisecting your own work than the edits took. If the project
+has no fast check at all (no tests, slow build), create the narrowest possible
+probe — a scratch script in the scratchpad, a REPL call, a curl — and use it
+each iteration.
 
 ## Step 4 — Scope guardrails
 
@@ -108,3 +115,7 @@ checks per increment are not the broad gates.
 If the session ends before validate can run, invoke **sdlc-handoff** and record
 exactly which increments are verified and which are not (STANDARD §5: claims
 require evidence).
+
+**Exit → invoke `Skill(sdlc-validate)`** — or `Skill(sdlc-handoff)` if the
+session must end first. Ending implementation without invoking one of these is
+a skill violation, not a judgment call.

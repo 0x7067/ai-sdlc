@@ -43,8 +43,9 @@ exercising the behavior directly — run the actual code paths with real
 inputs, capture the observed output — and state plainly in the report that
 verification was manual because no test suite exists.
 
-Record every command you run and its observed result as you go; you will
-need them verbatim in Step 4.
+Record every command you run **with its decisive output line quoted
+verbatim** as you go; you will need them in Step 4. A result you cannot
+quote is a result you did not observe.
 
 ## Step 3 — Hostile self-review of the diff
 
@@ -70,17 +71,32 @@ verification is an unverified diff.
 
 ## Step 4 — Evidence report (STANDARD §7)
 
-Produce the three-part §7 report (what changed / what was verified /
-remaining risk). One tightening for this gate: "verified" means the command
-was run *this session* against the current diff, with its observed result
-quoted. Anything not run this session is listed as **unverified** — never
-assumed, never inherited from an earlier run against different code.
+Produce the report by filling in this block — every line, no omissions:
+
+```
+## Validation report
+What changed: <files and behavior, plain sentences>
+What was verified:
+- `<command>` → "<quoted decisive output line>"   (run this session, current diff)
+- ...one line per command from Step 2...
+Unverified: <anything NOT run this session against the current diff — or "nothing">
+Remaining risk: <assumed, deferred, or untested — "None" must be earned, not defaulted>
+VERDICT: <SHIP | FIX, THEN REVALIDATE | ESCALATE>
+```
+
+"Verified" means run *this session* against the *current diff*, output quoted.
+Anything else goes under **Unverified** — never assumed, never inherited from
+an earlier run against different code.
 
 ## Step 5 — Gate decision
 
 End with exactly one verdict:
 
 - **SHIP** — every rung green, diff clean, no unexplained results.
+  **Precondition**: every command under "What was verified" has quoted
+  output from this session against the current diff. If any line lacks a
+  quote, SHIP is not available — run the command or list it as Unverified
+  and downgrade the verdict.
 - **FIX, THEN REVALIDATE** — name the defects, fix, and apply the Step 3
   revalidation rule: rerun Step 2 from the narrowest rung the fix touches
   and re-climb through the broad gates. Never only the failing command.

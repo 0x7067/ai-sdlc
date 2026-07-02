@@ -54,12 +54,13 @@ services and workers, prefer drain-first handling.
 
 ## 7. Reporting format
 
-Every substantive unit of work ends with three parts, in this order:
+Every substantive unit of work ends by filling in, in this order:
 
-- **What changed** — files and behavior, in plain sentences.
-- **What was verified** — the commands run and their observed results.
-- **Remaining risk** — anything unverified, assumed, or deferred. "None"
-  must be earned, not defaulted.
+```
+What changed: <files and behavior, in plain sentences>
+What was verified: <commands run → their observed results>
+Remaining risk: <unverified, assumed, or deferred — "None" must be earned, not defaulted>
+```
 
 ## 8. When to stop
 

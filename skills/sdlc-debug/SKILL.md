@@ -21,7 +21,9 @@ cannot prove fixed — any "fix" without a repro is a guess you'll ship.
 
 - If `.ai-sdlc/state.md` exists, check its Verification path and Landmines
   sections for the right commands and known flakiness before hunting.
-- Record the exact repro command; you will run it after every candidate fix.
+- Record the exact repro command **and quote its failing output line in your
+  response** before moving to Step 2 — this is the "before" half of your
+  before/after evidence. You will rerun this command after every candidate fix.
 - Can't reproduce? Vary environment (versions, env vars, data, ordering,
   repeated runs for flakiness) before touching code. If it's genuinely
   irreproducible, say so and switch to instrumenting (logs/assertions) —
@@ -57,8 +59,18 @@ Loop, explicitly:
 1. State the hypothesis in one sentence ("X is null because Y runs before Z").
 2. Run the CHEAPEST test that discriminates it — a print, a one-line script,
    a targeted assertion. Not a speculative code edit.
-3. Confirmed → fix. Refuted → count it and form the next hypothesis from what
-   the evidence actually showed.
+3. Confirmed → fix. Refuted → form the next hypothesis from what the evidence
+   actually showed.
+
+Keep a visible ledger in your response as you go, one line per hypothesis:
+
+```
+H1: <hypothesis> → <discriminating test> → confirmed | refuted: <what the evidence showed>
+H2: ...
+```
+
+The ledger is the counter for the stop rule below — without it you will not
+notice you are thrashing.
 
 **After ~3 refuted hypotheses, STOP iterating in place.** WHY: thrashing —
 re-editing the same file on hunches — is how debugging sessions burn their
@@ -103,6 +115,8 @@ doesn't exist, don't scaffold the full state system mid-debug; put the trap in
 your final report instead.
 
 Report per STANDARD §7: what changed, what was verified (repro before/after,
-regression test observed failing then passing), remaining risk. Then hand to
-sdlc-validate for the broad pre-ship gates; if the session ends here instead,
-invoke sdlc-handoff.
+regression test observed failing then passing), remaining risk.
+
+**Exit → invoke `Skill(sdlc-validate)`** for the broad pre-ship gates — or
+`Skill(sdlc-handoff)` if the session ends here. Ending a debug without invoking
+one of these is a skill violation, not a judgment call.

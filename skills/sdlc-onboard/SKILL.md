@@ -78,15 +78,20 @@ The verification path is the command(s) that prove the project works. It must be
 
 ## Step 5 — Output the orientation summary
 
-Before any substantive work, state 5-10 lines:
+Before any substantive work, output this block, filled in:
 
-- Project + goal (one line).
-- Active work / where things stand.
-- Verification path: exact command(s) + observed result this session.
-- Where the task's code lives.
-- Landmines or drift found (state.md fixed? baseline failures?).
-- What happens next (usually: invoke sdlc-plan for non-trivial work, or go
-  straight to sdlc-extend / sdlc-debug for a small, obvious change).
+```
+Orientation
+- Project + goal: <one line>
+- Active work: <where things stand>
+- Verification path: <exact command(s)> → <result observed THIS session>
+- Task code lives in: <real paths>
+- Landmines / drift: <what was found and what was fixed, or "none">
+- Next: Skill(sdlc-plan) | Skill(sdlc-extend) | Skill(sdlc-debug) — <why, one line>
+```
 
-This summary is the contract for the rest of the session — if you cannot write
-it honestly, you are not done onboarding.
+This summary is the contract for the rest of the session — no filled-in block,
+no onboarding. If you cannot fill a line honestly, you are not done orienting.
+
+**Exit → invoke the skill named on your Next line.** Substantive work outside
+one of the sdlc-* skills is a routing violation, not a shortcut.

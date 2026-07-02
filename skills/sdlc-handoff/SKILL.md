@@ -88,16 +88,29 @@ Order steps; put the resumption point of interrupted work first.
 ## Step 5 — The acid test
 
 Reread state.md as if you were a fresh session that has read *only* it plus
-STATE-SPEC. Ask: **could I resume from this file alone, without asking the
-human anything?** Check specifically: Does Now match reality? Could I run the
-Verification path verbatim? Does every uncommitted change have an
-explanation? Can I start Next step 1 immediately?
+STATE-SPEC — **could it resume from this file alone, without asking the human
+anything?** Answer these four in your response, yes or no, no hedging:
 
-If any answer is no, fix state.md and test again. Then commit the `.ai-sdlc/`
-changes themselves (unless gitignored per STATE-SPEC) — an uncommitted
-handoff can be lost with the worktree.
+```
+Acid test
+- Now matches reality: yes|no
+- Verification path runnable verbatim: yes|no
+- Every uncommitted change explained: yes|no
+- Next step 1 startable cold: yes|no
+```
+
+Any "no": fix state.md and answer again — only an all-yes acid test ends the
+handoff. Then commit the `.ai-sdlc/` changes themselves (unless gitignored per
+STATE-SPEC) — an uncommitted handoff can be lost with the worktree.
 
 ## Report
 
-End with: what was committed (hashes) vs. left uncommitted and why, that
-state.md/journal.md were updated, and the top Next step in one line.
+End by filling in:
+
+```
+Handoff report
+- Committed: <hashes, one line each>
+- Left uncommitted: <paths + why — or "nothing">
+- State files: state.md overwritten, journal.md appended, committed as <hash>
+- Top next step: <one line>
+```

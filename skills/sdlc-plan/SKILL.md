@@ -16,10 +16,20 @@ and §4 (verification ladder).
 
 ## Step 0 — Decide whether to plan at all
 
-Skip planning and go straight to sdlc-extend when ALL hold: the change is small
-(roughly one file / one sitting), reversible with `git revert`, and you can
-already name its verification path. Planning an obvious change wastes the tokens
-that should pay for verification. If any of the three fails, plan.
+Skip planning and go straight to sdlc-extend ONLY when all three hold — and to
+claim the skip, write the answers out in your response:
+
+```
+Skip check
+- Small: <why this is roughly one file / one sitting>
+- Reversible: <why `git revert` cleanly undoes it>
+- Verification: <the exact command that will prove it>
+```
+
+Any line you cannot fill honestly is your answer: plan. A skip without the
+filled-in block is not a skip — it is a skipped gate. Planning an obvious
+change wastes the tokens that should pay for verification; skipping a
+non-obvious one costs far more.
 
 ## Step 1 — Restate the task as success criteria
 
@@ -28,7 +38,8 @@ the auth module" is an activity; "`login` succeeds with a session cookie and the
 old `/v1/auth` route returns 410" is an outcome someone could check without
 reading your diff. Include what must NOT change (existing behavior to preserve).
 If a criterion can't be phrased as something checkable, you don't understand the
-task yet — investigate or ask before proceeding (per STANDARD §8).
+task yet — investigate or ask before proceeding (STANDARD §8: ask only when
+the missing decision would materially change the outcome).
 
 ## Step 2 — Explore just enough code to ground the plan
 
@@ -76,6 +87,15 @@ Ordered steps. Each step MUST have:
   repo still builds and passes its checks. If a step leaves the repo broken
   until the next step lands, merge them or resequence.
 
+Write each step in this exact shape (Stoppable is a sizing property to check,
+not a line to write):
+
+```
+N. <step title>
+   Change: <files and symbols edited or added>
+   Verify: <command or observation>
+```
+
 Prefer 3–7 steps. More than ~8 means the task should be split into milestones —
 plan the first milestone in full, list the rest as one line each under Next.
 
@@ -106,6 +126,6 @@ Once accepted, Read
 - Add any accepted Step-3 decision (with its one-line why) under **Decisions**,
   and Step-5 risks that are traps rather than tasks under **Landmines**.
 
-Then hand off: implementation continues under sdlc-extend (features) or
-sdlc-debug (fixing wrong behavior). Do not start editing source files inside
-this skill.
+**Exit → invoke `Skill(sdlc-extend)`** (features) **or `Skill(sdlc-debug)`**
+(fixing wrong behavior). Zero source files change inside this skill — if you
+are about to edit one, you have left planning without the exit.
