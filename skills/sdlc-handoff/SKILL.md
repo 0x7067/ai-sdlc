@@ -16,7 +16,10 @@ do not improvise sections.
 
 ## Step 1 — Settle the working tree
 
-Run `git status` and `git diff --stat`. Then, for every change:
+Run `bash ~/.agents/skills/sdlc-core/scripts/diff-inventory.sh` (fallback:
+the `scripts/` dir in the `sdlc-core/` sibling of this skill's directory) —
+it also surfaces the stashes and untracked files you must account for.
+Then, for every change:
 
 - **Completed, verified work**: commit it now, in logical units, following the
   repo's commit conventions (check `git log --oneline -10` for style). If
@@ -38,9 +41,11 @@ state.md.
 
 ## Step 2 — Overwrite state.md to current truth
 
-If `.ai-sdlc/state.md` does not exist, this is the repo's first handoff:
-`mkdir -p .ai-sdlc` and create both files per STATE-SPEC (including its rule on
-committing vs. gitignoring them).
+If `.ai-sdlc/state.md` does not exist, this is the repo's first handoff: run
+`bash ~/.agents/skills/sdlc-core/scripts/scaffold-state.sh` (fallback: the
+`scripts/` dir in the `sdlc-core/` sibling of this skill's directory) and
+replace every `TODO-SDLC` placeholder; journal.md is created by Step 3's
+append (committing vs. gitignoring them: STATE-SPEC's rule).
 
 Rewrite state.md completely — it is current truth, not a log. Every section
 must be true *right now*:
@@ -72,9 +77,12 @@ Handoff-specific additions: "Verified" lists only commands you actually ran
 Then run the hygiene check:
 `bash ~/.agents/skills/sdlc-core/scripts/check-state.sh` (fallback: the
 `scripts/` dir in the `sdlc-core/` sibling of this skill's directory). Fix
-every FAIL line now. If it warns compaction is due, compact per STATE-SPEC's
-Compaction section — fold all but the newest 5 journal entries into one
-digest entry — then re-run the check until it prints `check-state: OK`.
+every FAIL line now. If it warns compaction is due, run
+`bash ~/.agents/skills/sdlc-core/scripts/compact-journal.sh` (same fallback) —
+it does the mechanical fold per STATE-SPEC and leaves a `TODO-SDLC` digest
+line plus a `journal.md.bak`. Replace that line with digest bullets
+summarizing the folded entries it printed, delete the `.bak`, then re-run
+the check until it prints `check-state: OK`.
 
 ## Step 4 — Make Next steps cold-startable
 

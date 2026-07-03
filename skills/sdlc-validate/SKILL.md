@@ -15,18 +15,17 @@ contract this skill enforces. Do not proceed from memory of it.
 
 ## Step 1 — Pin down the diff under review
 
-Establish exactly what is being validated:
+Establish exactly what is being validated. Run
+`bash ~/.agents/skills/sdlc-core/scripts/diff-inventory.sh` (fallback: the
+`scripts/` dir in the `sdlc-core/` sibling of this skill's directory; pass
+the base ref when work spans commits) — one deterministic block: branch,
+status, staged/unstaged stats, untracked files, stashes. Then read the hunks
+themselves with `git diff` (plus `git diff --cached` if staged).
 
-```
-git status && git diff          # plus git diff --cached if staged
-```
+Untracked files have no hunks, so a hunk-only review misses them — and they
+are where leftover temp files, debug scripts, and secrets most often live.
+Read each file the inventory lists as untracked in full as part of Step 3.
 
-Also list untracked files from `git status --porcelain` — new files have no
-hunks, so a hunk-only review misses them, and they are where leftover temp
-files, debug scripts, and secrets most often live. Read each one in full as
-part of Step 3.
-
-If work spans commits, diff against the base (`git diff <base>...HEAD`).
 No git repo? Diff against whatever baseline exists (backup copies, the
 task description) and note the weaker baseline in the report.
 

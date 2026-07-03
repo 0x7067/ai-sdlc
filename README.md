@@ -39,12 +39,37 @@ can cold-start from the repo alone.
 
 Symlinks the skills into `~/.claude/skills` (override with `SKILLS_DIR=`,
 e.g. `SKILLS_DIR=~/.agents/skills` for a shared cross-agent layer) and the
-hook into `~/.claude/hooks`, then prints the two manual steps:
+hooks into `~/.claude/hooks`, then prints the two manual steps:
 
-1. **Register the hook** in `~/.claude/settings.json` under
-   `hooks.SessionStart` (entry printed by the script).
+1. **Register the hooks** in `~/.claude/settings.json` under
+   `hooks.SessionStart` and `hooks.Stop` (entries printed by the script).
 2. **Add the routing snippet** from `agents-md/sdlc-lifecycle.md` to your
    global instructions (`~/.claude/CLAUDE.md` / `~/.agents/AGENTS.md`).
+
+## The mechanical layer
+
+Judgment the skills can delegate to a script, they do — a weaker model
+complies with a command it must run far better than with prose it must
+imitate. In `skills/sdlc-core/scripts/`:
+
+| Script | Does |
+|---|---|
+| `check-state.sh` | Validates `.ai-sdlc/` against STATE-SPEC; each FAIL blocks handoff. |
+| `scaffold-state.sh` | Emits the state.md skeleton, judgment slots marked `TODO-SDLC`. |
+| `compact-journal.sh` | Journal compaction: byte-for-byte retention, digest carry, folded entries printed for summarizing. |
+| `diff-inventory.sh` | One deterministic working-tree inventory (status, stats, untracked, stashes) for validate/handoff. |
+
+`TODO-SDLC` is the contract between scripts and model: scripts mark every
+judgment slot with it, and `check-state.sh` FAILs while any remains — so a
+half-finished artifact cannot pass the gates.
+
+A second hook, `hooks/sdlc-handoff-gate` (Stop), closes the far end of the
+lifecycle the SessionStart gate opens. It verifies an issued "Handoff
+report" by running `check-state.sh` — blocking the stop with the FAIL lines
+when the claim doesn't hold — reminds once when a `VERDICT: SHIP` leaves a
+dirty tree, and nudges at most every ~45 minutes while uncommitted changes
+sit. `stop_hook_active` keeps it from looping; transcript inspection needs
+`jq` and degrades to the dirty-tree nudge without it.
 
 ## Why the hook exists
 
@@ -67,7 +92,9 @@ snippet remains as the cross-harness baseline for harnesses without hooks.
 ```
 skills/sdlc-*/SKILL.md           the seven skills
 skills/sdlc-core/references/     STANDARD.md, STATE-SPEC.md
+skills/sdlc-core/scripts/        check-state, scaffold-state, compact-journal, diff-inventory
 hooks/sdlc-lifecycle-gate        SessionStart hook (git repos only)
+hooks/sdlc-handoff-gate          Stop hook: handoff verification + dirty-tree nudge
 agents-md/sdlc-lifecycle.md      routing snippet for AGENTS.md / CLAUDE.md
 install.sh                       symlink installer
 ```

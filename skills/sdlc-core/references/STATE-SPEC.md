@@ -70,7 +70,7 @@ digest into it); leave the retained entries byte-for-byte untouched:
   drop anything already captured in state.md or the repo>
 ```
 
-## Hygiene checks
+## Scripts and hygiene checks
 
 `check-state.sh` validates this spec mechanically — required sections, the
 `updated:` date, size caps, journal entry headers — and reports when
@@ -83,6 +83,23 @@ bash ~/.agents/skills/sdlc-core/scripts/check-state.sh
 (fallback: the `scripts/` directory inside the `sdlc-core/` sibling of the
 calling skill's directory). Exit 0 means the artifacts conform; each FAIL
 line names a violation to fix before handoff completes.
+
+Sibling scripts in the same directory do the other mechanical work, so no
+session hand-builds these formats:
+
+- `scaffold-state.sh [repo-dir]` — creates the state.md skeleton with
+  today's `updated:` line; refuses to overwrite an existing file.
+- `compact-journal.sh [repo-dir]` — performs the Compaction fold above:
+  keeps the newest 5 entries byte-for-byte, carries the previous digest's
+  bullets, and prints the folded entries as the source to summarize.
+- `diff-inventory.sh [base-ref]` — read-only working-tree inventory
+  (branch, status, diff stats, untracked files, stashes) for
+  sdlc-validate and sdlc-handoff.
+
+`TODO-SDLC` is the contract between scripts and model: every judgment slot
+a script cannot fill is marked with it, and check-state.sh FAILs while any
+remains — likewise while a `journal.md.bak` left by compact-journal.sh
+exists — so a half-finished artifact cannot pass handoff.
 
 ## Rules
 

@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# Stop hook: mechanical handoff enforcement in project repos.
+#
+# The SessionStart gate makes models *start* the lifecycle; this closes the
+# other end — sessions that finish work but never persist it. Three checks,
+# cheapest signal first, each self-limiting so it never nags every turn:
+#
+#   A. The response just issued a "Handoff report"  -> verify the claim:
+#      run check-state.sh; any FAIL blocks the stop with the FAIL lines.
+#   B. The response just issued "VERDICT: SHIP" with a dirty tree -> remind
+#      once that shipped work still needs sdlc-handoff before session end.
+#   C. The tree has been dirty for >45 min since the last reminder -> gentle
+#      nudge (armed at the first stop, so a pre-existing dirty tree does not
+#      nag on turn 1).
+#
+# Blocking uses exit 2 + stderr (fed back to the model). `stop_hook_active`
+# short-circuits so a blocked stop never re-blocks its own continuation.
+# Transcript inspection (A/B) needs jq; without jq only C runs. Emits
+# nothing and exits 0 outside git repos.
+
+set -uo pipefail
+
+input=$(cat 2>/dev/null || true)
+
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+printf '%s' "$input" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
+
+json_str() {
+  printf '%s' "$input" \
+    | sed -nE 's/.*"'"$1"'"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p' | head -1
+}
+
+session_id=$(json_str session_id)
+[ -n "$session_id" ] || session_id=unknown
+transcript=$(json_str transcript_path)
+marker="${TMPDIR:-/tmp}/sdlc-handoff-gate-${session_id}"
+
+dirty() { [ -n "$(git status --porcelain 2>/dev/null)" ]; }
+
+block() {
+  printf '%s\n' "$1" >&2
+  touch "$marker" 2>/dev/null || true
+  exit 2
+}
+
+# Final text message of the turn (last assistant entry that has a text block).
+last_text=""
+if command -v jq >/dev/null 2>&1 && [ -n "$transcript" ] && [ -f "$transcript" ]; then
+  last_text=$(jq -rs '
+    [ .[]
+      | select(.type == "assistant")
+      | (.message.content // []) | (if type == "array" then . else [] end)
+      | map(select(.type == "text") | .text) | join("\n")
+      | select(length > 0)
+    ] | last // ""' "$transcript" 2>/dev/null || true)
+fi
+
+# A — a Handoff report is a checkable claim; check it.
+if printf '%s' "$last_text" | grep -q 'Handoff report'; then
+  check=""
+  for c in "$HOME/.agents/skills/sdlc-core/scripts/check-state.sh" \
+           "$HOME/.claude/skills/sdlc-core/scripts/check-state.sh"; do
+    [ -f "$c" ] && { check="$c"; break; }
+  done
+  if [ ! -d .ai-sdlc ]; then
+    block "sdlc gate: a Handoff report was issued but .ai-sdlc/ does not exist — sdlc-handoff Step 2 was skipped. Run Skill(sdlc-handoff) for real: scaffold state.md, append the journal entry, then re-issue the report."
+  fi
+  if [ -n "$check" ]; then
+    out=$(bash "$check" . 2>&1) || block "sdlc gate: a Handoff report was issued but the artifacts fail STATE-SPEC:
+$out
+Fix every FAIL line, re-run check-state.sh until it prints 'check-state: OK', then re-issue the Handoff report."
+  fi
+  touch "$marker" 2>/dev/null || true
+  exit 0
+fi
+
+# B — SHIP verdict with a dirty tree: shipped work that isn't persisted yet.
+if printf '%s' "$last_text" | grep -q 'VERDICT: SHIP' && dirty; then
+  block "sdlc gate: validation returned SHIP but the working tree is dirty. If the session is wrapping up, invoke Skill(sdlc-handoff) now — commit or explain every change and persist state. If more work follows, say so and continue; hand off before the session ends."
+fi
+
+# C — throttled dirty-tree reminder: arm on first stop, nag at most per 45 min.
+if [ ! -f "$marker" ]; then
+  touch "$marker" 2>/dev/null || true
+  exit 0
+fi
+if dirty && [ -n "$(find "$marker" -mmin +45 2>/dev/null)" ]; then
+  block "sdlc gate: the working tree has had uncommitted changes for over 45 minutes. If this session is wrapping up, invoke Skill(sdlc-handoff); otherwise continue — this reminder repeats roughly every 45 minutes while changes sit uncommitted."
+fi
+
+exit 0

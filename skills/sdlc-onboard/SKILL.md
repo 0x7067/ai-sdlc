@@ -53,10 +53,12 @@ The verification path is the command(s) that prove the project works. It must be
 
 ## Step 3 — Reconcile state.md with reality
 
-- **Missing**: create `.ai-sdlc/state.md` per STATE-SPEC from what you just learned.
-  Sparse-but-true beats complete-but-guessed; leave sections thin rather than
-  invent. Do not create `.ai-sdlc/journal.md` — sdlc-handoff creates it on first
-  append. Do not commit the new file now: STATE-SPEC requires it committed, but
+- **Missing**: run `bash ~/.agents/skills/sdlc-core/scripts/scaffold-state.sh`
+  (fallback: the `scripts/` dir in the `sdlc-core/` sibling of this skill's
+  directory), then replace every `TODO-SDLC` placeholder from what you just
+  learned. Sparse-but-true beats complete-but-guessed; leave sections thin
+  rather than invent. It creates only state.md — sdlc-handoff creates
+  `.ai-sdlc/journal.md` on first append. Do not commit the new file now: STATE-SPEC requires it committed, but
   committing belongs to sdlc-handoff, so you never entangle it with pre-existing
   uncommitted work (spotted in Step 1's structure scan).
 - **Present but contradicting the repo** (commands that fail, files that don't

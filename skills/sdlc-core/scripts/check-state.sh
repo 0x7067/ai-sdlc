@@ -34,6 +34,10 @@ for sec in "Goal" "Now" "Verification path" "Decisions" "Landmines" "Next"; do
     || fail "state.md: missing '## $sec' section"
 done
 
+if grep -q 'TODO-SDLC' "$STATE"; then
+  fail "state.md: unfilled TODO-SDLC placeholder(s) — replace each with real content (scaffold-state.sh leaves them; sparse-but-true beats complete-but-guessed)"
+fi
+
 state_lines=$(wc -l < "$STATE" | tr -d ' ')
 if [ "$state_lines" -gt 120 ]; then
   fail "state.md: $state_lines lines (hard cap 120 — cut stale detail; history belongs in the journal)"
@@ -49,10 +53,18 @@ if [ -f "$JOURNAL" ]; then
   [ -z "$bad_headers" ] || fail "journal.md: malformed entry header(s):
 $bad_headers"
 
+  if grep -q 'TODO-SDLC' "$JOURNAL"; then
+    fail "journal.md: unfilled TODO-SDLC digest line — compact-journal.sh printed the folded entries; summarize them into digest bullets"
+  fi
+
   journal_lines=$(wc -l < "$JOURNAL" | tr -d ' ')
   if [ "$journal_lines" -gt 200 ]; then
     warn "journal.md: $journal_lines lines — compaction due: fold all but the newest 5 entries into a digest (STATE-SPEC 'Compaction')"
   fi
+fi
+
+if [ -f "$JOURNAL.bak" ]; then
+  fail "journal.md.bak present — compaction unfinished: fill the digest, verify journal.md, then delete the backup"
 fi
 
 if [ "$fails" -gt 0 ]; then

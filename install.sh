@@ -5,7 +5,8 @@
 # What it does:
 #   1. Symlinks each skills/sdlc-* directory into a skills dir
 #      (default: ~/.claude/skills; override with SKILLS_DIR=...).
-#   2. Symlinks hooks/sdlc-lifecycle-gate into ~/.claude/hooks.
+#   2. Symlinks hooks/sdlc-lifecycle-gate and hooks/sdlc-handoff-gate
+#      into ~/.claude/hooks.
 #   3. Prints the settings.json hook entry and the AGENTS.md/CLAUDE.md
 #      routing snippet for you to add manually (the script never edits
 #      your settings or instruction files).
@@ -39,20 +40,28 @@ for skill in "$REPO_DIR"/skills/sdlc-*; do
 done
 
 link "$REPO_DIR/hooks/sdlc-lifecycle-gate" "$HOOKS_DIR/sdlc-lifecycle-gate"
+link "$REPO_DIR/hooks/sdlc-handoff-gate" "$HOOKS_DIR/sdlc-handoff-gate"
 
 cat <<EOF
 
-Skills and hook installed.
+Skills and hooks installed.
 
 Two manual steps remain:
 
-1. Register the hook in ~/.claude/settings.json under hooks.SessionStart
-   (this is what makes smaller models actually route through the skills):
+1. Register the hooks in ~/.claude/settings.json (SessionStart makes
+   smaller models route through the skills; Stop makes them finish with
+   a real, verified handoff):
 
-     {
-       "matcher": "",
-       "hooks": [
-         { "type": "command", "command": "~/.claude/hooks/sdlc-lifecycle-gate", "timeout": 10 }
+     "hooks": {
+       "SessionStart": [
+         { "matcher": "", "hooks": [
+           { "type": "command", "command": "~/.claude/hooks/sdlc-lifecycle-gate", "timeout": 10 }
+         ] }
+       ],
+       "Stop": [
+         { "hooks": [
+           { "type": "command", "command": "~/.claude/hooks/sdlc-handoff-gate", "timeout": 10 }
+         ] }
        ]
      }
 
