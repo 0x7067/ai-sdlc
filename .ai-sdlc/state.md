@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-02
+updated: 2026-07-03
 
 ## Goal
 A skill library (sdlc-onboard/plan/extend/debug/validate/handoff + sdlc-core)
@@ -8,56 +8,60 @@ engineering standard. Portable across harnesses; routing made deterministic
 by a SessionStart hook.
 
 ## Now
-Artifact-hygiene pass complete and committed (d9f6e13): STATE-SPEC defines
-journal compaction (>~200 lines → fold all but newest 5 entries into a
-digest) and state.md caps (target 80 / fail 120 lines);
-`skills/sdlc-core/scripts/check-state.sh` enforces both mechanically;
-sdlc-handoff (post-journal check + compaction + 5th acid-test line) and
-sdlc-onboard (Step 3 drift check) invoke it. All six skills are now
-probe-validated — four new Sonnet toy-repo probes 2026-07-02, all required
-trace blocks produced; the handoff probe exercised compaction end-to-end.
-Remaining milestone: real-codebase A/B.
+Mechanical layer landed (2026-07-03): three new sdlc-core scripts
+(scaffold-state.sh, compact-journal.sh, diff-inventory.sh), a scaffold
+placeholder-token contract enforced by check-state.sh, and a Stop hook
+(hooks/sdlc-handoff-gate) that verifies "Handoff report" claims via
+check-state.sh, reminds on SHIP-with-dirty-tree, and nags a >45-min dirty
+tree. Skills/STATE-SPEC/README/install.sh wired. All scripts and all 8 hook
+branches verified against a fixture repo. Remaining milestone: real-codebase
+A/B.
 
 ## Verification path
-- `bash -n install.sh hooks/sdlc-lifecycle-gate
-  skills/sdlc-core/scripts/check-state.sh` — passes (2026-07-02).
+- `bash -n install.sh hooks/* skills/sdlc-core/scripts/*.sh` — passes
+  (2026-07-03).
 - Frontmatter + balanced-fence check: every `skills/*/SKILL.md` starts with
-  `---` and has an even number of ``` lines — passes (2026-07-02).
+  `---` and has an even number of ``` lines — passes (2026-07-03).
 - `bash skills/sdlc-core/scripts/check-state.sh .` — "check-state: OK"
-  (2026-07-02).
-- Skill *behavior*: no automated test. Method: build a toy repo with
-  planted debris, spawn Sonnet subagents told to follow one SKILL.md
-  exactly, check the output contains the skill's required trace blocks and
-  catches the debris. All six skills passed one probe each (2026-07-02).
+  (2026-07-03).
+- Script/hook *behavior*: fixture-repo runs — scaffold create/refuse/FAIL→OK,
+  compact fold with byte-for-byte retained-tail diff, diff-inventory all
+  change classes, hook all 8 branches (isolated $HOME so tests hit the
+  edited check-state.sh) — all passed (2026-07-03; details in journal).
+- Skill *behavior*: no automated test; Sonnet toy-repo probes, all six
+  skills passed one probe each (2026-07-02).
 
 ## Decisions
 - Frontmatter descriptions stay untouched — triggering is solved by the
   SessionStart hook (empirical, see README "Why the hook exists").
-- Templates over prose for every checkable behavior — Sonnet complies with
-  literal fill-in blocks far better than descriptions of desired output.
+- Templates over prose for every checkable behavior; judgment a script can
+  absorb goes in a script (README "The mechanical layer").
 - Token budget: per-skill growth capped at ~±20% per tuning pass.
 - Don't push main from an agent session — commit locally, leave pushing to
   Pedro.
-- Artifact hygiene is script-backed, not prose-only: mechanical format/cap
-  checks live in `sdlc-core/scripts/check-state.sh`; prose guides only the
-  judgment parts (what goes in a digest). Same empirical lesson as the
-  SessionStart hook (2026-07-02).
-- Journal compaction is the sole sanctioned journal rewrite, performed at
-  handoff when >200 lines: fold all but the newest 5 entries into one
-  digest entry — never edit retained entries.
+- Journal compaction is the sole sanctioned journal rewrite; it is now
+  script-executed (compact-journal.sh), model writes only the digest bullets.
+- Stop hook blocks via exit 2 + stderr; self-limiting by stop_hook_active,
+  a per-session marker file, and a 45-min nag throttle — chosen so it never
+  nags every turn mid-work (2026-07-03).
 - sdlc-handoff intentionally has no `Exit →` chaining line — it is the
   terminal skill of a session (probe-confirmed harmless, 2026-07-02).
 
 ## Landmines
-- Skills are live-symlinked: `~/.claude/skills → ~/.agents/skills → this
-  repo`. Edits take effect immediately in every session, including running
-  ones.
-- Skills cite STANDARD.md/STATE-SPEC.md/check-state.sh as
+- Skills are NOT live from this repo: `~/.claude/skills` and
+  `~/.agents/skills` symlink into `~/.agents/ai-sdlc`, a pull-based
+  deployment clone. Edits here go live only after that clone pulls.
+- `~/.claude/hooks/*` are chezmoi-managed COPIES, not symlinks — copy the
+  new file there and `chezmoi add` (auto-pushes the dotfiles repo).
+- Never write the scaffold placeholder token literally into this repo's own
+  .ai-sdlc files — check-state.sh greps for it and would FAIL the handoff
+  (token defined in STATE-SPEC "Scripts and hygiene checks").
+- Skills cite STANDARD.md/STATE-SPEC.md/scripts as
   `~/.agents/skills/sdlc-core/...` with a sibling-directory fallback — keep
   both path forms when editing.
 - Frontmatter description lines and the `Read STANDARD.md` pointer lines are
-  intentionally long (>90 cols); the line-length scan flags them — that is
-  the known baseline, not new damage.
+  intentionally long (>90 cols); the line-length scan flags them — known
+  baseline, not new damage.
 - check-state.sh requires the em-dash form `## YYYY-MM-DD — ` for journal
   headers; hand-written journals using a hyphen FAIL on first onboard —
   intended drift repair, not a script bug.
@@ -67,7 +71,8 @@ Remaining milestone: real-codebase A/B.
      experiment in README "Why the hook exists"): one arm with current
      skills, one with pre-tuning versions extracted via
      `git show db79456:skills/<name>/SKILL.md` into a temp skills dir; same
-     task both arms; compare trace compliance and outcome quality. Done
+     task both arms; compare trace compliance and outcome quality. Include a
+     handoff task so the Stop gate's A-branch gets exercised for real. Done
      when results are written into .ai-sdlc/journal.md.
 2. Single-command repo check: a script (e.g. `checks.sh`) bundling the
      bash -n + frontmatter/fence + `check-state.sh .` runs so the

@@ -44,3 +44,21 @@
   (terminal skill); the probe flagged it and handled it correctly.
 - Left: real-codebase A/B (Next 1); single-command check script (Next 2).
   Branch main is unpushed — pushing left to Pedro per standing decision.
+
+## 2026-07-03 — mechanical layer: three scripts, placeholder contract, Stop-hook handoff gate
+- Did: added sdlc-core/scripts/{scaffold-state,compact-journal,diff-inventory}.sh;
+  extended check-state.sh to FAIL on unfilled scaffold placeholders and on a
+  leftover journal.md.bak; added hooks/sdlc-handoff-gate (Stop hook: verifies
+  "Handoff report" via check-state.sh, reminds on SHIP+dirty tree, 45-min
+  dirty-tree nag, self-limited by stop_hook_active + marker file); wired
+  onboard/validate/handoff skills, STATE-SPEC, README, install.sh.
+- Verified: bash -n all bash → OK; frontmatter/fence scan → OK;
+  check-state.sh . → OK; fixture-repo functional runs of all three scripts
+  (incl. byte-for-byte retained-tail diff for compaction) and 8 hook-branch
+  simulations (exit 0/2 as designed) — all observed passing 2026-07-03.
+- Learned: ~/.agents/skills/sdlc-* resolve to ~/.agents/ai-sdlc, a separate
+  pull-based deployment clone — NOT this repo; a stale deployed
+  check-state.sh made one hook test false-pass until $HOME was isolated.
+  ~/.claude/hooks/* are chezmoi-managed copies, not symlinks.
+- Left: milestone 2 (real-codebase A/B, now incl. a handoff task for the
+  Stop gate) and the checks.sh bundler, per state.md Next.
