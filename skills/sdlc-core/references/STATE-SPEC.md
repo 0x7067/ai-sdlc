@@ -5,7 +5,7 @@ The handoff medium between sessions. Lives inside each project repo:
 ```
 .ai-sdlc/
 ├── state.md     # current truth — overwritten to stay accurate
-└── journal.md   # append-only session log — never rewritten
+└── journal.md   # append-only session log — entries never edited
 ```
 
 Both are committed to the repo (they are project knowledge, not scratch).
@@ -14,7 +14,8 @@ that in state.md itself.
 
 ## state.md — current truth
 
-Keep it under ~80 lines. It is read at the start of every session, so every
+Keep it under 80 lines (hard cap 120 — the hygiene check below fails past
+it). It is read at the start of every session, so every
 stale line costs trust and every extra line costs tokens. Overwrite freely;
 history lives in the journal.
 
@@ -55,6 +56,33 @@ One entry per working session, appended at the end. Never edit old entries.
 - Learned: anything that changed understanding (or "nothing new")
 - Left: loose ends handed to the next session
 ```
+
+### Compaction — the only sanctioned journal rewrite
+
+Entries are never edited, but the journal must not grow without bound. At
+handoff, when journal.md exceeds ~200 lines, fold every entry except the
+newest 5 into one digest entry at the top of the file (merging any previous
+digest into it); leave the retained entries byte-for-byte untouched:
+
+```markdown
+## Digest (through YYYY-MM-DD)
+- <one line per durable learning or outcome from the folded entries;
+  drop anything already captured in state.md or the repo>
+```
+
+## Hygiene checks
+
+`check-state.sh` validates this spec mechanically — required sections, the
+`updated:` date, size caps, journal entry headers — and reports when
+compaction is due. Run it from the project repo:
+
+```
+bash ~/.agents/skills/sdlc-core/scripts/check-state.sh
+```
+
+(fallback: the `scripts/` directory inside the `sdlc-core/` sibling of the
+calling skill's directory). Exit 0 means the artifacts conform; each FAIL
+line names a violation to fix before handoff completes.
 
 ## Rules
 

@@ -69,6 +69,13 @@ Handoff-specific additions: "Verified" lists only commands you actually ran
 *this session* with the results you observed; if you verified nothing, write
 "nothing verified" rather than omitting the line.
 
+Then run the hygiene check:
+`bash ~/.agents/skills/sdlc-core/scripts/check-state.sh` (fallback: the
+`scripts/` dir in the `sdlc-core/` sibling of this skill's directory). Fix
+every FAIL line now. If it warns compaction is due, compact per STATE-SPEC's
+Compaction section — fold all but the newest 5 journal entries into one
+digest entry — then re-run the check until it prints `check-state: OK`.
+
 ## Step 4 — Make Next steps cold-startable
 
 Each item in **Next** must let a fresh model begin without archaeology. That
@@ -97,6 +104,7 @@ Acid test
 - Verification path runnable verbatim: yes|no
 - Every uncommitted change explained: yes|no
 - Next step 1 startable cold: yes|no
+- check-state.sh printed "check-state: OK": yes|no
 ```
 
 Any "no": fix state.md and answer again — only an all-yes acid test ends the

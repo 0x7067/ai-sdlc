@@ -65,6 +65,12 @@ The verification path is the command(s) that prove the project works. It must be
   STATE-SPEC Rules).
 - **Present and accurate**: touch nothing.
 
+When state.md is present, also run
+`bash ~/.agents/skills/sdlc-core/scripts/check-state.sh` (fallback: the
+`scripts/` dir in the `sdlc-core/` sibling of this skill's directory) —
+each FAIL line is format drift against STATE-SPEC; fix it now like any
+other drift.
+
 ## Step 4 — Cost discipline
 
 - Time-box exploration: roughly 10-15 tool calls or ~5 minutes. If you're not
