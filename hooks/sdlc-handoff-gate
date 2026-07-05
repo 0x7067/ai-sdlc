@@ -8,7 +8,7 @@
 #   A. The response just issued a "Handoff report"  -> verify the claim:
 #      run check-state.sh; any FAIL blocks the stop with the FAIL lines.
 #   B. The response just issued "VERDICT: SHIP" with a dirty tree -> remind
-#      once that shipped work still needs sdlc-handoff before session end.
+#      once that shipped work still needs sdlc-finish before session end.
 #   C. The tree has been dirty for >45 min since the last reminder -> gentle
 #      nudge (armed at the first stop, so a pre-existing dirty tree does not
 #      nag on turn 1).
@@ -63,7 +63,7 @@ if printf '%s' "$last_text" | grep -q 'Handoff report'; then
     [ -f "$c" ] && { check="$c"; break; }
   done
   if [ ! -d .ai-sdlc ]; then
-    block "sdlc gate: a Handoff report was issued but .ai-sdlc/ does not exist — sdlc-handoff Step 2 was skipped. Run Skill(sdlc-handoff) for real: scaffold state.md, append the journal entry, then re-issue the report."
+    block "sdlc gate: a Handoff report was issued but .ai-sdlc/ does not exist — nothing was persisted. Run Skill(sdlc-finish) for real: scaffold state.md, append the journal entry, then re-issue the report."
   fi
   if [ -n "$check" ]; then
     out=$(bash "$check" . 2>&1) || block "sdlc gate: a Handoff report was issued but the artifacts fail STATE-SPEC:
@@ -76,7 +76,7 @@ fi
 
 # B — SHIP verdict with a dirty tree: shipped work that isn't persisted yet.
 if printf '%s' "$last_text" | grep -q 'VERDICT: SHIP' && dirty; then
-  block "sdlc gate: validation returned SHIP but the working tree is dirty. If the session is wrapping up, invoke Skill(sdlc-handoff) now — commit or explain every change and persist state. If more work follows, say so and continue; hand off before the session ends."
+  block "sdlc gate: validation returned SHIP but the working tree is dirty. If the session is wrapping up, invoke Skill(sdlc-finish) now — commit or explain every change and persist state. If more work follows, say so and continue; hand off before the session ends."
 fi
 
 # C — throttled dirty-tree reminder: arm on first stop, nag at most per 45 min.
@@ -85,7 +85,7 @@ if [ ! -f "$marker" ]; then
   exit 0
 fi
 if dirty && [ -n "$(find "$marker" -mmin +45 2>/dev/null)" ]; then
-  block "sdlc gate: the working tree has had uncommitted changes for over 45 minutes. If this session is wrapping up, invoke Skill(sdlc-handoff); otherwise continue — this reminder repeats roughly every 45 minutes while changes sit uncommitted."
+  block "sdlc gate: the working tree has had uncommitted changes for over 45 minutes. If this session is wrapping up, invoke Skill(sdlc-finish); otherwise continue — this reminder repeats roughly every 45 minutes while changes sit uncommitted."
 fi
 
 exit 0

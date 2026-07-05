@@ -1,14 +1,22 @@
 # Project State
-updated: 2026-07-03
+updated: 2026-07-05
 
 ## Goal
-A skill library (sdlc-onboard/plan/extend/debug/validate/handoff + sdlc-core)
-that lets cheaper models carry a project across sessions at a consistent
-engineering standard. Portable across harnesses; routing made deterministic
-by a SessionStart hook.
+A skill library (sdlc-start + sdlc-finish + sdlc-core) that lets models
+carry a project across sessions at a consistent engineering standard.
+Portable across harnesses; routing made deterministic by a SessionStart
+hook. Execution between the gates is governed by STANDARD.md, not skills.
 
 ## Now
-Mechanical layer landed (2026-07-03): three new sdlc-core scripts
+Bitter Lesson Phase 2 collapse landed (2026-07-05): the six phase skills
+(onboard/plan/extend/debug/validate/handoff, ~720 SKILL.md lines) merged
+into sdlc-start (orient + plan, 74 lines) and sdlc-finish (validate +
+handoff, 57 lines), both advice-shaped — objectives + WHY, no step recipes.
+Hooks, README, agents-md snippet, and core prose renamed; STANDARD.md
+byte-identical; STATE-SPEC.md and script headers got name-only prose
+updates. An Option A experiment (single merged `sdlc` skill) is planned as
+branch `experiment/one-skill`. Prior milestone — mechanical layer landed
+(2026-07-03): three new sdlc-core scripts
 (scaffold-state.sh, compact-journal.sh, diff-inventory.sh), a scaffold
 placeholder-token contract enforced by check-state.sh, and a Stop hook
 (hooks/sdlc-handoff-gate) that verifies "Handoff report" claims via
@@ -44,8 +52,9 @@ A/B.
 - Stop hook blocks via exit 2 + stderr; self-limiting by stop_hook_active,
   a per-session marker file, and a 45-min nag throttle — chosen so it never
   nags every turn mid-work (2026-07-03).
-- sdlc-handoff intentionally has no `Exit →` chaining line — it is the
-  terminal skill of a session (probe-confirmed harmless, 2026-07-02).
+- The terminal skill of a session intentionally has no `Exit →` chaining
+  line (probe-confirmed harmless, 2026-07-02, on sdlc-handoff; the role now
+  belongs to sdlc-finish).
 
 ## Landmines
 - Skills are NOT live from this repo: `~/.claude/skills` and

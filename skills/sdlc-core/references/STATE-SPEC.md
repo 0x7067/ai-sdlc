@@ -94,7 +94,7 @@ session hand-builds these formats:
   bullets, and prints the folded entries as the source to summarize.
 - `diff-inventory.sh [base-ref]` — read-only working-tree inventory
   (branch, status, diff stats, untracked files, stashes) for
-  sdlc-validate and sdlc-handoff.
+  sdlc-finish (validation and handoff).
 
 `TODO-SDLC` is the contract between scripts and model: every judgment slot
 a script cannot fill is marked with it, and check-state.sh FAILs while any

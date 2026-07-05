@@ -62,3 +62,22 @@
   ~/.claude/hooks/* are chezmoi-managed copies, not symlinks.
 - Left: milestone 2 (real-codebase A/B, now incl. a handoff task for the
   Stop gate) and the checks.sh bundler, per state.md Next.
+
+## 2026-07-05 — Phase 2 Bitter Lesson collapse: six phase skills -> start/finish
+- Merged onboard+plan into sdlc-start (74 lines) and validate+handoff into
+  sdlc-finish (57 lines); deleted extend/debug outright — execution is now
+  governed by STANDARD.md alone. Both new skills are advice-shaped:
+  objectives + rationale + pointers, no step recipes, no "routing
+  violation"/"binding" language.
+- Renamed references in hooks (lifecycle gate text, handoff gate messages),
+  README, agents-md snippet, sdlc-core SKILL.md; name-only prose updates in
+  STATE-SPEC.md and script headers. STANDARD.md byte-identical. Hook
+  filenames unchanged, so installed settings.json entries stay valid.
+- Distrust next session: the merged frontmatter descriptions have NOT been
+  probe-tested for auto-triggering (old decision "descriptions stay
+  untouched, hook solves routing" still stands, but the hook text changed
+  too). The 2026-07-03 fixture verification of hook branches predates the
+  message-text edits — mechanics untouched, but re-run fixtures before
+  trusting branch A/B wording claims.
+- Option A (single `sdlc` skill) to be built on branch experiment/one-skill
+  for comparison; main deploys the two-skill shape.

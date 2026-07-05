@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Canonical working-tree inventory for sdlc-validate Step 1 and sdlc-handoff
-# Step 1: branch, status, staged/unstaged diff stats, untracked files, and
+# Canonical working-tree inventory for sdlc-finish (validation and handoff):
+# branch, status, staged/unstaged diff stats, untracked files, and
 # stashes in one deterministic, read-only block — so no category of change
 # gets skipped by an improvised git invocation.
 #

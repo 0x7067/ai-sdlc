@@ -10,9 +10,8 @@ description: >-
 
 # sdlc-core
 
-Foundation for the sdlc lifecycle skills (`sdlc-onboard`, `sdlc-plan`,
-`sdlc-extend`, `sdlc-debug`, `sdlc-validate`, `sdlc-handoff`). It holds the
-two things they all share, so no skill restates them:
+Foundation for the sdlc lifecycle skills (`sdlc-start`, `sdlc-finish`). It
+holds the two things they share, so neither skill restates them:
 
 - `references/STANDARD.md` — the engineering standard: what "done well" means
   for any change, regardless of which model executes it. Read it once per

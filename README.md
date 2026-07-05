@@ -1,32 +1,33 @@
 # ai-sdlc
 
-A skill library that lets cheaper models (Sonnet, Haiku, Opus) carry a project's
-progress across sessions at a consistent engineering standard. Seven skills cover
-the session lifecycle; a shared core holds the standard and the handoff file
-format; a session-start hook makes routing deterministic.
+A skill library that lets models carry a project's progress across sessions at
+a consistent engineering standard. Two skills bracket the session lifecycle —
+start (orient + plan) and finish (validate + hand off) — a shared core holds
+the standard and the handoff file format, and a session-start hook makes
+routing deterministic. Execution between the brackets is governed by the
+standard, not scripted by a skill: the library states objectives and durable
+contracts and leaves the *how* to the model.
 
 Built for Claude Code, portable to any harness that loads `SKILL.md`-style skills.
 
 ## The lifecycle
 
 ```
-session start ──> sdlc-onboard ──> sdlc-plan ────┐
-                                   sdlc-extend ──┼──> sdlc-validate ──> sdlc-handoff ──> session end
-                                   sdlc-debug ───┘
+session start ──> sdlc-start ──> execution (STANDARD.md) ──> sdlc-finish ──> session end
+                  orient, plan                                validate, hand off
 ```
 
 | Skill | When |
 |---|---|
-| `sdlc-onboard` | Start of any session in a project repo, before touching code. Builds the minimum mental model; reads or creates `.ai-sdlc/state.md`. |
-| `sdlc-plan` | Multi-step, risky, or ambiguous changes. Produces ordered steps, each with its own verification, recorded in state. |
-| `sdlc-extend` | Adding or modifying functionality. Pre-flight success criteria, mimic the nearest pattern, small edits + narrow verification. |
-| `sdlc-debug` | Wrong behavior: reproduce → isolate → root-cause → smallest fix → regression proof. |
-| `sdlc-validate` | Pre-ship gate: verification ladder narrowest-first, hostile self-review of the diff, evidence report with ship/fix/escalate. |
-| `sdlc-handoff` | End of session: persist state, commit or explain every working-tree change, leave cold-startable next steps. |
+| `sdlc-start` | Before the first substantive task of a session, and again for any multi-step, risky, or ambiguous change. Two objectives: orient (goal, code, verification baseline, `.ai-sdlc/state.md`) and plan (observable success criteria, genuine forks, per-step verification). |
+| `sdlc-finish` | Before declaring a nontrivial change done and before the session ends: hostile self-review of the full diff with quoted evidence, then persist state.md + journal so the next session cold-starts. |
 | `sdlc-core` | Shared foundation the others reference: `references/STANDARD.md` (the engineering standard) and `references/STATE-SPEC.md` (the `.ai-sdlc/state.md` + `journal.md` handoff format). |
 
-Onboard, validate, and handoff are mandatory gates; plan/extend/debug route by
-the shape of the work. The handoff medium is two committed files per project:
+Start and finish are the gates; the work between them is governed by
+`references/STANDARD.md` (root cause over patch, smallest coherent change,
+verification ladder) rather than scripted by a skill — the standard states
+the bar and the model decides how to clear it.
+The handoff medium is two committed files per project:
 `.ai-sdlc/state.md` (current truth, <80 lines) and `.ai-sdlc/journal.md`
 (append-only session log), so any future session — any model, any harness —
 can cold-start from the repo alone.
@@ -90,7 +91,7 @@ snippet remains as the cross-harness baseline for harnesses without hooks.
 ## Layout
 
 ```
-skills/sdlc-*/SKILL.md           the seven skills
+skills/sdlc-*/SKILL.md           the three skills (start, finish, core)
 skills/sdlc-core/references/     STANDARD.md, STATE-SPEC.md
 skills/sdlc-core/scripts/        check-state, scaffold-state, compact-journal, diff-inventory
 hooks/sdlc-lifecycle-gate        SessionStart hook (git repos only)
