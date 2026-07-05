@@ -30,9 +30,10 @@ You are oriented when you can state, without guessing:
   actually run, with their current baseline (what passes today). A stale
   verification command inherited from state.md is worse than none; run it.
 - **What the last session left unfinished** — read `.ai-sdlc/state.md`
-  (format: `../sdlc-core/references/STATE-SPEC.md`) and run
-  `bash ../sdlc-core/scripts/check-state.sh`. If the file is missing,
-  `scaffold-state.sh` creates it.
+  (format: `../sdlc-core/references/STATE-SPEC.md`), including its
+  `## History` digest, and — if `.ai-sdlc/journal.md` exists — its last 3
+  dated entries; then run `bash ../sdlc-core/scripts/check-state.sh`. If
+  state.md is missing, `scaffold-state.sh` creates it.
 
 Trust nothing that isn't reproduced: claims in state.md were true when
 written, which is not the same as true now.

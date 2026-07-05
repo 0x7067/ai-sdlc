@@ -45,6 +45,17 @@ env quirks, ordering constraints.
 Ordered, concrete next steps. Each one small enough to start cold.
 ```
 
+### History — compaction target (tool-managed)
+
+`compact-journal.sh` appends or updates a `## History (digest through
+YYYY-MM-DD)` section here when it folds old journal entries. It is the one
+section a session doesn't hand-author: the script writes the header,
+carries the previous digest's bullets forward verbatim, and adds one
+`TODO-SDLC` placeholder for the newly folded entries, which the model then
+fills in. `sdlc-start` reads this section at orientation time — a digest
+belongs wherever state.md lives, since that's the file every session
+actually reads back.
+
 ## journal.md — append-only log
 
 One entry per working session, appended at the end. Never edit old entries.
@@ -61,11 +72,14 @@ One entry per working session, appended at the end. Never edit old entries.
 
 Entries are never edited, but the journal must not grow without bound. At
 handoff, when journal.md exceeds ~200 lines, fold every entry except the
-newest 5 into one digest entry at the top of the file (merging any previous
-digest into it); leave the retained entries byte-for-byte untouched:
+newest 5 into a digest — merging any previous digest's bullets in — and
+write it to state.md's `## History (digest through YYYY-MM-DD)` section
+(replacing any prior one there), not into journal.md itself: a digest left
+in the journal is never read back. journal.md keeps only the newest 5
+entries, byte-for-byte untouched:
 
 ```markdown
-## Digest (through YYYY-MM-DD)
+## History (digest through YYYY-MM-DD)
 - <one line per durable learning or outcome from the folded entries;
   drop anything already captured in state.md or the repo>
 ```
@@ -90,8 +104,10 @@ session hand-builds these formats:
 - `scaffold-state.sh [repo-dir]` — creates the state.md skeleton with
   today's `updated:` line; refuses to overwrite an existing file.
 - `compact-journal.sh [repo-dir]` — performs the Compaction fold above:
-  keeps the newest 5 entries byte-for-byte, carries the previous digest's
-  bullets, and prints the folded entries as the source to summarize.
+  trims journal.md to the newest 5 entries byte-for-byte, writes the
+  digest (carrying the previous one's bullets forward) into state.md's
+  `## History` section, and prints the folded entries as the source to
+  summarize.
 - `diff-inventory.sh [base-ref]` — read-only working-tree inventory
   (branch, status, diff stats, untracked files, stashes) for
   sdlc-finish (validation and handoff).

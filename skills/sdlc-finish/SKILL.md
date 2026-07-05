@@ -41,6 +41,11 @@ done when:
 - **`.ai-sdlc/state.md` is the current truth** — goals, decisions, next
   steps, and known landmines as they stand *now*, not as they stood when
   the session started. Format: `../sdlc-core/references/STATE-SPEC.md`.
+  Stamp `updated:` with today's date every time, even for a small change —
+  a stale date understates how current the file is. When a `Next` step
+  depends on something outside this repo (a PR, a deploy, another agent's
+  work), name that dependency explicitly so the next session re-verifies
+  it instead of trusting a claim that may have moved on.
 - **The journal has an entry** — what changed, why, and what a future
   session should distrust.
 - **`bash ../sdlc-core/scripts/check-state.sh` exits 0.**

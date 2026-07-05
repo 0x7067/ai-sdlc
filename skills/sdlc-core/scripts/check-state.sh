@@ -34,6 +34,38 @@ for sec in "Goal" "Now" "Verification path" "Decisions" "Landmines" "Next"; do
     || fail "state.md: missing '## $sec' section"
 done
 
+# Advisory: file edited well after its 'updated:' header claims — the header
+# is a promise about freshness, and mtime is the only cheap way to catch it
+# going stale without re-deriving the whole file's truth.
+updated_date=$(grep -E '^updated: [0-9]{4}-[0-9]{2}-[0-9]{2}$' "$STATE" | head -1 | sed 's/^updated: //')
+if [ -n "$updated_date" ]; then
+  # Try GNU stat's format flag first, then BSD's — whichever binary answers
+  # first on a given machine, the other flag reads as noise, not an error
+  # (BSD `-f` and GNU `-c` mean different things), so validate the result
+  # is purely numeric rather than trusting a zero exit status alone.
+  mtime_epoch=$(stat -c %Y "$STATE" 2>/dev/null || stat -f %m "$STATE" 2>/dev/null || echo 0)
+  case "$mtime_epoch" in ''|*[!0-9]*) mtime_epoch=0 ;; esac
+  updated_epoch=$(date -d "$updated_date" '+%s' 2>/dev/null \
+    || date -j -f '%Y-%m-%d' "$updated_date" '+%s' 2>/dev/null || echo 0)
+  case "$updated_epoch" in ''|*[!0-9]*) updated_epoch=0 ;; esac
+  if [ "$mtime_epoch" != 0 ] && [ "$updated_epoch" != 0 ] \
+    && [ "$((mtime_epoch - updated_epoch))" -gt 86400 ]; then
+    warn "state.md: file modified more than 24h after its 'updated: $updated_date' header — re-stamp updated: to today"
+  fi
+fi
+
+# Advisory: a 'Next' step naming external state (a PR, a deploy, another
+# agent's work) is a claim that may have moved on since it was written.
+next_start=$(grep -n '^## Next$' "$STATE" | head -1 | cut -d: -f1 || true)
+if [ -n "$next_start" ]; then
+  next_end=$(awk -v s="$next_start" 'NR > s && /^## / { print NR - 1; exit }' "$STATE")
+  [ -z "$next_end" ] && next_end=$(wc -l < "$STATE" | tr -d ' ')
+  next_body=$(sed -n "$((next_start + 1)),${next_end}p" "$STATE")
+  if printf '%s' "$next_body" | grep -qiE 'PR ?#|pull request|deploy|\bmerged?\b|other agent|another agent'; then
+    warn "state.md: 'Next' references external state (PR/deploy/other agent) — re-verify it before trusting, don't assume it still holds"
+  fi
+fi
+
 if grep -q 'TODO-SDLC' "$STATE"; then
   fail "state.md: unfilled TODO-SDLC placeholder(s) — replace each with real content (scaffold-state.sh leaves them; sparse-but-true beats complete-but-guessed)"
 fi
