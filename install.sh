@@ -3,7 +3,7 @@
 # discovers skills from a directory of SKILL.md folders).
 #
 # What it does:
-#   1. Symlinks each skills/sdlc-* directory into a skills dir
+#   1. Symlinks the skills/sdlc directory into a skills dir
 #      (default: ~/.claude/skills; override with SKILLS_DIR=...).
 #   2. Symlinks hooks/sdlc-lifecycle-gate and hooks/sdlc-handoff-gate
 #      into ~/.claude/hooks.
@@ -12,7 +12,7 @@
 #      your settings or instruction files).
 #
 # Symlinks (not copies) keep a `git pull` in this repo live everywhere,
-# and keep the sdlc-core sibling-directory resolution intact.
+# and keep the skill's internal references/ and scripts/ paths intact.
 #
 # Idempotent: re-running replaces existing symlinks, refuses to touch
 # real files/directories it did not create.
@@ -35,7 +35,7 @@ link() { # link <target> <linkpath>
 
 mkdir -p "$SKILLS_DIR" "$HOOKS_DIR"
 
-for skill in "$REPO_DIR"/skills/sdlc-*; do
+for skill in "$REPO_DIR"/skills/sdlc; do
   link "$skill" "$SKILLS_DIR/$(basename "$skill")"
 done
 

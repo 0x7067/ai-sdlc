@@ -6,7 +6,7 @@
 # Mechanical part only: emits the exact required sections and today's
 # `updated:` line, with every judgment slot marked `TODO-SDLC: ...`.
 # The model replaces the placeholders; check-state.sh FAILs while any
-# remain. journal.md is NOT created here — sdlc-finish creates it on
+# remain. journal.md is NOT created here — sdlc handoff creates it on
 # first append.
 #
 # Refuses to overwrite an existing state.md.

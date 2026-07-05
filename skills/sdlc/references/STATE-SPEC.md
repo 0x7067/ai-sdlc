@@ -77,11 +77,11 @@ digest into it); leave the retained entries byte-for-byte untouched:
 compaction is due. Run it from the project repo:
 
 ```
-bash ~/.agents/skills/sdlc-core/scripts/check-state.sh
+bash ~/.agents/skills/sdlc/scripts/check-state.sh
 ```
 
-(fallback: the `scripts/` directory inside the `sdlc-core/` sibling of the
-calling skill's directory). Exit 0 means the artifacts conform; each FAIL
+(fallback: the `scripts/` directory inside the `sdlc` skill's own
+directory). Exit 0 means the artifacts conform; each FAIL
 line names a violation to fix before handoff completes.
 
 Sibling scripts in the same directory do the other mechanical work, so no
@@ -94,7 +94,7 @@ session hand-builds these formats:
   bullets, and prints the folded entries as the source to summarize.
 - `diff-inventory.sh [base-ref]` — read-only working-tree inventory
   (branch, status, diff stats, untracked files, stashes) for
-  sdlc-finish (validation and handoff).
+  sdlc validation and handoff.
 
 `TODO-SDLC` is the contract between scripts and model: every judgment slot
 a script cannot fill is marked with it, and check-state.sh FAILs while any

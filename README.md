@@ -13,17 +13,20 @@ Built for Claude Code, portable to any harness that loads `SKILL.md`-style skill
 ## The lifecycle
 
 ```
-session start ──> sdlc-start ──> execution (STANDARD.md) ──> sdlc-finish ──> session end
-                  orient, plan                                validate, hand off
+session start ──> sdlc ──> execution (STANDARD.md) ──> sdlc ──> session end
+                  orient, plan                          validate, hand off
 ```
 
-| Skill | When |
+| Objective | When |
 |---|---|
-| `sdlc-start` | Before the first substantive task of a session, and again for any multi-step, risky, or ambiguous change. Two objectives: orient (goal, code, verification baseline, `.ai-sdlc/state.md`) and plan (observable success criteria, genuine forks, per-step verification). |
-| `sdlc-finish` | Before declaring a nontrivial change done and before the session ends: hostile self-review of the full diff with quoted evidence, then persist state.md + journal so the next session cold-starts. |
-| `sdlc-core` | Shared foundation the others reference: `references/STANDARD.md` (the engineering standard) and `references/STATE-SPEC.md` (the `.ai-sdlc/state.md` + `journal.md` handoff format). |
+| Orient | Before the first substantive task of a session: goal, code, verification baseline, `.ai-sdlc/state.md`. |
+| Plan | For any multi-step, risky, or ambiguous change: observable success criteria, genuine forks, per-step verification. |
+| Validate | Before declaring a nontrivial change done: hostile self-review of the full diff with quoted evidence. |
+| Hand off | Before the session ends with anything changed: persist state.md + journal so the next session cold-starts. |
 
-Start and finish are the gates; the work between them is governed by
+One skill (`skills/sdlc`) carries all four objectives plus the shared
+references. Orient/plan and validate/handoff are the gates; the work
+between them is governed by
 `references/STANDARD.md` (root cause over patch, smallest coherent change,
 verification ladder) rather than scripted by a skill — the standard states
 the bar and the model decides how to clear it.
@@ -51,7 +54,7 @@ hooks into `~/.claude/hooks`, then prints the two manual steps:
 
 Judgment the skills can delegate to a script, they do — a weaker model
 complies with a command it must run far better than with prose it must
-imitate. In `skills/sdlc-core/scripts/`:
+imitate. In `skills/sdlc/scripts/`:
 
 | Script | Does |
 |---|---|
@@ -91,19 +94,18 @@ snippet remains as the cross-harness baseline for harnesses without hooks.
 ## Layout
 
 ```
-skills/sdlc-*/SKILL.md           the three skills (start, finish, core)
-skills/sdlc-core/references/     STANDARD.md, STATE-SPEC.md
-skills/sdlc-core/scripts/        check-state, scaffold-state, compact-journal, diff-inventory
+skills/sdlc/SKILL.md             the single lifecycle skill
+skills/sdlc/references/          STANDARD.md, STATE-SPEC.md
+skills/sdlc/scripts/             check-state, scaffold-state, compact-journal, diff-inventory
 hooks/sdlc-lifecycle-gate        SessionStart hook (git repos only)
 hooks/sdlc-handoff-gate          Stop hook: handoff verification + dirty-tree nudge
 agents-md/sdlc-lifecycle.md      routing snippet for AGENTS.md / CLAUDE.md
 install.sh                       symlink installer
 ```
 
-Skills reference the core as `~/.agents/skills/sdlc-core/...` with an explicit
-fallback: `sdlc-core/` is always resolvable as a sibling of the invoking skill's
-directory, which the symlink install preserves regardless of where this repo
-lives.
+The skill references its own `references/` and `scripts/` subdirectories
+relative to `SKILL.md`, which the symlink install preserves regardless of
+where this repo lives.
 
 ## Precedence
 
