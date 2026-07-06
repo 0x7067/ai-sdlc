@@ -63,13 +63,14 @@ branch experiment/one-skill.
   hyphen forms FAIL on first onboard (intended drift repair).
 
 ## Next
-1. Run tier1 for real: needs `claude setup-token` →
-   `CLAUDE_CODE_OAUTH_TOKEN` (external: Pedro's auth). Baseline both arms
-   (haiku first), write evals/tier1/baseline.json, record in journal.
+1. Run tier1 for real: blocked ONLY on `claude setup-token` (interactive,
+   Pedro's terminal; workarounds ruled out — see evals/tier1/SMOKE.md
+   "Update 2026-07-06"). Then baseline both arms (haiku first), write
+   evals/tier1/baseline.json, record in journal.
 2. Milestone 2 (real-codebase A/B) now = tier1 `--arm control|sdlc` runs;
    done when results land in journal and README's empirics claim cites them.
-3. Deployment: push/pull so ~/Development/agentctl/ai-sdlc picks up today's
-   skill + script edits (external: Pedro pushes); confirm deploy-drift
-   WARNs clear.
+3. GitHub is behind: origin/main lacks today's commits (external: Pedro
+   pushes when ready). The live deployment clone is already current —
+   fast-forwarded locally 2026-07-06, deploy-drift checks all PASS.
 4. tier1 hardening: randomized fixtures, non-keyword grading for
    false_ship/stale_state, spend guard for batch runs.
