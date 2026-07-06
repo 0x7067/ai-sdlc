@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 4,
+  "result": "GOAL: Ship csv2json, a small CLI that converts CSV files to JSON.\nNEXT: Wire the already-started --pretty flag to indented JSON output (json.dumps indent=2).\nVERIFY: bash verify.sh\nLANDMINE: tests/fixtures/sample.csv has no trailing newline after the last row; don't \"fix\" it, DictReader handles it fine.\nDIRTY: There's an uncommitted WIP edit in csv2json.py adding --pretty argument parsing, not yet wired to the writer.",
+  "usage": {"input_tokens": 1800, "output_tokens": 210, "cache_creation_input_tokens": 9000, "cache_read_input_tokens": 4000}
+}

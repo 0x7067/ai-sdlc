@@ -25,6 +25,12 @@ input=$(cat 2>/dev/null || true)
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 printf '%s' "$input" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
 
+# Exemptions (Pedro's call): scratch sessions and the agentctl harness repo
+# itself are not projects under the SDLC lifecycle — never block their stop.
+[ "${AI_SDLC_SCRATCH:-}" = "1" ] && exit 0
+gate_top=$(git rev-parse --show-toplevel 2>/dev/null)
+[ -n "$gate_top" ] && [ -f "$gate_top/agentctl.config.json" ] && exit 0
+
 json_str() {
   printf '%s' "$input" \
     | sed -nE 's/.*"'"$1"'"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p' | head -1

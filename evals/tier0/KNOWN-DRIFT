@@ -1,0 +1,13 @@
+# Known, accepted coherence drift.
+#
+# Format: one finding id per line (the id printed by a checks/*.sh script,
+# e.g. "coherence.hook-string.handoff-report"), a whitespace run, then a
+# one-line justification. Blank lines and lines starting with '#' are
+# ignored.
+#
+# run.sh treats every id listed here as an EXPECTED failure: it does not
+# block on it, but it prints it plainly as a real, live finding for the
+# orchestrator/human to see. run.sh ALSO fails if a listed id does NOT
+# fail this run (a stale allowlist entry) — remove the entry once the
+# underlying gap is actually fixed, don't leave it as permanent cover.
+

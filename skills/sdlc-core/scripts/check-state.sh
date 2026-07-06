@@ -50,7 +50,7 @@ if [ -n "$updated_date" ]; then
   case "$updated_epoch" in ''|*[!0-9]*) updated_epoch=0 ;; esac
   if [ "$mtime_epoch" != 0 ] && [ "$updated_epoch" != 0 ] \
     && [ "$((mtime_epoch - updated_epoch))" -gt 86400 ]; then
-    warn "state.md: file modified more than 24h after its 'updated: $updated_date' header — re-stamp updated: to today"
+    warn "state.md: file modified more than 24h after its 'updated: $updated_date' header — re-verify the file's claims against the repo, then re-stamp updated: (a fresh date on stale content is worse than a stale date)"
   fi
 fi
 
@@ -66,6 +66,27 @@ if [ -n "$next_start" ]; then
   fi
 fi
 
+# Advisory: a 'Verification path' naming files that no longer exist is a
+# stale claim wearing a fresh date — exactly the drift the form checks above
+# cannot see. Only backticked tokens that look like relative repo paths are
+# checked (globs, flags, absolute/home/URL forms are skipped).
+vp_start=$(grep -n '^## Verification path$' "$STATE" | head -1 | cut -d: -f1 || true)
+if [ -n "$vp_start" ]; then
+  vp_end=$(awk -v s="$vp_start" 'NR > s && /^## / { print NR - 1; exit }' "$STATE")
+  [ -z "$vp_end" ] && vp_end=$(wc -l < "$STATE" | tr -d ' ')
+  vp_toks=$(sed -n "$((vp_start + 1)),${vp_end}p" "$STATE" \
+    | grep -o '`[^`]*`' | tr -d '`' | tr ' ' '\n' | grep '/' | sort -u || true)
+  vp_missing=""
+  for tok in $vp_toks; do
+    case "$tok" in
+      /*|~*|\$*|-*|*'://'*|*'*'*|*'?'*) continue ;;
+    esac
+    tok="${tok%[,;)]}"
+    [ -e "${1:-.}/$tok" ] || vp_missing="$vp_missing $tok"
+  done
+  [ -z "$vp_missing" ] || warn "state.md: 'Verification path' names path(s) missing from the repo:$vp_missing — stale claim? re-run the commands and fix the section, don't just re-stamp the date"
+fi
+
 if grep -q 'TODO-SDLC' "$STATE"; then
   fail "state.md: unfilled TODO-SDLC placeholder(s) — replace each with real content (scaffold-state.sh leaves them; sparse-but-true beats complete-but-guessed)"
 fi
@@ -74,7 +95,7 @@ state_lines=$(wc -l < "$STATE" | tr -d ' ')
 if [ "$state_lines" -gt 120 ]; then
   fail "state.md: $state_lines lines (hard cap 120 — cut stale detail; history belongs in the journal)"
 elif [ "$state_lines" -gt 80 ]; then
-  warn "state.md: $state_lines lines (target <=80)"
+  warn "state.md: $state_lines lines (target <=80 — trim History/plan prose first; never cut Landmines or Decisions just to satisfy the cap)"
 fi
 
 if [ -f "$JOURNAL" ]; then

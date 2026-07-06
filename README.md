@@ -72,9 +72,25 @@ dirty tree, and nudges at most every ~45 minutes while uncommitted changes
 sit. `stop_hook_active` keeps it from looping; transcript inspection needs
 `jq` and degrades to the dirty-tree nudge without it.
 
+## Evals
+
+`evals/OBJECTIVE.md` defines what "better" means for this library —
+resumption fidelity, claim integrity, overhead — and maps every proxy this
+repo tracks to one of those axes. Two gates keep the proxies honest:
+
+- `bash evals/tier0/run.sh` — deterministic, seconds, no model calls. Run
+  after any change to `skills/`, `hooks/`, or `scripts/`. `--self-test`
+  seeds 7 mutations and asserts the suite catches them.
+- `bash evals/tier1/run.sh` — model-in-the-loop scenarios graded on
+  outcomes (resumption Q&A, stale-state trap, false-SHIP honesty,
+  overhead), with a control-vs-sdlc A/B mode. `--dry-run` is free;
+  real runs cost model calls.
+
 ## Why the hook exists
 
-Empirically (headless Sonnet A/B tests against a real codebase):
+Empirically (headless Sonnet A/B tests against a real codebase; the
+original transcripts were not preserved — `evals/tier1` exists to re-run
+this claim with persisted artifacts):
 
 - Skill **descriptions alone never trigger** process-discipline skills — the
   model feels no capability gap, so it never reaches for them.
@@ -98,6 +114,7 @@ hooks/sdlc-lifecycle-gate        SessionStart hook (git repos only)
 hooks/sdlc-handoff-gate          Stop hook: handoff verification + dirty-tree nudge
 agents-md/sdlc-lifecycle.md      routing snippet for AGENTS.md / CLAUDE.md
 install.sh                       symlink installer
+evals/                           OBJECTIVE.md (what "better" means) + tier0/tier1 gates
 ```
 
 Skills reference the core as `~/.agents/skills/sdlc-core/...` with an explicit

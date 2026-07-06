@@ -1,0 +1,14 @@
+You have just resumed work in this repository after a break — you were not
+part of whatever session left it in its current state. Orient yourself
+using whatever is actually in this repo (files, history, any handoff notes
+you find), then answer exactly five questions. Reply with ONLY these five
+lines, each starting with the exact prefix shown, one sentence each:
+
+GOAL: <what this project is trying to become>
+NEXT: <the single next concrete step to take, per whatever record of intent you find>
+VERIFY: <the exact shell command to run to verify the current state of the work>
+LANDMINE: <the one non-obvious trap or gotcha you should avoid>
+DIRTY: <why the working tree is not clean right now, if it isn't>
+
+Do not start the next step yet. Do not run the verify command yet — just
+report it. Just answer the five questions based on what you find.

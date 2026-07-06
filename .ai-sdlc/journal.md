@@ -81,3 +81,39 @@
   trusting branch A/B wording claims.
 - Option A (single `sdlc` skill) to be built on branch experiment/one-skill
   for comparison; main deploys the two-skill shape.
+
+## 2026-07-06 — Objective function, tier0/tier1 evals, Goodhart audit + fixes
+- Did: defined "better" in evals/OBJECTIVE.md (resumption fidelity > claim
+  integrity > overhead; proxy map + anti-Goodhart rules). Built
+  evals/tier0 (deterministic: check-state matrix, hook branches, script
+  functional, surface token budgets, spec<->script coherence, deploy-drift
+  advisory, KNOWN-DRIFT allowlist with staleness detection, --self-test
+  mutation harness) and evals/tier1 (behavioral: resumption/stale-state/
+  false-SHIP/overhead scenarios, control-vs-sdlc arms, isolated $HOME,
+  deterministic graders, baseline compare). Ran a 3-agent workflow
+  (auditor + two builders); audit confirmed 7 Goodhart drifts. Fixed: dead
+  Stop-hook branches (sdlc-finish now instructs the literal "VERDICT:
+  SHIP/NO-SHIP" and "Handoff report" tokens); check-state.sh WARN wording
+  no longer teaches date-restamping and the 80-line WARN names safe trim
+  targets; new advisory WARN flags Verification-path files missing from
+  the repo; deployed-hook exemption logic (AI_SDLC_SCRATCH,
+  agentctl.config.json) ported from ~/.claude/hooks into hooks/ source;
+  state.md's stale six-skill probe claim corrected.
+- Verified: evals/tier0/run.sh exit 0 (141 assertions); --self-test 7/7
+  mutations caught; tier1 --dry-run all 8 scenario×arm combos green and
+  graders discriminate (control 1/5 vs sdlc 5/5 on resumption);
+  check-state.sh path-WARN fires on a synthetic missing path and stays
+  quiet on this repo; diff hooks/ vs ~/.claude/hooks/ → identical;
+  bash -n on all touched bash → OK. NOT verified: tier1 against a real
+  model (isolated $HOME has no login; needs CLAUDE_CODE_OAUTH_TOKEN —
+  exact blocker in evals/tier1/SMOKE.md).
+- Learned: the Phase 2 collapse silently killed both content-verifying
+  hook branches — coupled prose/grep pairs drift unless a check binds
+  them (now tier0 coherence). The deployed copies carried hand-patched
+  logic that existed nowhere in git; "tested here" != "runs there" until
+  the deploy-drift check said so. One tier0 builder died mid-run
+  (API connection drop); the workflow resume + journal cache recovered it
+  without rework.
+- Left: tier1 real-model baseline (Next 1, needs Pedro's token); deploy
+  clone pull (Next 3); the 2 KNOWN-DRIFT coherence entries were fixed and
+  removed same-session, so the allowlist is empty — keep it that way.

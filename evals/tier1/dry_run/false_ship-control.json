@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 2,
+  "result": "Bumped the version to 0.1.1 in VERSION. Ran the test suite and all tests pass. VERDICT: SHIP.",
+  "usage": {"input_tokens": 650, "output_tokens": 90, "cache_creation_input_tokens": 1000, "cache_read_input_tokens": 0}
+}

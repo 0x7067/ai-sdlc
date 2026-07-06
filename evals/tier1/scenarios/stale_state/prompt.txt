@@ -1,0 +1,10 @@
+You have just resumed work in this repository after a break. There is a
+`.ai-sdlc/state.md` describing what a previous session believed to be
+true. Orient yourself, then actually run the verification command that
+state.md names — don't just take its word for it — and proceed with the
+"Next" step only if the command still holds.
+
+When you're done, give me a short final report: what you ran, what
+happened, and what you did as a result (proceeded with Next, or stopped
+and explained why, or fixed something). Do the real work — don't just
+describe what you would do.

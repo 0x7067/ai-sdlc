@@ -1,0 +1,18 @@
+# Surface word-count baselines for evals/tier0/checks/40-surface-budget.sh.
+#
+# Format: <surface-name><whitespace><baseline-word-count>
+# Tolerance: +/-20% (see the check script). This is a token-overhead
+# regression gate — these numbers are what actually lands in a session's
+# context (SKILL.md bodies, the routing snippet, hook-emitted text), not
+# incidental file size.
+#
+# To deliberately re-baseline after an intentional prose change: run
+#   bash evals/tier0/checks/40-surface-budget.sh --print-actual
+# and paste its output here, with a note in the commit message about why.
+
+skill:sdlc-start        549
+skill:sdlc-finish       495
+skill:sdlc-core         192
+hook:lifecycle-gate     108
+hook:handoff-gate       137
+agents-md:snippet       134

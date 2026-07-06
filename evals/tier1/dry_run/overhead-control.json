@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 2,
+  "result": "Fixed the typo in README.md (\"recieve\" -> \"receive\").",
+  "usage": {"input_tokens": 500, "output_tokens": 40, "cache_creation_input_tokens": 900, "cache_read_input_tokens": 0}
+}

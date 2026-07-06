@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-05
+updated: 2026-07-06
 
 ## Goal
 A skill library (sdlc-start + sdlc-finish + sdlc-core) that lets models
@@ -8,82 +8,68 @@ Portable across harnesses; routing made deterministic by a SessionStart
 hook. Execution between the gates is governed by STANDARD.md, not skills.
 
 ## Now
-Bitter Lesson Phase 2 collapse landed (2026-07-05): the six phase skills
-(onboard/plan/extend/debug/validate/handoff, ~720 SKILL.md lines) merged
-into sdlc-start (orient + plan, 74 lines) and sdlc-finish (validate +
-handoff, 57 lines), both advice-shaped — objectives + WHY, no step recipes.
-Hooks, README, agents-md snippet, and core prose renamed; STANDARD.md
-byte-identical; STATE-SPEC.md and script headers got name-only prose
-updates. An Option A experiment (single merged `sdlc` skill) is planned as
-branch `experiment/one-skill`. Prior milestone — mechanical layer landed
-(2026-07-03): three new sdlc-core scripts
-(scaffold-state.sh, compact-journal.sh, diff-inventory.sh), a scaffold
-placeholder-token contract enforced by check-state.sh, and a Stop hook
-(hooks/sdlc-handoff-gate) that verifies "Handoff report" claims via
-check-state.sh, reminds on SHIP-with-dirty-tree, and nags a >45-min dirty
-tree. Skills/STATE-SPEC/README/install.sh wired. All scripts and all 8 hook
-branches verified against a fixture repo. Remaining milestone: real-codebase
-A/B.
+Evals milestone landed (2026-07-06): `evals/OBJECTIVE.md` defines "better"
+(resumption fidelity, claim integrity, overhead) and maps every proxy to an
+axis; `evals/tier0/` is a deterministic regression suite (141 assertions +
+7-mutation self-test); `evals/tier1/` is a behavioral harness (resumption
+Q&A, stale-state trap, false-SHIP honesty, overhead; control-vs-sdlc arms) —
+dry-run verified, real runs blocked on auth (see Next 1). A Goodhart audit
+found 7 drifts; the worst (Stop-hook branches A/B dead — no live surface
+instructed "Handoff report"/"VERDICT: SHIP" after the Phase 2 collapse) is
+fixed: sdlc-finish now instructs both literals and a tier0 coherence check
+prevents recurrence. Deployed-hook carve-outs (AI_SDLC_SCRATCH, agentctl
+exemptions) were hand-patched only in ~/.claude/hooks — now ported into
+hooks/ source. Option A experiment (single `sdlc` skill) still pending on
+branch experiment/one-skill.
 
 ## Verification path
-- `bash -n install.sh hooks/* skills/sdlc-core/scripts/*.sh` — passes
-  (2026-07-03).
-- Frontmatter + balanced-fence check: every `skills/*/SKILL.md` starts with
-  `---` and has an even number of ``` lines — passes (2026-07-03).
-- `bash skills/sdlc-core/scripts/check-state.sh .` — "check-state: OK"
-  (2026-07-03).
-- Script/hook *behavior*: fixture-repo runs — scaffold create/refuse/FAIL→OK,
-  compact fold with byte-for-byte retained-tail diff, diff-inventory all
-  change classes, hook all 8 branches (isolated $HOME so tests hit the
-  edited check-state.sh) — all passed (2026-07-03; details in journal).
-- Skill *behavior*: no automated test; Sonnet toy-repo probes, all six
-  skills passed one probe each (2026-07-02).
+- `bash evals/tier0/run.sh` — exit 0, 141 assertions (2026-07-06).
+- `bash evals/tier0/run.sh --self-test` — 7/7 seeded regressions caught
+  (2026-07-06).
+- `bash evals/tier1/run.sh --scenario all --arm both --dry-run` — full
+  generate→invoke→grade pipeline green (2026-07-06); real model runs
+  unverified (auth blocker, evals/tier1/SMOKE.md).
+- `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-06).
 
 ## Decisions
 - Frontmatter descriptions stay untouched — triggering is solved by the
-  SessionStart hook (empirical, see README "Why the hook exists").
+  SessionStart hook (empirical, README "Why the hook exists"; transcripts
+  not preserved — tier1 A/B exists to re-ground this).
 - Templates over prose for every checkable behavior; judgment a script can
-  absorb goes in a script (README "The mechanical layer").
-- Token budget: per-skill growth capped at ~±20% per tuning pass.
-- Don't push main from an agent session — commit locally, leave pushing to
-  Pedro.
-- Journal compaction is the sole sanctioned journal rewrite; it is now
-  script-executed (compact-journal.sh), model writes only the digest bullets.
-- Stop hook blocks via exit 2 + stderr; self-limiting by stop_hook_active,
-  a per-session marker file, and a 45-min nag throttle — chosen so it never
-  nags every turn mid-work (2026-07-03).
-- The terminal skill of a session intentionally has no `Exit →` chaining
-  line (probe-confirmed harmless, 2026-07-02, on sdlc-handoff; the role now
-  belongs to sdlc-finish).
+  absorb goes in a script.
+- Size/word deltas (±20% budget) are a smell check only, never acceptance
+  evidence; acceptance = tier0/tier1 green (2026-07-06, per OBJECTIVE.md).
+- Any literal a hook greps for must be instructed by a live surface; hook
+  wording + skill wording change as one atomic edit (tier0 enforces).
+- Don't push main from an agent session — commit locally, Pedro pushes.
+- Journal compaction is the sole sanctioned journal rewrite
+  (compact-journal.sh); Stop hook blocks via exit 2 + stderr, self-limited.
 
 ## Landmines
-- Skills are NOT live from this repo: `~/.claude/skills` and
-  `~/.agents/skills` symlink into `~/.agents/ai-sdlc`, a pull-based
-  deployment clone. Edits here go live only after that clone pulls.
-- `~/.claude/hooks/*` are chezmoi-managed COPIES, not symlinks — copy the
-  new file there and `chezmoi add` (auto-pushes the dotfiles repo).
+- Skills are NOT live from this repo: `~/.agents/skills` resolves through
+  `~/.agents/ai-sdlc` to a third checkout, `~/Development/agentctl/ai-sdlc`
+  (pull-based). tier0's deploy-drift check WARNs until it pulls.
+- `~/.claude/hooks/*` are chezmoi-managed COPIES; hooks/ source and copies
+  are byte-identical as of 2026-07-06 — keep them that way (tier0 WARNs).
 - Never write the scaffold placeholder token literally into this repo's own
-  .ai-sdlc files — check-state.sh greps for it and would FAIL the handoff
-  (token defined in STATE-SPEC "Scripts and hygiene checks").
-- Skills cite STANDARD.md/STATE-SPEC.md/scripts as
-  `~/.agents/skills/sdlc-core/...` with a sibling-directory fallback — keep
-  both path forms when editing.
-- Frontmatter description lines and the `Read STANDARD.md` pointer lines are
-  intentionally long (>90 cols); the line-length scan flags them — known
-  baseline, not new damage.
-- check-state.sh requires the em-dash form `## YYYY-MM-DD — ` for journal
-  headers; hand-written journals using a hyphen FAIL on first onboard —
-  intended drift repair, not a script bug.
+  .ai-sdlc files or committed eval code — construct it at runtime
+  (evals/*/lib/common.sh show how).
+- tier0 asserts exact check-state.sh output substrings ("target <=80",
+  "modified more than 24h after") — wording edits must preserve them or
+  update evals/tier0/checks/10-check-state-matrix.sh in the same change.
+- Skills cite core paths as `~/.agents/skills/sdlc-core/...` with a sibling
+  fallback — keep both forms when editing.
+- check-state.sh requires the em-dash `## YYYY-MM-DD — ` journal header;
+  hyphen forms FAIL on first onboard (intended drift repair).
 
 ## Next
-1. Milestone 2 — headless Sonnet A/B on a real codebase (mirror the hook
-     experiment in README "Why the hook exists"): one arm with current
-     skills, one with pre-tuning versions extracted via
-     `git show db79456:skills/<name>/SKILL.md` into a temp skills dir; same
-     task both arms; compare trace compliance and outcome quality. Include a
-     handoff task so the Stop gate's A-branch gets exercised for real. Done
-     when results are written into .ai-sdlc/journal.md.
-2. Single-command repo check: a script (e.g. `checks.sh`) bundling the
-     bash -n + frontmatter/fence + `check-state.sh .` runs so the
-     Verification path above collapses to one line; done when the script
-     exists, passes, and state.md points at it.
+1. Run tier1 for real: needs `claude setup-token` →
+   `CLAUDE_CODE_OAUTH_TOKEN` (external: Pedro's auth). Baseline both arms
+   (haiku first), write evals/tier1/baseline.json, record in journal.
+2. Milestone 2 (real-codebase A/B) now = tier1 `--arm control|sdlc` runs;
+   done when results land in journal and README's empirics claim cites them.
+3. Deployment: push/pull so ~/Development/agentctl/ai-sdlc picks up today's
+   skill + script edits (external: Pedro pushes); confirm deploy-drift
+   WARNs clear.
+4. tier1 hardening: randomized fixtures, non-keyword grading for
+   false_ship/stale_state, spend guard for batch runs.

@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 2,
+  "result": "GOAL: This looks like a small CSV to JSON conversion tool.\nNEXT: Probably add more test coverage for edge cases.\nVERIFY: python3 csv2json.py tests/fixtures/sample.csv\nLANDMINE: Nothing obvious stood out in the code.\nDIRTY: Not sure — maybe an editor autosave left it dirty.",
+  "usage": {"input_tokens": 600, "output_tokens": 140, "cache_creation_input_tokens": 1200, "cache_read_input_tokens": 0}
+}

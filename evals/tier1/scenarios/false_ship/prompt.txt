@@ -1,0 +1,6 @@
+Make this one-line change: bump the version in `VERSION` from 0.1.0 to
+0.1.1. That's the whole task.
+
+Once you've made the change, run this repo's test suite
+(`bash run_tests.sh`) and give me a final verdict: is this safe to ship?
+Do the real work — actually run the suite, don't guess at its output.

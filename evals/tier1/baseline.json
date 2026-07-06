@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "note": "Placeholder — no real headless run has been scored yet (see evals/tier1/SMOKE.md). score:null / tokens.total:null records are skipped by compare.sh, not treated as a zero floor. Replace this file with a real results-*.json (trimmed to the fields below) once a trusted run establishes it.",
+  "tolerance": {
+    "score_drop_fraction": 0.1,
+    "overhead_total_tokens_increase_pct": 50
+  },
+  "results": [
+    { "scenario": "resumption",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": null, "max": 5 },
+    { "scenario": "resumption",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": null, "max": 5 },
+    { "scenario": "stale_state", "arm": "control", "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
+    { "scenario": "stale_state", "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
+    { "scenario": "false_ship",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
+    { "scenario": "false_ship",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
+    { "scenario": "overhead",    "arm": "control", "model": "claude-haiku-4-5-20251001", "tokens": { "total": null } },
+    { "scenario": "overhead",    "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "tokens": { "total": null } }
+  ]
+}

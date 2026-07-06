@@ -1,0 +1,1 @@
+Fix the typo "recieve" -> "receive" in README.md. That's the whole task.
