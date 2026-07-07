@@ -15,9 +15,11 @@ objective is to switch sides: re-read the work as a reviewer who assumes
 it is broken, and let the evidence — not the memory of writing it — carry
 the claim. Validation is done when:
 
-- **You have re-read the full diff cold** — `git diff` plus untracked
-  files, not a paraphrase from memory. Read it looking for the bug, the
-  scope creep, the file you forgot you touched.
+- **You have re-read the full diff cold** — run
+  `bash ../sdlc-core/scripts/diff-inventory.sh` for the complete inventory
+  (status, diffs, untracked, stashes), then read the changes themselves,
+  not a paraphrase from memory. Read looking for the bug, the scope
+  creep, the file you forgot you touched.
 - **Every success criterion has evidence** — a command you ran *this
   session*, output quoted, not paraphrased. "Tests pass" without the run
   in front of you is a claim, not evidence. Compare against the baseline
@@ -68,4 +70,5 @@ something the hard way, it isn't written down yet.
 - `../sdlc-core/references/STANDARD.md` — verification ladder §4,
   evidence report format §7
 - `../sdlc-core/references/STATE-SPEC.md` — state.md / journal format
-- `../sdlc-core/scripts/` — `check-state.sh`, `compact-journal.sh`
+- `../sdlc-core/scripts/` — `diff-inventory.sh`, `check-state.sh`,
+  `compact-journal.sh`

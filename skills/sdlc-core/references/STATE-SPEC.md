@@ -106,6 +106,10 @@ line names a violation to fix before handoff completes.
 Sibling scripts in the same directory do the other mechanical work, so no
 session hand-builds these formats:
 
+- `orient.sh [repo-dir]` — one-command session orientation for
+  `sdlc-start`: git snapshot, state.md, newest 3 journal entries, the
+  drift check (advisory here, blocking at handoff), and the Orientation
+  fill-in block. Scaffolds `.ai-sdlc/` on first use.
 - `scaffold-state.sh [repo-dir]` — creates the state.md skeleton with
   today's `updated:` line; refuses to overwrite an existing file.
 - `compact-journal.sh [repo-dir]` — performs the Compaction fold above:

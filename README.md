@@ -55,6 +55,7 @@ imitate. In `skills/sdlc-core/scripts/`:
 
 | Script | Does |
 |---|---|
+| `orient.sh` | One-command orientation for `sdlc-start`: git snapshot, state.md, journal tail, drift check, fill-in Orientation block. Scaffolds `.ai-sdlc/` on first use. |
 | `check-state.sh` | Validates `.ai-sdlc/` against STATE-SPEC; each FAIL blocks handoff. |
 | `scaffold-state.sh` | Emits the state.md skeleton, judgment slots marked `TODO-SDLC`. |
 | `compact-journal.sh` | Journal compaction: byte-for-byte retention, digest carry, folded entries printed for summarizing. |
