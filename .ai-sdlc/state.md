@@ -1,76 +1,76 @@
 # Project State
-updated: 2026-07-06
+updated: 2026-07-07
 
 ## Goal
-A skill library (sdlc-start + sdlc-finish + sdlc-core) that lets models
-carry a project across sessions at a consistent engineering standard.
-Portable across harnesses; routing made deterministic by a SessionStart
-hook. Execution between the gates is governed by STANDARD.md, not skills.
+A skill library (sdlc-start + sdlc-finish + sdlc-core) that lets models —
+including weaker ones — carry a project across sessions at a consistent
+engineering standard. Mechanical layer does what scripts can; skills stay
+advice-shaped. Installable as a Claude Code plugin; portable elsewhere via
+install.sh. Execution between the gates is governed by STANDARD.md.
 
 ## Now
-Evals milestone landed (2026-07-06): `evals/OBJECTIVE.md` defines "better"
-(resumption fidelity, claim integrity, overhead) and maps every proxy to an
-axis; `evals/tier0/` is a deterministic regression suite (141 assertions +
-7-mutation self-test); `evals/tier1/` is a behavioral harness (resumption
-Q&A, stale-state trap, false-SHIP honesty, overhead; control-vs-sdlc arms) —
-dry-run verified, real runs blocked on auth (see Next 1). A Goodhart audit
-found 7 drifts; the worst (Stop-hook branches A/B dead — no live surface
-instructed "Handoff report"/"VERDICT: SHIP" after the Phase 2 collapse) is
-fixed: sdlc-finish now instructs both literals and a tier0 coherence check
-prevents recurrence. Deployed-hook carve-outs (AI_SDLC_SCRATCH, agentctl
-exemptions) were hand-patched only in ~/.claude/hooks — now ported into
-hooks/ source. Option A experiment (single `sdlc` skill) still pending on
-branch experiment/one-skill.
+2026-07-07 milestone: the empirical loop is CLOSED — tier1 ran for real
+(remote containers carry auth in env, not $HOME; IS_SANDBOX=1 needed as
+root) and the first baseline is committed. Haiku 4.5 saturates all four
+scenarios in both arms: outcome scores no longer discriminate at that
+tier; cost does (resumption sdlc ≈40-60% of control tokens). Also landed:
+orient.sh (one-command orientation), plugin packaging (verified end to
+end with --plugin-dir + real model), reference files under the token
+budget gate, tier0 portability fix (no-jq shim).
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 141 assertions (2026-07-06).
-- `bash evals/tier0/run.sh --self-test` — 7/7 seeded regressions caught
-  (2026-07-06).
-- `bash evals/tier1/run.sh --scenario all --arm both --dry-run` — full
-  generate→invoke→grade pipeline green (2026-07-06); real model runs
-  unverified (auth blocker, evals/tier1/SMOKE.md).
-- `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-06).
+- `bash evals/tier0/run.sh` — exit 0, 167 assertions (2026-07-07).
+- `bash evals/tier0/run.sh --self-test` — 7/7 mutations caught (2026-07-07).
+- `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both --model
+  claude-haiku-4-5-20251001` — all 8 runs green (2026-07-07); then
+  `bash evals/tier1/compare.sh --baseline evals/tier1/baseline.json
+  --results <results-file>` — OK.
+- `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-07).
 
 ## Decisions
-- Frontmatter descriptions stay untouched — triggering is solved by the
-  SessionStart hook (empirical, README "Why the hook exists"; transcripts
-  not preserved — tier1 A/B exists to re-ground this).
-- Templates over prose for every checkable behavior; judgment a script can
-  absorb goes in a script.
-- Size/word deltas (±20% budget) are a smell check only, never acceptance
-  evidence; acceptance = tier0/tier1 green (2026-07-06, per OBJECTIVE.md).
-- Any literal a hook greps for must be instructed by a live surface; hook
-  wording + skill wording change as one atomic edit (tier0 enforces).
-- Don't push main from an agent session — commit locally, Pedro pushes.
-- Journal compaction is the sole sanctioned journal rewrite
-  (compact-journal.sh); Stop hook blocks via exit 2 + stderr, self-limited.
+- Frontmatter descriptions stay untouched; routing is the SessionStart
+  hook's job (plugin installs auto-register it; gate teaches the
+  ai-sdlc:* namespaced names).
+- Judgment a script can absorb goes in a script; orient.sh is the read
+  side (one command), diff-inventory.sh the write side.
+- Size/word deltas are smell checks, never acceptance; acceptance =
+  tier0/tier1 green (OBJECTIVE.md).
+- Hook-grepped literals must be instructed by a live surface; hook + skill
+  wording change atomically (tier0 enforces).
+- Don't push main from an agent session — Pedro pushes. Feature-branch
+  pushes to claude/* are fine (harness requirement, 2026-07-07).
+- Journal compaction is the sole sanctioned journal rewrite.
+- Equal A/B outcome scores at haiku tier mean the SCENARIOS saturated,
+  not that sdlc has no effect — harden scenarios before reading them.
 
 ## Landmines
-- Skills are NOT live from this repo: `~/.agents/skills` resolves through
-  `~/.agents/ai-sdlc` to a third checkout, `~/Development/agentctl/ai-sdlc`
-  (pull-based). tier0's deploy-drift check WARNs until it pulls.
-- `~/.claude/hooks/*` are chezmoi-managed COPIES; hooks/ source and copies
-  are byte-identical as of 2026-07-06 — keep them that way (tier0 WARNs).
-- Never write the scaffold placeholder token literally into this repo's own
-  .ai-sdlc files or committed eval code — construct it at runtime
-  (evals/*/lib/common.sh show how).
-- tier0 asserts exact check-state.sh output substrings ("target <=80",
-  "modified more than 24h after") — wording edits must preserve them or
-  update evals/tier0/checks/10-check-state-matrix.sh in the same change.
-- Skills cite core paths as `~/.agents/skills/sdlc-core/...` with a sibling
-  fallback — keep both forms when editing.
-- check-state.sh requires the em-dash `## YYYY-MM-DD — ` journal header;
-  hyphen forms FAIL on first onboard (intended drift repair).
+- Pedro's machine only: ~/.agents/skills resolves to a third checkout;
+  ~/.claude/hooks are chezmoi COPIES. tier0 deploy-drift WARNs elsewhere
+  (e.g. remote containers) — those WARNs are expected noise there.
+- Never write the scaffold placeholder token literally into this repo's
+  own .ai-sdlc files or committed eval code — construct at runtime
+  (evals/*/lib/common.sh); skills scripts MAY contain it (scaffold/orient).
+- tier0 asserts exact check-state.sh output substrings and the em-dash
+  `## YYYY-MM-DD — ` journal header — wording edits must keep them or
+  update checks in the same change.
+- Skills cite core paths as `~/.agents/skills/sdlc-core/...` with sibling
+  fallback — keep both forms. Plugin installs keep sibling resolution
+  (all three skills ship in one plugin) — don't split them.
+- tier0 self-test's build_sandbox copies an explicit dir list — any new
+  top-level path a check reads must be added there (bit 2026-07-07 with
+  .claude-plugin/).
+- tier1 real runs as root need IS_SANDBOX=1 or every run errors
+  "--dangerously-skip-permissions cannot be used with root".
 
 ## Next
-1. Run tier1 for real: blocked ONLY on `claude setup-token` (interactive,
-   Pedro's terminal; workarounds ruled out — see evals/tier1/SMOKE.md
-   "Update 2026-07-06"). Then baseline both arms (haiku first), write
-   evals/tier1/baseline.json, record in journal.
-2. Milestone 2 (real-codebase A/B) now = tier1 `--arm control|sdlc` runs;
-   done when results land in journal and README's empirics claim cites them.
-3. GitHub is behind: origin/main lacks today's commits (external: Pedro
-   pushes when ready). The live deployment clone is already current —
-   fast-forwarded locally 2026-07-06, deploy-drift checks all PASS.
-4. tier1 hardening: randomized fixtures, non-keyword grading for
-   false_ship/stale_state, spend guard for batch runs.
+1. tier1 scenario hardening so outcome scores discriminate again:
+   randomized fixtures, harder resumption answer keys, non-keyword grading
+   for false_ship/stale_state, spend guard; then re-baseline.
+2. Run the A/B at Sonnet tier (haiku saturates) and cite results in
+   README's empirics section — the 2026-07-07 baseline is cost-only
+   evidence so far.
+3. Verify marketplace install from GitHub after push (`/plugin marketplace
+   add 0x7067/ai-sdlc`) — only `--plugin-dir` was verified locally.
+4. Pedro (external): push main; pull the deployment clone.
+5. Option A experiment (single `sdlc` skill) on branch experiment/one-skill
+   — still unbuilt.

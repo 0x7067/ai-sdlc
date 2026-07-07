@@ -117,3 +117,28 @@
 - Left: tier1 real-model baseline (Next 1, needs Pedro's token); deploy
   clone pull (Next 3); the 2 KNOWN-DRIFT coherence entries were fixed and
   removed same-session, so the allowlist is empty — keep it that way.
+
+## 2026-07-07 — tier1 unblocked + first real baseline; plugin packaging; orient.sh
+- Did: closed the empirical loop — remote containers carry claude auth in
+  env (not $HOME), so tier1's isolated-$HOME harness just works; root needs
+  IS_SANDBOX=1. Ran all 8 scenario×arm haiku runs, wrote baseline.json,
+  verified compare.sh green. Packaged the repo as a Claude Code plugin
+  (.claude-plugin/{plugin,marketplace}.json, hooks/hooks.json; gate now
+  teaches ai-sdlc:* names, "installed policy" phrasing). Added orient.sh
+  (one-command orientation; sdlc-start instructs it; sdlc-finish now names
+  diff-inventory.sh). Put STANDARD/STATE-SPEC under the token budget gate;
+  re-baselined budgets. Fixed tier0 no-jq check (shim PATH — /bin symlinks
+  /usr/bin here) and self-test sandbox (.claude-plugin copy).
+- Verified: tier0 167 assertions exit 0; --self-test 7/7; tier1 8/8 runs
+  is_error=false + compare.sh OK; plugin end-to-end via --plugin-dir in an
+  isolated $HOME (real haiku quoted the injected gate text and listed all
+  three namespaced skills); check-state.sh OK.
+- Learned: haiku 4.5 saturates every tier1 scenario in BOTH arms — outcome
+  scores stopped discriminating at this tier; cost still discriminates
+  (resumption sdlc ≈40-60% of control tokens, fewer turns). Equal scores
+  mean weak scenarios, not "sdlc does nothing". Also: PATH-prefixed
+  commands resolve the command word with the NEW path (shim must include
+  bash itself).
+- Left: scenario hardening + Sonnet-tier A/B (state.md Next 1-2);
+  marketplace-add install unverified until the repo is on GitHub (Next 3);
+  branch pushed to claude/ai-sdlc-framework-lean-avh8fi, main untouched.

@@ -104,8 +104,9 @@ repo tracks to one of those axes. Two gates keep the proxies honest:
 ## Why the hook exists
 
 Empirically (headless Sonnet A/B tests against a real codebase; the
-original transcripts were not preserved — `evals/tier1` exists to re-run
-this claim with persisted artifacts):
+original transcripts were not preserved — `evals/tier1` re-runs A/Bs with
+persisted artifacts, first real baseline 2026-07-07 in
+`evals/tier1/baseline.json`):
 
 - Skill **descriptions alone never trigger** process-discipline skills — the
   model feels no capability gap, so it never reaches for them.
