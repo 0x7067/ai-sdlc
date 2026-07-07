@@ -9,7 +9,7 @@
 # an accident, not that the prose is bad.
 #
 # To deliberately re-baseline (intentional prose change, reviewed and
-# wanted): recompute the six numbers with:
+# wanted): recompute the baseline numbers with:
 #   bash evals/tier0/checks/40-surface-budget.sh --print-actual
 # and paste the output into evals/tier0/budgets.txt, noting why in the
 # commit message. Do not silently widen the tolerance instead.
@@ -28,6 +28,8 @@ surface_word_count() { # surface_word_count <name>
     hook:lifecycle-gate) extract_heredoc_body "$REPO_ROOT/hooks/sdlc-lifecycle-gate" | wc -w ;;
     hook:handoff-gate)   extract_block_messages "$REPO_ROOT/hooks/sdlc-handoff-gate" | wc -w ;;
     agents-md:snippet)   wc -w < "$REPO_ROOT/agents-md/sdlc-lifecycle.md" ;;
+    ref:standard-md)     wc -w < "$STANDARD_MD" ;;
+    ref:state-spec-md)   wc -w < "$STATE_SPEC_MD" ;;
     *) echo 0 ;;
   esac
 }
