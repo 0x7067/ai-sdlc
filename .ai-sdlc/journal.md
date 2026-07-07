@@ -154,3 +154,9 @@
 - Learned: journal fixture (m) appends filler inside the newest entry —
   entry-length checks must stay WARN-only or that fixture wedges.
 - Left: state.md Next unchanged (scenario hardening still #1).
+
+## 2026-07-07 — PR review: orient.sh exit contract hardened
+- Did: removed errexit from orient.sh and added tier0 coverage that pins it to `set -uo pipefail`.
+- Verified: script-functional PASS including orient.no-errexit.options; tier0 177 assertions OK; self-test 7/7; check-state OK with expected external-state WARN.
+- Learned: the always-exit-0 orientation contract needs source-level coverage, not only functional fixture coverage.
+- Left: push branch and re-check PR thread status.

@@ -10,7 +10,7 @@
 # Always exits 0: orientation is informational. Drift the check reports is
 # repaired as part of the work, and blocks at handoff, not here.
 
-set -euo pipefail
+set -uo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "${1:-.}"

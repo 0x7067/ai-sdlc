@@ -155,6 +155,9 @@ assert_contains "diff-inventory.base-ref.section" "$out" "committed vs HEAD"
 # orient.sh
 # ============================================================================
 
+orient_opts=$(grep -E '^set -[[:alnum:]]*o pipefail$' "$ORIENT_SH" | head -n1 || true)
+assert_eq "orient.no-errexit.options" "$orient_opts" "set -uo pipefail"
+
 # Fresh git repo, no .ai-sdlc: scaffolds, notes first session, exits 0.
 d="$tmp_root/orient-fresh"; mkdir -p "$d"
 ( cd "$d" && git init -q && git config user.email t@example.com \

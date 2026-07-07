@@ -16,7 +16,7 @@ Leanness now enforced: state target 60 lines, newest journal entry warns
 >12; unearned comments are validation defects surfaced by diff-inventory.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 175 assertions (2026-07-07).
+- `bash evals/tier0/run.sh` — exit 0, 177 assertions (2026-07-07).
 - `bash evals/tier0/run.sh --self-test` — 7/7 caught (2026-07-07).
 - `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` then
   `compare.sh --baseline evals/tier1/baseline.json --results <file>` — OK.
