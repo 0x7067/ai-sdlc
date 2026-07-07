@@ -34,6 +34,16 @@ if [ -n "$base" ]; then
   git diff --stat "$base...HEAD"
 fi
 
+# Comment-looking added lines from staged + unstaged diffs, code files only
+# (markdown headings would false-positive). A surfacing heuristic for the
+# STANDARD §3 review, not a judgment: the model decides what each line earns.
+echo "== added comment lines — each must earn its place (STANDARD §3: non-obvious why, trap, external constraint — never narration or prescriptive scaffolding) =="
+{ git diff -- . ':(exclude)*.md' ':(exclude)*.markdown'; \
+  git diff --cached -- . ':(exclude)*.md' ':(exclude)*.markdown'; } \
+  | grep -E '^\+[^+]' \
+  | grep -E '^\+[[:space:]]*(#|//|/\*|\*[[:space:]]|<!--|--[[:space:]]|;[[:space:]])' \
+  || echo "(none)"
+
 echo "== untracked files — READ EACH ONE IN FULL during review =="
 git ls-files --others --exclude-standard
 

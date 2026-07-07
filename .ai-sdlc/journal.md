@@ -142,3 +142,15 @@
 - Left: scenario hardening + Sonnet-tier A/B (state.md Next 1-2);
   marketplace-add install unverified until the repo is on GitHub (Next 3);
   branch pushed to claude/ai-sdlc-framework-lean-avh8fi, main untouched.
+
+## 2026-07-07 — leanness enforced: caps tightened, unearned comments = defects
+- Did: state.md target 80→60 (hard 120 stays); newest-journal-entry WARN
+  >12 lines (older entries immutable, so newest only); diff-inventory.sh
+  now surfaces every added comment line (code files, md excluded) for the
+  STANDARD §3 review; §3 names unearned comments validation defects;
+  sdlc-finish hunts them. Trimmed this repo's state.md 80→60.
+- Verified: tier0 175 assertions exit 0; --self-test 7/7; check-state.sh
+  OK (no WARNs on own artifacts); new matrix fixtures cover warn/quiet.
+- Learned: journal fixture (m) appends filler inside the newest entry —
+  entry-length checks must stay WARN-only or that fixture wedges.
+- Left: state.md Next unchanged (scenario hardening still #1).

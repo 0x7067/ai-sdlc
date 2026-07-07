@@ -28,7 +28,7 @@ Start and finish are the gates; the work between them is governed by
 verification ladder) rather than scripted by a skill — the standard states
 the bar and the model decides how to clear it.
 The handoff medium is two committed files per project:
-`.ai-sdlc/state.md` (current truth, <80 lines) and `.ai-sdlc/journal.md`
+`.ai-sdlc/state.md` (current truth, <60 lines) and `.ai-sdlc/journal.md`
 (append-only session log), so any future session — any model, any harness —
 can cold-start from the repo alone.
 

@@ -126,6 +126,10 @@ d="$tmp_root/repo"; mkdir -p "$d"
   && git stash push -q -m throwaway \
   && echo "line two" >> tracked.txt \
   && echo "new content" > staged-new.txt && git add staged-new.txt \
+  && printf '%s\n' '# COMMENT-FIXTURE: prescriptive marker' 'x=1' > commented.sh \
+  && git add commented.sh \
+  && printf '%s\n' '# md heading, not a comment' > doc-fixture.md \
+  && git add doc-fixture.md \
   && echo "scratch" > untracked-fixture.txt )
 
 out=$(cd "$d" && bash "$DIFF_INVENTORY_SH" 2>&1); code=$?
@@ -138,6 +142,9 @@ assert_contains "diff-inventory.repo.untracked-section" "$out" "== untracked fil
 assert_contains "diff-inventory.repo.untracked-file" "$out" "untracked-fixture.txt"
 assert_contains "diff-inventory.repo.staged-file" "$out" "staged-new.txt"
 assert_contains "diff-inventory.repo.stash-section" "$out" "== stashes"
+assert_contains "diff-inventory.repo.comments-section" "$out" "== added comment lines"
+assert_contains "diff-inventory.repo.comment-surfaced" "$out" "COMMENT-FIXTURE"
+assert_not_contains "diff-inventory.repo.md-excluded" "$out" "md heading, not a comment"
 
 # base-ref form adds the extra stat section.
 out=$(cd "$d" && bash "$DIFF_INVENTORY_SH" HEAD 2>&1); code=$?

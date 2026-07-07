@@ -19,7 +19,10 @@ the claim. Validation is done when:
   `bash ../sdlc-core/scripts/diff-inventory.sh` for the complete inventory
   (status, diffs, untracked, stashes), then read the changes themselves,
   not a paraphrase from memory. Read looking for the bug, the scope
-  creep, the file you forgot you touched.
+  creep, the file you forgot you touched — and for comments the code
+  didn't earn (narration, prescriptive scaffolding, change markers;
+  STANDARD §3): the inventory lists every added comment line, and each
+  one you keep must state a why the code can't.
 - **Every success criterion has evidence** — a command you ran *this
   session*, output quoted, not paraphrased. "Tests pass" without the run
   in front of you is a claim, not evidence. Compare against the baseline

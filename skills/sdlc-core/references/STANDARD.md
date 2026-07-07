@@ -28,7 +28,9 @@ rewrites; if you notice one worth doing, record it as a note, don't do it.
 Comments follow the same discipline: add one only when the code cannot
 carry the meaning — a non-obvious *why*, a trap, an external constraint.
 Never narrate what the code already says, and never leave prescriptive
-scaffolding ("do X here", section banners, change markers).
+scaffolding ("do X here", section banners, change markers). An unearned
+comment is a defect at validation time, not a style preference — delete
+it like any other bug.
 
 ## 4. The verification ladder
 

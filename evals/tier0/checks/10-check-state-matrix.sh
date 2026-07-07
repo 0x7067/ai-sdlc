@@ -70,19 +70,19 @@ fi
 assert_exit "check-state.hard-cap.exit" "$CS_CODE" 1
 assert_contains "check-state.hard-cap.msg" "$CS_OUT" "hard cap 120"
 
-# --- h. state.md warn zone (81-120 lines) --------------------------------
+# --- h. state.md warn zone (61-120 lines) --------------------------------
 d="$tmp_root/warn-zone"; write_valid_state_dir "$d"
 base_lines=$(wc -l < "$d/.ai-sdlc/state.md" | tr -d ' ')
-want=95
+want=80
 append_filler_lines "$d/.ai-sdlc/state.md" "$((want - base_lines))"
 run_check "$d"
 lines=$(wc -l < "$d/.ai-sdlc/state.md" | tr -d ' ')
-if [ "$lines" -le 80 ] || [ "$lines" -gt 120 ]; then
-  fail "check-state.warn-zone.fixture" "fixture has $lines lines, need 81-120 — fixture bug"
+if [ "$lines" -le 60 ] || [ "$lines" -gt 120 ]; then
+  fail "check-state.warn-zone.fixture" "fixture has $lines lines, need 61-120 — fixture bug"
 fi
 assert_exit "check-state.warn-zone.exit" "$CS_CODE" 0
 assert_contains "check-state.warn-zone.ok" "$CS_OUT" "check-state: OK"
-assert_contains "check-state.warn-zone.warn" "$CS_OUT" "target <=80"
+assert_contains "check-state.warn-zone.warn" "$CS_OUT" "target <=60"
 
 # --- i. stale 'updated:' header (mtime far past the claimed date) -------
 d="$tmp_root/stale-updated"; write_valid_state_dir "$d"
@@ -123,6 +123,23 @@ if [ "$jlines" -le 200 ]; then
 fi
 assert_exit "check-state.journal-long.exit" "$CS_CODE" 0
 assert_contains "check-state.journal-long.warn" "$CS_OUT" "compaction due"
+
+# --- n2. newest journal entry over the telegram cap (>12 lines) ----------
+d="$tmp_root/journal-long-entry"; write_valid_state_dir "$d"
+{
+  echo "## 2026-02-01 — long fixture entry"
+  for i in $(seq 1 14); do echo "- process narrative line $i."; done
+} >> "$d/.ai-sdlc/journal.md"
+run_check "$d"
+assert_exit "check-state.journal-long-entry.exit" "$CS_CODE" 0
+assert_contains "check-state.journal-long-entry.warn" "$CS_OUT" "newest entry is"
+assert_contains "check-state.journal-long-entry.remedy" "$CS_OUT" "newest entry only"
+
+# --- n3. newest entry within cap: no entry-length warn --------------------
+d="$tmp_root/journal-short-entry"; write_valid_state_dir "$d"
+run_check "$d"
+assert_exit "check-state.journal-short-entry.exit" "$CS_CODE" 0
+assert_not_contains "check-state.journal-short-entry.quiet" "$CS_OUT" "newest entry is"
 
 # --- n. leftover journal.md.bak -------------------------------------------
 d="$tmp_root/journal-bak"; write_valid_state_dir "$d"
