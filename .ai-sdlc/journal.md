@@ -160,3 +160,9 @@
 - Verified: script-functional PASS including orient.no-errexit.options; tier0 177 assertions OK; self-test 7/7; check-state OK with expected external-state WARN.
 - Learned: the always-exit-0 orientation contract needs source-level coverage, not only functional fixture coverage.
 - Left: push branch and re-check PR thread status.
+
+## 2026-07-07 — PR review branch pushed
+- Did: pushed f0052cb to PR #1 and re-read thread-aware GitHub review state.
+- Verified: original Devin thread isOutdated=true; gh-axi reports no CI checks configured; local branch matches origin.
+- Learned: flat gh-axi review output still shows old inline text; GraphQL thread state is the useful source for outdated status.
+- Left: no actionable PR review thread remains from the 2026-07-07 Devin comment.
