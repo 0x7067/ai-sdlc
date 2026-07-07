@@ -70,7 +70,7 @@ for needle in "Handoff report" "VERDICT: SHIP"; do
 done
 
 # --- C7: state.md's documented size caps match check-state.sh's constants -
-for cap in 80 120; do
+for cap in 60 120; do
   if grep -qF -- "$cap" "$STATE_SPEC_MD"; then
     pass "coherence.size-cap-doc.$cap" "STATE-SPEC.md documents the $cap-line cap"
   else

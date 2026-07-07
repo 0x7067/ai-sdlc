@@ -4,6 +4,8 @@
 #   compact-journal.sh  byte-for-byte retained tail, digest carry, "nothing
 #                       to fold" short-circuit
 #   diff-inventory.sh   all documented change classes
+#   orient.sh           scaffold path, newest-3 journal window, drift note,
+#                       non-git fallback, always-exit-0 contract
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=../lib/common.sh
@@ -124,6 +126,10 @@ d="$tmp_root/repo"; mkdir -p "$d"
   && git stash push -q -m throwaway \
   && echo "line two" >> tracked.txt \
   && echo "new content" > staged-new.txt && git add staged-new.txt \
+  && printf '%s\n' '# COMMENT-FIXTURE: prescriptive marker' 'x=1' > commented.sh \
+  && git add commented.sh \
+  && printf '%s\n' '# md heading, not a comment' > doc-fixture.md \
+  && git add doc-fixture.md \
   && echo "scratch" > untracked-fixture.txt )
 
 out=$(cd "$d" && bash "$DIFF_INVENTORY_SH" 2>&1); code=$?
@@ -136,8 +142,68 @@ assert_contains "diff-inventory.repo.untracked-section" "$out" "== untracked fil
 assert_contains "diff-inventory.repo.untracked-file" "$out" "untracked-fixture.txt"
 assert_contains "diff-inventory.repo.staged-file" "$out" "staged-new.txt"
 assert_contains "diff-inventory.repo.stash-section" "$out" "== stashes"
+assert_contains "diff-inventory.repo.comments-section" "$out" "== added comment lines"
+assert_contains "diff-inventory.repo.comment-surfaced" "$out" "COMMENT-FIXTURE"
+assert_not_contains "diff-inventory.repo.md-excluded" "$out" "md heading, not a comment"
 
 # base-ref form adds the extra stat section.
 out=$(cd "$d" && bash "$DIFF_INVENTORY_SH" HEAD 2>&1); code=$?
 assert_exit "diff-inventory.base-ref.exit" "$code" 0
 assert_contains "diff-inventory.base-ref.section" "$out" "committed vs HEAD"
+
+# ============================================================================
+# orient.sh
+# ============================================================================
+
+orient_opts=$(grep -E '^set -[[:alnum:]]*o pipefail$' "$ORIENT_SH" | head -n1 || true)
+assert_eq "orient.no-errexit.options" "$orient_opts" "set -uo pipefail"
+
+# Fresh git repo, no .ai-sdlc: scaffolds, notes first session, exits 0.
+d="$tmp_root/orient-fresh"; mkdir -p "$d"
+( cd "$d" && git init -q && git config user.email t@example.com \
+  && git config user.name t && git commit -q --allow-empty -m init )
+out=$(bash "$ORIENT_SH" "$d" 2>&1); code=$?
+assert_exit "orient.fresh.exit" "$code" 0
+assert_contains "orient.fresh.scaffolded" "$out" "CREATED"
+assert_contains "orient.fresh.first-session" "$out" "first session under sdlc"
+assert_file_exists "orient.fresh.state-file" "$d/.ai-sdlc/state.md"
+assert_contains "orient.fresh.git-section" "$out" "== git =="
+assert_contains "orient.fresh.fill-block" "$out" "Orientation"
+assert_contains "orient.fresh.fill-token" "$out" "$(placeholder_token)"
+
+# Established repo: prints state.md, only the newest 3 journal entries, and
+# a clean drift check; exit 0.
+d="$tmp_root/orient-established"; mkdir -p "$d"
+( cd "$d" && git init -q && git config user.email t@example.com \
+  && git config user.name t && git commit -q --allow-empty -m init )
+write_valid_state_only "$d"
+{
+  echo "# Journal"
+  echo
+  for i in 1 2 3 4 5; do
+    echo "## 2026-01-0$i — entry $i"
+    echo "- Did: fixture ORIENT-ENTRY-$i."
+  done
+} > "$d/.ai-sdlc/journal.md"
+out=$(bash "$ORIENT_SH" "$d" 2>&1); code=$?
+assert_exit "orient.established.exit" "$code" 0
+assert_contains "orient.established.state" "$out" "Fixture goal"
+assert_contains "orient.established.journal-newest" "$out" "ORIENT-ENTRY-5"
+assert_contains "orient.established.journal-window-start" "$out" "ORIENT-ENTRY-3"
+assert_not_contains "orient.established.journal-old-dropped" "$out" "ORIENT-ENTRY-2"
+assert_contains "orient.established.drift-ok" "$out" "check-state: OK"
+
+# Drifted artifacts (missing section): orient still exits 0 but surfaces the
+# FAIL and the repair note — orientation is informational, handoff blocks.
+remove_markdown_section "$d/.ai-sdlc/state.md" "## Now"
+out=$(bash "$ORIENT_SH" "$d" 2>&1); code=$?
+assert_exit "orient.drifted.exit" "$code" 0
+assert_contains "orient.drifted.fail-surfaced" "$out" "missing '## Now' section"
+assert_contains "orient.drifted.repair-note" "$out" "blocks handoff"
+
+# Non-git directory with valid artifacts: degrades gracefully, exit 0.
+d="$tmp_root/orient-nongit"; mkdir -p "$d"
+write_valid_state_only "$d"
+out=$(bash "$ORIENT_SH" "$d" 2>&1); code=$?
+assert_exit "orient.non-git.exit" "$code" 0
+assert_contains "orient.non-git.note" "$out" "(not a git repository)"

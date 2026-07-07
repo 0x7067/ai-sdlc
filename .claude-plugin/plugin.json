@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "ai-sdlc",
+  "displayName": "ai-sdlc",
+  "version": "0.1.0",
+  "description": "Session lifecycle discipline for project repos: orient + plan at start, validate + hand off at finish, an engineering standard in between, and a committed .ai-sdlc/ state file so any future session cold-starts.",
+  "author": { "name": "0x7067" },
+  "repository": "https://github.com/0x7067/ai-sdlc",
+  "keywords": ["sdlc", "lifecycle", "handoff", "process", "skills"]
+}

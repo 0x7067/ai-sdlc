@@ -1,0 +1,11 @@
+{
+  "name": "ai-sdlc",
+  "owner": { "name": "0x7067" },
+  "plugins": [
+    {
+      "name": "ai-sdlc",
+      "source": "./",
+      "description": "Session lifecycle discipline: orient + plan at start, validate + hand off at finish, engineering standard in between."
+    }
+  ]
+}

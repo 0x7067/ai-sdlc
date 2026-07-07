@@ -29,11 +29,13 @@ You are oriented when you can state, without guessing:
 - **How this project verifies changes** — test/build/lint commands you have
   actually run, with their current baseline (what passes today). A stale
   verification command inherited from state.md is worse than none; run it.
-- **What the last session left unfinished** — read `.ai-sdlc/state.md`
-  (format: `../sdlc-core/references/STATE-SPEC.md`), including its
-  `## History` digest, and — if `.ai-sdlc/journal.md` exists — its last 3
-  dated entries; then run `bash ../sdlc-core/scripts/check-state.sh`. If
-  state.md is missing, `scaffold-state.sh` creates it.
+- **What the last session left unfinished** — run
+  `bash ../sdlc-core/scripts/orient.sh` once. It scaffolds `.ai-sdlc/` if
+  missing, then prints state.md (format:
+  `../sdlc-core/references/STATE-SPEC.md`), the newest journal entries,
+  the drift check, and a git snapshot, ending in an Orientation block.
+  Fill every slot of that block in your reply — a slot you cannot fill
+  truthfully is a gap to close before editing.
 
 Trust nothing that isn't reproduced: claims in state.md were true when
 written, which is not the same as true now.
@@ -71,5 +73,5 @@ pick up `sdlc-finish`.
 - `../sdlc-core/references/STANDARD.md` — the engineering bar (root cause,
   verification ladder §4, evidence §7, when to ask §8)
 - `../sdlc-core/references/STATE-SPEC.md` — state.md / journal format
-- `../sdlc-core/scripts/` — `check-state.sh`, `scaffold-state.sh`,
-  `compact-journal.sh`, `diff-inventory.sh`
+- `../sdlc-core/scripts/` — `orient.sh`, `check-state.sh`,
+  `scaffold-state.sh`, `compact-journal.sh`, `diff-inventory.sh`

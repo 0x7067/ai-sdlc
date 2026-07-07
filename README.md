@@ -28,11 +28,25 @@ Start and finish are the gates; the work between them is governed by
 verification ladder) rather than scripted by a skill — the standard states
 the bar and the model decides how to clear it.
 The handoff medium is two committed files per project:
-`.ai-sdlc/state.md` (current truth, <80 lines) and `.ai-sdlc/journal.md`
+`.ai-sdlc/state.md` (current truth, <60 lines) and `.ai-sdlc/journal.md`
 (append-only session log), so any future session — any model, any harness —
 can cold-start from the repo alone.
 
 ## Install
+
+**Claude Code — as a plugin (zero manual steps):**
+
+```
+/plugin marketplace add 0x7067/ai-sdlc
+/plugin install ai-sdlc@ai-sdlc
+```
+
+Skills and both hooks register automatically. Plugin installs namespace
+the skills (`ai-sdlc:sdlc-start` etc.); the session-start gate teaches
+those names, so routing still works. One-off trial without installing:
+`claude --plugin-dir /path/to/ai-sdlc`.
+
+**Any other harness — symlink install:**
 
 ```sh
 ./install.sh
@@ -55,6 +69,7 @@ imitate. In `skills/sdlc-core/scripts/`:
 
 | Script | Does |
 |---|---|
+| `orient.sh` | One-command orientation for `sdlc-start`: git snapshot, state.md, journal tail, drift check, fill-in Orientation block. Scaffolds `.ai-sdlc/` on first use. |
 | `check-state.sh` | Validates `.ai-sdlc/` against STATE-SPEC; each FAIL blocks handoff. |
 | `scaffold-state.sh` | Emits the state.md skeleton, judgment slots marked `TODO-SDLC`. |
 | `compact-journal.sh` | Journal compaction: byte-for-byte retention, digest carry, folded entries printed for summarizing. |
@@ -89,8 +104,9 @@ repo tracks to one of those axes. Two gates keep the proxies honest:
 ## Why the hook exists
 
 Empirically (headless Sonnet A/B tests against a real codebase; the
-original transcripts were not preserved — `evals/tier1` exists to re-run
-this claim with persisted artifacts):
+original transcripts were not preserved — `evals/tier1` re-runs A/Bs with
+persisted artifacts, first real baseline 2026-07-07 in
+`evals/tier1/baseline.json`):
 
 - Skill **descriptions alone never trigger** process-discipline skills — the
   model feels no capability gap, so it never reaches for them.
@@ -107,13 +123,15 @@ snippet remains as the cross-harness baseline for harnesses without hooks.
 ## Layout
 
 ```
+.claude-plugin/                  plugin + marketplace manifests (Claude Code install)
 skills/sdlc-*/SKILL.md           the three skills (start, finish, core)
 skills/sdlc-core/references/     STANDARD.md, STATE-SPEC.md
-skills/sdlc-core/scripts/        check-state, scaffold-state, compact-journal, diff-inventory
+skills/sdlc-core/scripts/        orient, check-state, scaffold-state, compact-journal, diff-inventory
 hooks/sdlc-lifecycle-gate        SessionStart hook (git repos only)
 hooks/sdlc-handoff-gate          Stop hook: handoff verification + dirty-tree nudge
+hooks/hooks.json                 plugin hook registration (${CLAUDE_PLUGIN_ROOT})
 agents-md/sdlc-lifecycle.md      routing snippet for AGENTS.md / CLAUDE.md
-install.sh                       symlink installer
+install.sh                       symlink installer for non-plugin harnesses
 evals/                           OBJECTIVE.md (what "better" means) + tier0/tier1 gates
 ```
 

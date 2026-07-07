@@ -94,8 +94,8 @@ fi
 state_lines=$(wc -l < "$STATE" | tr -d ' ')
 if [ "$state_lines" -gt 120 ]; then
   fail "state.md: $state_lines lines (hard cap 120 — cut stale detail; history belongs in the journal)"
-elif [ "$state_lines" -gt 80 ]; then
-  warn "state.md: $state_lines lines (target <=80 — trim History/plan prose first; never cut Landmines or Decisions just to satisfy the cap)"
+elif [ "$state_lines" -gt 60 ]; then
+  warn "state.md: $state_lines lines (target <=60 — trim History/plan prose first; never cut Landmines or Decisions just to satisfy the cap)"
 fi
 
 if [ -f "$JOURNAL" ]; then
@@ -113,6 +113,17 @@ $bad_headers"
   journal_lines=$(wc -l < "$JOURNAL" | tr -d ' ')
   if [ "$journal_lines" -gt 200 ]; then
     warn "journal.md: $journal_lines lines — compaction due: fold all but the newest 5 entries into a digest (STATE-SPEC 'Compaction')"
+  fi
+
+  # Advisory: entries are telegrams (~8 lines); a long one is recording
+  # process instead of findings. Only the newest entry is checked — older
+  # entries are immutable, so a warning about them could never be acted on.
+  last_hdr=$(grep -n '^## [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} — ' "$JOURNAL" | tail -1 | cut -d: -f1 || true)
+  if [ -n "$last_hdr" ]; then
+    entry_lines=$((journal_lines - last_hdr + 1))
+    if [ "$entry_lines" -gt 12 ]; then
+      warn "journal.md: newest entry is $entry_lines lines (aim ~8, warn past 12) — keep outcomes and surprises, cut process narrative; trim it before handoff (newest entry only — never edit older ones)"
+    fi
   fi
 fi
 

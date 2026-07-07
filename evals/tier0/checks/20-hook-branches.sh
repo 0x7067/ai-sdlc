@@ -184,17 +184,23 @@ assert_empty "hook.handoff.branchC-clean-tree.stderr" "$HG_ERR"
 
 # H12 — no jq on PATH: transcript inspection (A/B) is unavailable, so a
 # "Handoff report" transcript is invisible and the hook degrades to branch C
-# only (documented in the hook's own header comment).
-restricted_path=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v '^/usr/bin$' | paste -sd: -)
-if ! command -v jq >/dev/null 2>&1; then
-  warnrep "hook.handoff.no-jq" "jq not on PATH in this environment already — skipping"
-elif printf '%s\n' "$restricted_path" | tr ':' '\n' | xargs -I{} test -x {}/jq 2>/dev/null; then
-  warnrep "hook.handoff.no-jq" "could not build a jq-free PATH (jq present outside /usr/bin) — skipping"
+# only (documented in the hook's own header comment). The jq-free PATH is a
+# shim directory holding exactly the external tools the hook needs —
+# subtracting jq's directory from $PATH is not deterministic (on layouts
+# where /bin symlinks to /usr/bin, jq stays reachable through the alias).
+shim="$sandbox/nojq-bin"; mkdir -p "$shim"
+shim_ok=1
+for tool in bash cat git grep sed head find touch; do
+  p=$(command -v "$tool" 2>/dev/null) || { shim_ok=0; missing="$tool"; break; }
+  ln -s "$p" "$shim/$tool"
+done
+if [ "$shim_ok" -ne 1 ]; then
+  warnrep "hook.handoff.no-jq" "cannot resolve hook dependency '$missing' for the shim PATH — skipping"
 else
   make_dirty "$repo"
   t="$sandbox/h12.jsonl"; write_transcript "$t" "Handoff report
 should be invisible without jq."
-  run_handoff "$repo" "h12" false "$t" "$restricted_path"
+  run_handoff "$repo" "h12" false "$t" "$shim"
   assert_exit "hook.handoff.no-jq.exit" "$HG_CODE" 0
   assert_file_exists "hook.handoff.no-jq.marker" "$(marker_path h12)"
   make_clean "$repo"

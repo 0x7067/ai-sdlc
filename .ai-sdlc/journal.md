@@ -117,3 +117,52 @@
 - Left: tier1 real-model baseline (Next 1, needs Pedro's token); deploy
   clone pull (Next 3); the 2 KNOWN-DRIFT coherence entries were fixed and
   removed same-session, so the allowlist is empty — keep it that way.
+
+## 2026-07-07 — tier1 unblocked + first real baseline; plugin packaging; orient.sh
+- Did: closed the empirical loop — remote containers carry claude auth in
+  env (not $HOME), so tier1's isolated-$HOME harness just works; root needs
+  IS_SANDBOX=1. Ran all 8 scenario×arm haiku runs, wrote baseline.json,
+  verified compare.sh green. Packaged the repo as a Claude Code plugin
+  (.claude-plugin/{plugin,marketplace}.json, hooks/hooks.json; gate now
+  teaches ai-sdlc:* names, "installed policy" phrasing). Added orient.sh
+  (one-command orientation; sdlc-start instructs it; sdlc-finish now names
+  diff-inventory.sh). Put STANDARD/STATE-SPEC under the token budget gate;
+  re-baselined budgets. Fixed tier0 no-jq check (shim PATH — /bin symlinks
+  /usr/bin here) and self-test sandbox (.claude-plugin copy).
+- Verified: tier0 167 assertions exit 0; --self-test 7/7; tier1 8/8 runs
+  is_error=false + compare.sh OK; plugin end-to-end via --plugin-dir in an
+  isolated $HOME (real haiku quoted the injected gate text and listed all
+  three namespaced skills); check-state.sh OK.
+- Learned: haiku 4.5 saturates every tier1 scenario in BOTH arms — outcome
+  scores stopped discriminating at this tier; cost still discriminates
+  (resumption sdlc ≈40-60% of control tokens, fewer turns). Equal scores
+  mean weak scenarios, not "sdlc does nothing". Also: PATH-prefixed
+  commands resolve the command word with the NEW path (shim must include
+  bash itself).
+- Left: scenario hardening + Sonnet-tier A/B (state.md Next 1-2);
+  marketplace-add install unverified until the repo is on GitHub (Next 3);
+  branch pushed to claude/ai-sdlc-framework-lean-avh8fi, main untouched.
+
+## 2026-07-07 — leanness enforced: caps tightened, unearned comments = defects
+- Did: state.md target 80→60 (hard 120 stays); newest-journal-entry WARN
+  >12 lines (older entries immutable, so newest only); diff-inventory.sh
+  now surfaces every added comment line (code files, md excluded) for the
+  STANDARD §3 review; §3 names unearned comments validation defects;
+  sdlc-finish hunts them. Trimmed this repo's state.md 80→60.
+- Verified: tier0 175 assertions exit 0; --self-test 7/7; check-state.sh
+  OK (no WARNs on own artifacts); new matrix fixtures cover warn/quiet.
+- Learned: journal fixture (m) appends filler inside the newest entry —
+  entry-length checks must stay WARN-only or that fixture wedges.
+- Left: state.md Next unchanged (scenario hardening still #1).
+
+## 2026-07-07 — PR review: orient.sh exit contract hardened
+- Did: removed errexit from orient.sh and added tier0 coverage that pins it to `set -uo pipefail`.
+- Verified: script-functional PASS including orient.no-errexit.options; tier0 177 assertions OK; self-test 7/7; check-state OK with expected external-state WARN.
+- Learned: the always-exit-0 orientation contract needs source-level coverage, not only functional fixture coverage.
+- Left: push branch and re-check PR thread status.
+
+## 2026-07-07 — PR review branch pushed
+- Did: pushed f0052cb to PR #1 and re-read thread-aware GitHub review state.
+- Verified: original Devin thread isOutdated=true; gh-axi reports no CI checks configured; local branch matches origin.
+- Learned: flat gh-axi review output still shows old inline text; GraphQL thread state is the useful source for outdated status.
+- Left: no actionable PR review thread remains from the 2026-07-07 Devin comment.

@@ -31,6 +31,7 @@ build_sandbox() { # build_sandbox -> prints sandbox path
   cp -R "$REAL_REPO_ROOT/skills" "$sandbox/skills"
   cp -R "$REAL_REPO_ROOT/hooks" "$sandbox/hooks"
   cp -R "$REAL_REPO_ROOT/agents-md" "$sandbox/agents-md"
+  cp -R "$REAL_REPO_ROOT/.claude-plugin" "$sandbox/.claude-plugin"
   cp "$REAL_REPO_ROOT/README.md" "$sandbox/README.md"
   chmod +x "$sandbox"/hooks/* "$sandbox"/skills/sdlc-core/scripts/*.sh
   printf '%s' "$sandbox"
