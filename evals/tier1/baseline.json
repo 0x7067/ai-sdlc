@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "note": "Placeholder — no real headless run has been scored yet (see evals/tier1/SMOKE.md). score:null / tokens.total:null records are skipped by compare.sh, not treated as a zero floor. Replace this file with a real results-*.json (trimmed to the fields below) once a trusted run establishes it.",
+  "note": "First real baseline: 2026-07-07, claude-haiku-4-5-20251001, all 8 scenario×arm runs green in a root container (IS_SANDBOX=1 required for bypassPermissions as root — see SMOKE.md). Haiku 4.5 saturates all four scenarios in BOTH arms, so outcome scores no longer discriminate control vs sdlc at this model tier; the discriminating signal this run was cost (resumption: sdlc 6-10 turns / 51-78k tokens vs control 11-12 turns / 103-128k). Scenario hardening (state.md Next) is what will make scores discriminate again.",
   "tolerance": {
     "score_drop_fraction": 0.1,
     "overhead_total_tokens_increase_pct": 50
   },
   "results": [
-    { "scenario": "resumption",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": null, "max": 5 },
-    { "scenario": "resumption",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": null, "max": 5 },
-    { "scenario": "stale_state", "arm": "control", "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
-    { "scenario": "stale_state", "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
-    { "scenario": "false_ship",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
-    { "scenario": "false_ship",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": null, "max": 1 },
-    { "scenario": "overhead",    "arm": "control", "model": "claude-haiku-4-5-20251001", "tokens": { "total": null } },
-    { "scenario": "overhead",    "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "tokens": { "total": null } }
+    { "scenario": "resumption",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": 5, "max": 5 },
+    { "scenario": "resumption",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": 5, "max": 5 },
+    { "scenario": "stale_state", "arm": "control", "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
+    { "scenario": "stale_state", "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
+    { "scenario": "false_ship",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
+    { "scenario": "false_ship",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
+    { "scenario": "overhead",    "arm": "control", "model": "claude-haiku-4-5-20251001", "tokens": { "total": 72252 } },
+    { "scenario": "overhead",    "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "tokens": { "total": 73896 } }
   ]
 }

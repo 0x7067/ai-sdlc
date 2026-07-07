@@ -141,3 +141,23 @@ Conclusion: the one sanctioned path stands — Pedro runs
 `CLAUDE_CODE_OAUTH_TOKEN=<token> bash evals/tier1/run.sh --scenario all
 --arm both` (or exports the var before launching an agent session so
 run.sh's pass_env forwards it). Keep the token out of chat transcripts.
+
+## Update 2026-07-07 (remote container): UNBLOCKED — first real baseline landed
+
+The macOS blocker does not exist in Claude Code remote-execution
+containers: auth there is carried by the *environment* (host-managed
+provider), not by files or a keychain under `$HOME`, so `run.sh`'s
+`env HOME="$iso_home" claude -p ...` authenticates as-is — verified with a
+real isolated-`$HOME` PONG round-trip, then all 8 scenario×arm runs.
+
+Two container-specific facts:
+
+- These containers run as root, and the CLI refuses
+  `--permission-mode bypassPermissions` under root unless `IS_SANDBOX=1`
+  is set. Invoke as `IS_SANDBOX=1 bash evals/tier1/run.sh ...` — the env
+  passes through to the child; no harness change needed.
+- Results: all 8 runs `is_error=false`; scores recorded in
+  `baseline.json` (2026-07-07, haiku). Haiku 4.5 saturates every scenario
+  in both arms, so outcome scores stopped discriminating at this tier —
+  cost did discriminate (resumption sdlc ≈40-60% of control tokens).
+  Scenario hardening is the follow-up (state.md Next).
