@@ -51,7 +51,7 @@ done when:
   work), name that dependency explicitly so the next session re-verifies
   it instead of trusting a claim that may have moved on.
 - **The journal has an entry** — what changed, why, and what a future
-  session should distrust.
+  session should distrust, in a few terse bullets, not a narrative.
 - **`bash ../sdlc-core/scripts/check-state.sh` exits 0.**
 
 Announce completion in a message containing the literal phrase

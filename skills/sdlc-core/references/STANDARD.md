@@ -25,6 +25,11 @@ the codebase's existing patterns, naming, and idioms — consistency beats
 personal preference. No drive-by refactors, dependency changes, or style
 rewrites; if you notice one worth doing, record it as a note, don't do it.
 
+Comments follow the same discipline: add one only when the code cannot
+carry the meaning — a non-obvious *why*, a trap, an external constraint.
+Never narrate what the code already says, and never leave prescriptive
+scaffolding ("do X here", section banners, change markers).
+
 ## 4. The verification ladder
 
 Verify at the narrowest meaningful level first, then broaden only as risk

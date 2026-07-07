@@ -17,7 +17,9 @@ that in state.md itself.
 Keep it under 80 lines (hard cap 120 — the hygiene check below fails past
 it). It is read at the start of every session, so every
 stale line costs trust and every extra line costs tokens. Overwrite freely;
-history lives in the journal.
+history lives in the journal. Write clipped bullets, not prose — if a line
+isn't a decision, a trap, a command, or a next step, cut it. 80 is a
+ceiling, not a budget; most projects fit in half that.
 
 ```markdown
 # Project State
@@ -59,6 +61,9 @@ actually reads back.
 ## journal.md — append-only log
 
 One entry per working session, appended at the end. Never edit old entries.
+Entries are telegrams, not narratives: a handful of terse bullets, each an
+outcome or a surprise. Aim for ~8 lines; if an entry runs long, it is
+recording process instead of findings.
 
 ```markdown
 ## YYYY-MM-DD — <one-line summary>
