@@ -34,6 +34,20 @@ can cold-start from the repo alone.
 
 ## Install
 
+**Claude Code — as a plugin (zero manual steps):**
+
+```
+/plugin marketplace add 0x7067/ai-sdlc
+/plugin install ai-sdlc@ai-sdlc
+```
+
+Skills and both hooks register automatically. Plugin installs namespace
+the skills (`ai-sdlc:sdlc-start` etc.); the session-start gate teaches
+those names, so routing still works. One-off trial without installing:
+`claude --plugin-dir /path/to/ai-sdlc`.
+
+**Any other harness — symlink install:**
+
 ```sh
 ./install.sh
 ```
@@ -108,13 +122,15 @@ snippet remains as the cross-harness baseline for harnesses without hooks.
 ## Layout
 
 ```
+.claude-plugin/                  plugin + marketplace manifests (Claude Code install)
 skills/sdlc-*/SKILL.md           the three skills (start, finish, core)
 skills/sdlc-core/references/     STANDARD.md, STATE-SPEC.md
-skills/sdlc-core/scripts/        check-state, scaffold-state, compact-journal, diff-inventory
+skills/sdlc-core/scripts/        orient, check-state, scaffold-state, compact-journal, diff-inventory
 hooks/sdlc-lifecycle-gate        SessionStart hook (git repos only)
 hooks/sdlc-handoff-gate          Stop hook: handoff verification + dirty-tree nudge
+hooks/hooks.json                 plugin hook registration (${CLAUDE_PLUGIN_ROOT})
 agents-md/sdlc-lifecycle.md      routing snippet for AGENTS.md / CLAUDE.md
-install.sh                       symlink installer
+install.sh                       symlink installer for non-plugin harnesses
 evals/                           OBJECTIVE.md (what "better" means) + tier0/tier1 gates
 ```
 
