@@ -55,7 +55,7 @@ imitate. In `skills/sdlc-core/scripts/`:
 
 | Script | Does |
 |---|---|
-| `check-state.sh` | Validates `.ai-sdlc/` against STATE-SPEC; each FAIL blocks handoff. |
+| `check-state.sh [--strict] [repo-dir]` | Validates `.ai-sdlc/` against STATE-SPEC; advisory mode warns when compaction is due, while strict mode makes overdue compaction fail handoff. |
 | `scaffold-state.sh` | Emits the state.md skeleton, judgment slots marked `TODO-SDLC`. |
 | `compact-journal.sh` | Journal compaction: byte-for-byte retention, digest carry, folded entries printed for summarizing. |
 | `diff-inventory.sh` | One deterministic working-tree inventory (status, stats, untracked, stashes) for validate/handoff. |
@@ -67,9 +67,10 @@ half-finished artifact cannot pass the gates.
 A second hook, `hooks/sdlc-handoff-gate` (Stop), closes the far end of the
 lifecycle the SessionStart gate opens. When the final response contains all
 three report fields — `What changed:`, `What was verified:`, and
-`Remaining risk:` — it runs `check-state.sh`, blocking the stop with the FAIL
-lines when the persisted artifacts do not support the report. Independently,
-it nudges at most every ~45 minutes while uncommitted changes sit.
+`Remaining risk:` — it runs `check-state.sh --strict`, blocking the stop with
+the FAIL lines when the persisted artifacts do not support the report.
+Independently, it nudges at most every ~45 minutes while uncommitted changes
+sit.
 `stop_hook_active` keeps it from looping; transcript inspection needs `jq`
 and degrades to the dirty-tree nudge without it.
 

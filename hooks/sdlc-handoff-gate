@@ -6,7 +6,7 @@
 # cheapest signal first, each self-limiting so it never nags every turn:
 #
 #   A. The response just issued the three-field SDLC report -> verify the
-#      claim: run check-state.sh; any FAIL blocks with the FAIL lines.
+#      claim: run check-state.sh --strict; any FAIL blocks with the FAIL lines.
 #   B. The tree has been dirty for >45 min since the last reminder -> gentle
 #      nudge (armed at the first stop, so a pre-existing dirty tree does not
 #      nag on turn 1).
@@ -67,9 +67,9 @@ if printf '%s\n' "$last_text" | grep -q '^What changed:' \
     block "sdlc gate: the SDLC report was issued but .ai-sdlc/ does not exist — nothing was persisted. Run Skill(sdlc-finish) for real: scaffold state.md, append the journal entry, then re-issue the report."
   fi
   if [ -n "$check" ]; then
-    out=$(bash "$check" . 2>&1) || block "sdlc gate: the SDLC report was issued but the artifacts fail STATE-SPEC:
+    out=$(bash "$check" --strict . 2>&1) || block "sdlc gate: the SDLC report was issued but the artifacts fail STATE-SPEC:
 $out
-Fix every FAIL line, re-run check-state.sh until it prints 'check-state: OK', then re-issue the report."
+Fix every FAIL line, re-run check-state.sh --strict until it prints 'check-state: OK', then re-issue the report."
   fi
   touch "$marker" 2>/dev/null || true
   exit 0

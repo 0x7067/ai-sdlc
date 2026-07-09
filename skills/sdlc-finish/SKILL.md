@@ -48,7 +48,7 @@ done when:
   it instead of trusting a claim that may have moved on.
 - **The journal has an entry** — what changed, why, and what a future
   session should distrust.
-- **`bash ../sdlc-core/scripts/check-state.sh` exits 0.**
+- **`bash ../sdlc-core/scripts/check-state.sh --strict` exits 0.**
 
 The acid test: a stranger given only state.md and the repo reaches the
 same understanding you have right now. If they'd have to rediscover
