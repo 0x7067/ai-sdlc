@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SessionStart hook: inject the SDLC lifecycle gate in project repos.
 # Emits nothing outside git repos (global-config sessions, scratch dirs).
+[ "${AI_SDLC_SCRATCH:-}" = "1" ] && exit 0
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 cat <<'EOF'
 SDLC LIFECYCLE (from Pedro's global config):

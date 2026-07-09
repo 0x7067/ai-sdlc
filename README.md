@@ -65,12 +65,13 @@ judgment slot with it, and `check-state.sh` FAILs while any remains — so a
 half-finished artifact cannot pass the gates.
 
 A second hook, `hooks/sdlc-handoff-gate` (Stop), closes the far end of the
-lifecycle the SessionStart gate opens. It verifies an issued "Handoff
-report" by running `check-state.sh` — blocking the stop with the FAIL lines
-when the claim doesn't hold — reminds once when a `VERDICT: SHIP` leaves a
-dirty tree, and nudges at most every ~45 minutes while uncommitted changes
-sit. `stop_hook_active` keeps it from looping; transcript inspection needs
-`jq` and degrades to the dirty-tree nudge without it.
+lifecycle the SessionStart gate opens. When the final response contains all
+three report fields — `What changed:`, `What was verified:`, and
+`Remaining risk:` — it runs `check-state.sh`, blocking the stop with the FAIL
+lines when the persisted artifacts do not support the report. Independently,
+it nudges at most every ~45 minutes while uncommitted changes sit.
+`stop_hook_active` keeps it from looping; transcript inspection needs `jq`
+and degrades to the dirty-tree nudge without it.
 
 ## Why the hook exists
 
