@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
 # Validate a repo's .ai-sdlc/ artifacts against STATE-SPEC.md.
 #
-# Usage: check-state.sh [repo-dir]     (default: current directory)
+# Usage: check-state.sh [--strict] [repo-dir]     (default: current directory)
 #
-# Exit 0: artifacts conform (WARN lines are advisory).
+# Exit 0: artifacts conform (WARN lines are advisory outside strict mode).
 # Exit 1: one FAIL line per violation — fix each before handoff completes.
 #
 # Mechanical checks only; judgment calls (what belongs in a digest, whether
 # a section is *true*) stay with the model per STATE-SPEC.
 
 set -euo pipefail
+
+strict=0
+if [ "${1:-}" = "--strict" ]; then
+  strict=1
+  shift
+fi
 
 DIR="${1:-.}/.ai-sdlc"
 STATE="$DIR/state.md"
@@ -95,7 +101,11 @@ state_lines=$(wc -l < "$STATE" | tr -d ' ')
 if [ "$state_lines" -gt 120 ]; then
   fail "state.md: $state_lines lines (hard cap 120 — cut stale detail; history belongs in the journal)"
 elif [ "$state_lines" -gt 60 ]; then
-  warn "state.md: $state_lines lines (target <=60 — trim History/plan prose first; never cut Landmines or Decisions just to satisfy the cap)"
+  if [ "$strict" -eq 1 ]; then
+    fail "state.md: $state_lines lines (target <=60 in strict mode — trim History/plan prose first; never cut Landmines or Decisions just to satisfy the cap)"
+  else
+    warn "state.md: $state_lines lines (target <=60 — trim History/plan prose first; never cut Landmines or Decisions just to satisfy the cap)"
+  fi
 fi
 
 if [ -f "$JOURNAL" ]; then
@@ -112,7 +122,11 @@ $bad_headers"
 
   journal_lines=$(wc -l < "$JOURNAL" | tr -d ' ')
   if [ "$journal_lines" -gt 200 ]; then
-    warn "journal.md: $journal_lines lines — compaction due: fold all but the newest 5 entries into a digest (STATE-SPEC 'Compaction')"
+    if [ "$strict" -eq 1 ]; then
+      fail "journal.md: $journal_lines lines — compaction required in strict mode: fold all but the newest 5 entries into a digest (STATE-SPEC 'Compaction')"
+    else
+      warn "journal.md: $journal_lines lines — compaction due: fold all but the newest 5 entries into a digest (STATE-SPEC 'Compaction')"
+    fi
   fi
 
   # Advisory: entries are telegrams (~8 lines); a long one is recording

@@ -39,8 +39,8 @@ write_transcript() { # write_transcript <path> <assistant-text>
 # --- runners ----------------------------------------------------------------
 
 HG_OUT=""; HG_ERR=""; HG_CODE=0
-run_handoff() { # run_handoff <cwd> <session_id> <stop_hook_active> <transcript_path> [path_override]
-  local cwd="$1" sid="$2" active="$3" transcript="$4" path_override="${5:-}"
+run_handoff() { # run_handoff <cwd> <session_id> <stop_hook_active> <transcript_path> [path_override] [scratch]
+  local cwd="$1" sid="$2" active="$3" transcript="$4" path_override="${5:-}" scratch="${6:-0}"
   local stdin_json errfile
   stdin_json=$(printf '{"session_id":"%s","transcript_path":"%s","stop_hook_active":%s}' \
     "$sid" "$transcript" "$active")
@@ -49,10 +49,10 @@ run_handoff() { # run_handoff <cwd> <session_id> <stop_hook_active> <transcript_
     # BASH_ENV="" matters here: this environment's non-interactive bash
     # sources a global path-management rc (see $BASH_ENV) that otherwise
     # resets PATH on every invocation, silently undoing path_override.
-    HG_OUT=$(cd "$cwd" && HOME="$fakehome" TMPDIR="$fakehome/tmp" PATH="$path_override" BASH_ENV="" \
+    HG_OUT=$(cd "$cwd" && HOME="$fakehome" TMPDIR="$fakehome/tmp" PATH="$path_override" BASH_ENV="" AI_SDLC_SCRATCH="$scratch" \
       bash "$HOOK_HANDOFF" <<<"$stdin_json" 2>"$errfile")
   else
-    HG_OUT=$(cd "$cwd" && HOME="$fakehome" TMPDIR="$fakehome/tmp" \
+    HG_OUT=$(cd "$cwd" && HOME="$fakehome" TMPDIR="$fakehome/tmp" AI_SDLC_SCRATCH="$scratch" \
       bash "$HOOK_HANDOFF" <<<"$stdin_json" 2>"$errfile")
   fi
   HG_CODE=$?
@@ -88,6 +88,11 @@ out=$(cd "$nongit" && bash "$HOOK_LIFECYCLE" 2>&1); code=$?
 assert_exit "hook.lifecycle.non-git.exit" "$code" 0
 assert_empty "hook.lifecycle.non-git.silent" "$out"
 
+# L3 — explicit scratch mode is silent even inside a git repo.
+out=$(cd "$repo" && AI_SDLC_SCRATCH=1 bash "$HOOK_LIFECYCLE" 2>&1); code=$?
+assert_exit "hook.lifecycle.scratch.exit" "$code" 0
+assert_empty "hook.lifecycle.scratch.silent" "$out"
+
 # ============================================================================
 # sdlc-handoff-gate (Stop) — each case gets its own session_id (own marker).
 # ============================================================================
@@ -109,52 +114,60 @@ assert_empty "hook.handoff.stop-active.stdout" "$HG_OUT"
 assert_empty "hook.handoff.stop-active.stderr" "$HG_ERR"
 assert_file_absent "hook.handoff.stop-active.no-marker" "$(marker_path h2)"
 
-# H3 — branch A: "Handoff report" issued, .ai-sdlc/ does not exist -> block.
-t="$sandbox/h3.jsonl"; write_transcript "$t" "Handoff report
-everything is done."
+# H2b — explicit scratch mode bypasses all handoff enforcement.
+run_handoff "$repo" "h2b" false "$empty_transcript" "" 1
+assert_exit "hook.handoff.scratch.exit" "$HG_CODE" 0
+assert_empty "hook.handoff.scratch.stderr" "$HG_ERR"
+assert_file_absent "hook.handoff.scratch.no-marker" "$(marker_path h2b)"
+
+# H3 — branch A: the exact report issued, .ai-sdlc/ absent -> block.
+t="$sandbox/h3.jsonl"; write_transcript "$t" "What changed: fixture
+What was verified: fixture
+Remaining risk: none"
 make_clean "$repo"
 run_handoff "$repo" "h3" false "$t"
 assert_exit "hook.handoff.branchA-missing-dir.exit" "$HG_CODE" 2
 assert_contains "hook.handoff.branchA-missing-dir.msg" "$HG_ERR" "does not exist"
 assert_contains "hook.handoff.branchA-missing-dir.msg2" "$HG_ERR" "nothing was persisted"
 
-# H4 — branch A: Handoff report issued, .ai-sdlc/ exists but fails STATE-SPEC.
+# H4 — branch A: exact report issued, .ai-sdlc/ fails STATE-SPEC.
 mkdir -p "$repo/.ai-sdlc"
 write_valid_state_dir "$repo"
 remove_markdown_section "$repo/.ai-sdlc/state.md" "## Now"
-t="$sandbox/h4.jsonl"; write_transcript "$t" "Handoff report
-done for real this time."
+t="$sandbox/h4.jsonl"; write_transcript "$t" "What changed: fixture
+What was verified: fixture
+Remaining risk: none"
 run_handoff "$repo" "h4" false "$t"
 assert_exit "hook.handoff.branchA-check-fail.exit" "$HG_CODE" 2
 assert_contains "hook.handoff.branchA-check-fail.msg" "$HG_ERR" "fail STATE-SPEC"
 assert_contains "hook.handoff.branchA-check-fail.fail-line" "$HG_ERR" "missing '## Now' section"
 rm -rf "$repo/.ai-sdlc"
 
-# H5 — branch A: Handoff report issued, .ai-sdlc/ fully conformant -> exit 0.
+# H5 — branch A: exact report issued, .ai-sdlc/ conformant -> exit 0.
 mkdir -p "$repo/.ai-sdlc"; write_valid_state_dir "$repo"
-t="$sandbox/h5.jsonl"; write_transcript "$t" "Handoff report
-state.md and journal.md are current."
+t="$sandbox/h5.jsonl"; write_transcript "$t" "What changed: fixture
+What was verified: fixture
+Remaining risk: none"
 run_handoff "$repo" "h5" false "$t"
 assert_exit "hook.handoff.branchA-pass.exit" "$HG_CODE" 0
 assert_file_exists "hook.handoff.branchA-pass.marker" "$(marker_path h5)"
 rm -rf "$repo/.ai-sdlc"
 
-# H6 — branch B: "VERDICT: SHIP" issued with a dirty tree -> block.
+# H6 — retired VERDICT token does not trigger validation; dirty-tree logic arms.
 make_dirty "$repo"
 t="$sandbox/h6.jsonl"; write_transcript "$t" "VERDICT: SHIP
 the change is validated."
 run_handoff "$repo" "h6" false "$t"
-assert_exit "hook.handoff.branchB-ship-dirty.exit" "$HG_CODE" 2
-assert_contains "hook.handoff.branchB-ship-dirty.msg" "$HG_ERR" "validation returned SHIP but the working tree is dirty"
+assert_exit "hook.handoff.retired-verdict.exit" "$HG_CODE" 0
+assert_empty "hook.handoff.retired-verdict.stderr" "$HG_ERR"
 make_clean "$repo"
 
-# H7 — branch B corollary: SHIP with a CLEAN tree does not block; falls
-# through to C, which (first stop for this session_id) arms without nagging.
-t="$sandbox/h7.jsonl"; write_transcript "$t" "VERDICT: SHIP
-the change is validated and committed."
+# H7 — retired Handoff report phrase does not trigger validation.
+t="$sandbox/h7.jsonl"; write_transcript "$t" "Handoff report
+this retired phrase is inert."
 run_handoff "$repo" "h7" false "$t"
-assert_exit "hook.handoff.branchB-ship-clean.exit" "$HG_CODE" 0
-assert_file_exists "hook.handoff.branchB-ship-clean.marker" "$(marker_path h7)"
+assert_exit "hook.handoff.retired-handoff.exit" "$HG_CODE" 0
+assert_file_exists "hook.handoff.retired-handoff.marker" "$(marker_path h7)"
 
 # H8 — branch C: first stop ever for this session (marker absent) arms the
 # marker without nagging, even though the tree is dirty.
@@ -182,8 +195,8 @@ run_handoff "$repo" "h8" false "$empty_transcript"
 assert_exit "hook.handoff.branchC-clean-tree.exit" "$HG_CODE" 0
 assert_empty "hook.handoff.branchC-clean-tree.stderr" "$HG_ERR"
 
-# H12 — no jq on PATH: transcript inspection (A/B) is unavailable, so a
-# "Handoff report" transcript is invisible and the hook degrades to branch C
+# H12 — no jq on PATH: report inspection is unavailable, so the exact report
+# is invisible and the hook degrades to dirty-tree timing.
 # only (documented in the hook's own header comment). The jq-free PATH is a
 # shim directory holding exactly the external tools the hook needs —
 # subtracting jq's directory from $PATH is not deterministic (on layouts
@@ -198,10 +211,23 @@ if [ "$shim_ok" -ne 1 ]; then
   warnrep "hook.handoff.no-jq" "cannot resolve hook dependency '$missing' for the shim PATH — skipping"
 else
   make_dirty "$repo"
-  t="$sandbox/h12.jsonl"; write_transcript "$t" "Handoff report
-should be invisible without jq."
+  t="$sandbox/h12.jsonl"; write_transcript "$t" "What changed: fixture
+What was verified: fixture
+Remaining risk: none"
   run_handoff "$repo" "h12" false "$t" "$shim"
   assert_exit "hook.handoff.no-jq.exit" "$HG_CODE" 0
   assert_file_exists "hook.handoff.no-jq.marker" "$(marker_path h12)"
   make_clean "$repo"
 fi
+
+# H13 — the agentctl harness is high-blast-radius, not exempt from handoff.
+touch "$repo/agentctl.config.json"
+mkdir -p "$repo/.ai-sdlc"; write_valid_state_dir "$repo"
+remove_markdown_section "$repo/.ai-sdlc/state.md" "## Now"
+t="$sandbox/h13.jsonl"; write_transcript "$t" "What changed: fixture
+What was verified: fixture
+Remaining risk: none"
+run_handoff "$repo" "h13" false "$t"
+assert_exit "hook.handoff.agentctl-not-exempt.exit" "$HG_CODE" 2
+assert_contains "hook.handoff.agentctl-not-exempt.msg" "$HG_ERR" "missing '## Now' section"
+rm -rf "$repo/.ai-sdlc" "$repo/agentctl.config.json"

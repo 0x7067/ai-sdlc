@@ -94,15 +94,21 @@ entries, byte-for-byte untouched:
 
 `check-state.sh` validates this spec mechanically — required sections, the
 `updated:` date, size caps, journal entry headers — and reports when
-compaction is due. Run it from the project repo:
+compaction is due. Run advisory checks while working, then strict checks at
+handoff:
 
 ```
 bash ~/.agents/skills/sdlc-core/scripts/check-state.sh
+bash ~/.agents/skills/sdlc-core/scripts/check-state.sh --strict
 ```
 
 (fallback: the `scripts/` directory inside the `sdlc-core/` sibling of the
-calling skill's directory). Exit 0 means the artifacts conform; each FAIL
-line names a violation to fix before handoff completes.
+calling skill's directory). Both forms accept an optional repo directory;
+`--strict` must precede it. In advisory mode, state.md over 60 lines and
+journal.md over 200 lines WARN and exit 0; in strict mode those
+overdue-compaction conditions FAIL and exit 1. State.md over the 120-line hard
+cap always FAILs. Each FAIL line names a violation to fix before handoff
+completes.
 
 Sibling scripts in the same directory do the other mechanical work, so no
 session hand-builds these formats:

@@ -166,3 +166,12 @@
 - Verified: original Devin thread isOutdated=true; gh-axi reports no CI checks configured; local branch matches origin.
 - Learned: flat gh-axi review output still shows old inline text; GraphQL thread state is the useful source for outdated status.
 - Left: no actionable PR review thread remains from the 2026-07-07 Devin comment.
+
+## 2026-07-10 — merge harness hardening into main
+- Did: merged `codex/harness-hardening` after 14 main-side commits; kept
+  plugin/orient/leanness behavior and migrated hook, docs, and evals together.
+- Verified: tier0 193/193; self-test caught 7/7; tier1 dry-run completed 8/8;
+  shell syntax, strict state, and staged-diff checks passed.
+- Learned: the retired Handoff/VERDICT tokens were embedded in tier0 and the
+  objective, so hook-contract migration had to update executable proxies too.
+- Left: parent remains pinned to `c7f89af`; it is now reachable from main.

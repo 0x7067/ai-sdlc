@@ -33,7 +33,7 @@ this table is a smell until it is added with its axis and failure mode.
 | `check-state.sh` exit 0 | 1, 2 | validates form, not truth — a stale state.md passes | path-existence WARN; tier1 resumption eval measures truth directly |
 | `updated:` freshness (mtime WARN) | 1 | re-stamp the date without re-verifying content | WARN wording now instructs re-verify-then-stamp |
 | state.md line caps (60/120) | 3 | trim Landmines/Decisions — the highest-value lines — to satisfy the cap | WARN names safe trim targets (History/plan prose) |
-| Hook grep tokens (`Handoff report`, `VERDICT: SHIP`) | 2 | skill prose and hook greps drift apart; branches go dead silently | tier0 coherence check: every grepped literal must be instructed by a live surface |
+| Hook report fields (`What changed:`, `What was verified:`, `Remaining risk:`) | 2 | skill prose and hook greps drift apart; validation silently stops running | tier0 coherence check: every grepped literal must be instructed by a live surface |
 | ±20% per-skill word budget | 3 | treated as acceptance evidence for content edits; padding/trimming to the number | demoted to smell check; acceptance = tier0/tier1 green |
 | Probe "trace blocks emitted" | none | measures ceremony compliance, not outcomes | replaced by tier1 outcome grading (answer keys, repo state) |
 | "verified 2026-MM-DD" journal claims | 2 | one-off manual runs decay silently; nothing re-runs them | tier0 persists them as executable checks |
@@ -77,7 +77,7 @@ never to make a red run green.
 
 | # | Finding | Status |
 |---|---|---|
-| F1 | Stop-hook branches A/B dead — greps for tokens no skill instructs | **Fixed**: sdlc-finish now instructs both literals; tier0 coherence prevents recurrence |
+| F1 | Stop-hook validation dead — greps for fields no skill instructs | **Fixed**: sdlc-finish now instructs all three fields; tier0 coherence prevents recurrence |
 | F2 | check-state validates form not truth; live stale instance in this repo's own state.md | **Partial**: WARN re-worded, path-existence advisory added, state.md corrected; full truth measurement is tier1's job |
 | F3 | Deployed hooks carried uncommitted exemption logic | **Fixed**: carve-outs ported into `hooks/` source; deploy-drift advisory added |
 | F4 | "Verified" claims were one-off manual runs | **Fixed**: tier0 persists them; self-test proves the suite can fail |

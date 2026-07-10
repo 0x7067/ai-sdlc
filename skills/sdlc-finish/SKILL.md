@@ -36,10 +36,6 @@ the claim. Validation is done when:
 If a criterion can't be checked with what exists, say so explicitly
 rather than substituting a weaker check that can.
 
-Close validation with a literal `VERDICT: SHIP` or `VERDICT: NO-SHIP`
-line. The exact token matters: the Stop hook keys on it to catch shipped
-work left unpersisted — a synonym silently disarms that check.
-
 ## Objective 2 — Hand off before stopping
 
 The next session starts with zero memory of this conversation. Handoff is
@@ -57,12 +53,12 @@ done when:
   it instead of trusting a claim that may have moved on.
 - **The journal has an entry** — what changed, why, and what a future
   session should distrust, in a few terse bullets, not a narrative.
-- **`bash ../sdlc-core/scripts/check-state.sh` exits 0.**
+- **`bash ../sdlc-core/scripts/check-state.sh --strict` exits 0.**
 
-Announce completion in a message containing the literal phrase
-`Handoff report` (with the STANDARD §7 evidence report). Again the exact
-phrase matters: the Stop hook verifies any message carrying it by running
-check-state.sh, so the claim is checked the moment it is made.
+End the final response with the STANDARD §7 evidence report, keeping each
+field at the start of its line: `What changed:`, `What was verified:`, and
+`Remaining risk:`. The Stop hook recognizes that exact three-field contract
+and runs the strict state check before allowing the session to end.
 
 The acid test: a stranger given only state.md and the repo reaches the
 same understanding you have right now. If they'd have to rediscover

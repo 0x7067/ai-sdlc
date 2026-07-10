@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 # SessionStart hook: inject the SDLC lifecycle gate in project repos.
 # Emits nothing outside git repos (global-config sessions, scratch dirs).
-git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
-
-# Exemption (Pedro's call): scratch sessions only. The agentctl harness repo
-# is deliberately NOT exempt — its edits propagate to every agent, so it has
-# the highest blast radius of any repo on this machine.
 [ "${AI_SDLC_SCRATCH:-}" = "1" ] && exit 0
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 
 cat <<'EOF'
 SDLC LIFECYCLE (installed policy):

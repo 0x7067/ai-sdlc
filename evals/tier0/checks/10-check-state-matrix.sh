@@ -13,6 +13,11 @@ run_check() { # run_check <dir> -> sets CS_OUT, CS_CODE
   CS_CODE=$?
 }
 
+run_check_strict() { # run_check_strict <dir> -> sets CS_OUT, CS_CODE
+  CS_OUT=$(bash "$CHECK_STATE_SH" --strict "$1" 2>&1)
+  CS_CODE=$?
+}
+
 tmp_root=$(mktemp -d)
 trap 'rm -rf "$tmp_root"' EXIT
 
@@ -83,6 +88,9 @@ fi
 assert_exit "check-state.warn-zone.exit" "$CS_CODE" 0
 assert_contains "check-state.warn-zone.ok" "$CS_OUT" "check-state: OK"
 assert_contains "check-state.warn-zone.warn" "$CS_OUT" "target <=60"
+run_check_strict "$d"
+assert_exit "check-state.warn-zone.strict-exit" "$CS_CODE" 1
+assert_contains "check-state.warn-zone.strict-msg" "$CS_OUT" "target <=60 in strict mode"
 
 # --- i. stale 'updated:' header (mtime far past the claimed date) -------
 d="$tmp_root/stale-updated"; write_valid_state_dir "$d"
@@ -123,6 +131,9 @@ if [ "$jlines" -le 200 ]; then
 fi
 assert_exit "check-state.journal-long.exit" "$CS_CODE" 0
 assert_contains "check-state.journal-long.warn" "$CS_OUT" "compaction due"
+run_check_strict "$d"
+assert_exit "check-state.journal-long.strict-exit" "$CS_CODE" 1
+assert_contains "check-state.journal-long.strict-msg" "$CS_OUT" "compaction required in strict mode"
 
 # --- n2. newest journal entry over the telegram cap (>12 lines) ----------
 d="$tmp_root/journal-long-entry"; write_valid_state_dir "$d"

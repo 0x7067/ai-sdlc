@@ -57,10 +57,10 @@ else
   fail "coherence.bak-doc" "check-state.sh FAILs on a leftover journal.md.bak but STATE-SPEC.md never mentions it"
 fi
 
-# --- C5/C6: every literal string sdlc-handoff-gate greps the transcript for
+# --- C5-C7: every literal string sdlc-handoff-gate greps the transcript for
 # must be a phrase some live surface actually instructs the model to
 # produce, or the gate is checking for a claim no one was ever told to make.
-for needle in "Handoff report" "VERDICT: SHIP"; do
+for needle in "What changed:" "What was verified:" "Remaining risk:"; do
   slug=$(printf '%s' "$needle" | tr -c '[:alnum:]' '-' | tr '[:upper:]' '[:lower:]' | sed -E 's/-+/-/g; s/^-|-$//g')
   if live_surfaces_contain "$needle"; then
     pass "coherence.hook-string.$slug" "'$needle' (grepped by sdlc-handoff-gate) is instructed by a live surface"
@@ -69,7 +69,7 @@ for needle in "Handoff report" "VERDICT: SHIP"; do
   fi
 done
 
-# --- C7: state.md's documented size caps match check-state.sh's constants -
+# --- C8: state.md's documented size caps match check-state.sh's constants -
 for cap in 60 120; do
   if grep -qF -- "$cap" "$STATE_SPEC_MD"; then
     pass "coherence.size-cap-doc.$cap" "STATE-SPEC.md documents the $cap-line cap"
@@ -78,7 +78,7 @@ for cap in 60 120; do
   fi
 done
 
-# --- C8: compact-journal.sh's KEEP constant matches STATE-SPEC's "newest 5"
+# --- C9: compact-journal.sh's KEEP constant matches STATE-SPEC's "newest 5"
 keep_const=$(grep -E '^KEEP=' "$COMPACT_JOURNAL_SH" | head -1 | cut -d= -f2)
 if [ -n "$keep_const" ] && grep -qF -- "newest $keep_const" "$STATE_SPEC_MD"; then
   pass "coherence.compact-keep-match" "compact-journal.sh KEEP=$keep_const matches STATE-SPEC's 'newest $keep_const entries' wording"
@@ -86,7 +86,7 @@ else
   fail "coherence.compact-keep-match" "compact-journal.sh has KEEP=${keep_const:-?} but STATE-SPEC.md does not say 'newest ${keep_const:-?} entries'"
 fi
 
-# --- C9/C10: hooks reference skills that actually exist --------------------
+# --- C10/C11: hooks reference skills that actually exist -------------------
 for skill in sdlc-start sdlc-finish; do
   if [ -f "$REPO_ROOT/skills/$skill/SKILL.md" ]; then
     pass "coherence.skill-exists.$skill" "skills/$skill/SKILL.md exists"
