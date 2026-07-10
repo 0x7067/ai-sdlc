@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-07
+updated: 2026-07-10
 
 ## Goal
 A skill library (sdlc-start/finish/core) that lets models — weaker ones
@@ -8,12 +8,11 @@ Scripts do what scripts can; skills stay advice-shaped. Claude Code
 plugin install; install.sh elsewhere; STANDARD.md governs execution.
 
 ## Now
-Empirical loop closed 2026-07-07: tier1 runs for real in remote
-containers (auth is env-carried; IS_SANDBOX=1 as root), first haiku
-baseline committed. Haiku saturates all scenarios in both arms — cost
-discriminates (sdlc resumption ≈40-60% of control tokens), scores don't.
-Leanness now enforced: state target 60 lines, newest journal entry warns
->12; unearned comments are validation defects surfaced by diff-inventory.
+Pedro explicitly authorized merging `codex/harness-hardening` into current
+`main`. Preserve main's plugin, orient, 60-line state target, and terse report
+contract while adding strict handoff checks, scratch exemptions, and the
+three-field evidence report. Prove with tier0, self-test, shell syntax, and
+merge ancestry before pushing main; keep the parent submodule pin unchanged.
 
 ## Verification path
 - `bash evals/tier0/run.sh` — exit 0, 177 assertions (2026-07-07).
@@ -45,10 +44,6 @@ Leanness now enforced: state target 60 lines, newest journal entry warns
 - Root tier1 runs error without IS_SANDBOX=1.
 
 ## Next
-1. Harden tier1 scenarios (randomized fixtures, harder answer keys,
-   non-keyword grading, spend guard) so scores discriminate; re-baseline.
-2. Sonnet-tier A/B; cite results in README empirics (haiku is cost-only).
-3. After GitHub push: verify `/plugin marketplace add 0x7067/ai-sdlc`
-   install path (only --plugin-dir verified).
-4. Pedro (external): push main; pull the deployment clone.
-5. Option A (single `sdlc` skill) on experiment/one-skill — unbuilt.
+1. Merge and verify `codex/harness-hardening` into `main`, then push.
+2. Resume scenario hardening and Sonnet-tier A/B.
+3. Verify marketplace-add install and pull the deployment clone.
