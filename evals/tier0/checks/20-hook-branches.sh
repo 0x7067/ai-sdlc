@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Drive hooks/sdlc-lifecycle-gate (SessionStart) and hooks/sdlc-handoff-gate
-# (Stop) the way Claude Code does: JSON on stdin, a transcript file path, an
+# (Stop) with Claude Code and Codex transcript shapes: JSON on stdin, a
+# transcript file path, an
 # isolated $HOME (so the handoff gate's check-state.sh lookup hits THIS
 # repo's script, not a deployed copy — the trick documented in
 # .ai-sdlc/journal.md 2026-07-03), asserting exit code + stderr/stdout.
@@ -34,6 +35,13 @@ write_transcript() { # write_transcript <path> <assistant-text>
   local json_text
   json_text=$(printf '%s' "$text" | jq -Rs .)
   printf '{"type":"assistant","message":{"content":[{"type":"text","text":%s}]}}\n' "$json_text" > "$path"
+}
+
+write_codex_transcript() { # write_codex_transcript <path> <assistant-text>
+  local path="$1" text="$2"
+  local json_text
+  json_text=$(printf '%s' "$text" | jq -Rs .)
+  printf '{"type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":%s}]}}\n' "$json_text" > "$path"
 }
 
 # --- runners ----------------------------------------------------------------
@@ -151,6 +159,16 @@ Remaining risk: none"
 run_handoff "$repo" "h5" false "$t"
 assert_exit "hook.handoff.branchA-pass.exit" "$HG_CODE" 0
 assert_file_exists "hook.handoff.branchA-pass.marker" "$(marker_path h5)"
+rm -rf "$repo/.ai-sdlc"
+
+# H5b — branch A: the Codex rollout shape triggers the same validation.
+mkdir -p "$repo/.ai-sdlc"; write_valid_state_dir "$repo"
+t="$sandbox/h5b.jsonl"; write_codex_transcript "$t" "What changed: fixture
+What was verified: fixture
+Remaining risk: none"
+run_handoff "$repo" "h5b" false "$t"
+assert_exit "hook.handoff.branchA-codex-pass.exit" "$HG_CODE" 0
+assert_file_exists "hook.handoff.branchA-codex-pass.marker" "$(marker_path h5b)"
 rm -rf "$repo/.ai-sdlc"
 
 # H6 — retired VERDICT token does not trigger validation; dirty-tree logic arms.

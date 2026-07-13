@@ -46,10 +46,21 @@ block() {
 last_text=""
 if command -v jq >/dev/null 2>&1 && [ -n "$transcript" ] && [ -f "$transcript" ]; then
   last_text=$(jq -rs '
+    def assistant_content:
+      if .type == "assistant" then
+        (.message.content // [])
+      elif .type == "response_item"
+        and .payload.type == "message"
+        and .payload.role == "assistant" then
+        (.payload.content // [])
+      else
+        empty
+      end;
     [ .[]
-      | select(.type == "assistant")
-      | (.message.content // []) | (if type == "array" then . else [] end)
-      | map(select(.type == "text") | .text) | join("\n")
+      | assistant_content
+      | (if type == "array" then . else [] end)
+      | map(select((.type == "text" or .type == "output_text") and (.text | type == "string")) | .text)
+      | join("\n")
       | select(length > 0)
     ] | last // ""' "$transcript" 2>/dev/null || true)
 fi

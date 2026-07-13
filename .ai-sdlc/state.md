@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-10
+updated: 2026-07-13
 
 ## Goal
 A skill library (sdlc-start/finish/core) that lets models — weaker ones
@@ -8,13 +8,12 @@ Scripts do what scripts can; skills stay advice-shaped. Claude Code
 plugin install; install.sh elsewhere; STANDARD.md governs execution.
 
 ## Now
-Harness hardening is merged and published on `main`. The integration preserves
-plugin/orient behavior and the 60-line state target while adding strict
-handoff hygiene, scratch-only exemption, and the three-field evidence report.
-The parent submodule pin remains `c7f89af`, now reachable from `ai-sdlc/main`.
+The Stop gate validates the same exact three-field evidence report from Claude
+Code and Codex transcript shapes. Hook branch tests cover both formats while
+preserving the existing scratch, dirty-tree, and strict-state behavior.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 193 assertions (2026-07-10).
+- `bash evals/tier0/run.sh` — exit 0, 195 assertions (2026-07-13).
 - `bash evals/tier0/run.sh --self-test` — 7/7 caught (2026-07-10).
 - `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` then
   `compare.sh --baseline evals/tier1/baseline.json --results <file>` — OK.

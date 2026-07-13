@@ -175,3 +175,9 @@
 - Learned: the retired Handoff/VERDICT tokens were embedded in tier0 and the
   objective, so hook-contract migration had to update executable proxies too.
 - Left: parent remains pinned to `c7f89af`; it is now reachable from main.
+
+## 2026-07-13 — validate Codex handoff transcripts
+- Did: taught the canonical Stop gate to read Codex response-item assistant text.
+- Verified: tier0 exits 0 with 195 assertions, including the Codex report branch.
+- Learned: Claude and Codex store assistant text under different JSONL shapes.
+- Left: scenario hardening and Sonnet-tier A/B remain unchanged.
