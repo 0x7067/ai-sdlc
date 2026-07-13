@@ -13,8 +13,8 @@
 #
 # Blocking uses exit 2 + stderr (fed back to the model). `stop_hook_active`
 # short-circuits so a blocked stop never re-blocks its own continuation.
-# Transcript inspection (A) needs jq; without jq only B runs. Emits
-# nothing and exits 0 outside git repos.
+# Current-message inspection (A) needs jq; older harnesses fall back to the
+# transcript. Without jq only B runs. Emits nothing outside git repos.
 
 set -uo pipefail
 
@@ -22,11 +22,19 @@ set -uo pipefail
 input=$(cat 2>/dev/null || true)
 
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
-printf '%s' "$input" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
+if command -v jq >/dev/null 2>&1; then
+  [ "$(printf '%s' "$input" | jq -r '.stop_hook_active == true' 2>/dev/null)" = "true" ] && exit 0
+else
+  printf '%s' "$input" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
+fi
 
 json_str() {
-  printf '%s' "$input" \
-    | sed -nE 's/.*"'"$1"'"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p' | head -1
+  if command -v jq >/dev/null 2>&1; then
+    printf '%s' "$input" | jq -r --arg key "$1" '.[$key] // empty | strings' 2>/dev/null
+  else
+    printf '%s' "$input" \
+      | sed -nE 's/.*"'"$1"'"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p' | head -1
+  fi
 }
 
 session_id=$(json_str session_id)
@@ -42,9 +50,18 @@ block() {
   exit 2
 }
 
-# Final text message of the turn (last assistant entry that has a text block).
+# Prefer the event's current final message. Transcript writes can lag Stop;
+# only older harnesses that omit last_assistant_message need the fallback.
 last_text=""
-if command -v jq >/dev/null 2>&1 && [ -n "$transcript" ] && [ -f "$transcript" ]; then
+has_last_text=false
+if command -v jq >/dev/null 2>&1; then
+  has_last_text=$(printf '%s' "$input" | jq -r 'has("last_assistant_message")' 2>/dev/null || true)
+  if [ "$has_last_text" = "true" ]; then
+    last_text=$(printf '%s' "$input" | jq -r '.last_assistant_message // "" | strings' 2>/dev/null || true)
+  fi
+fi
+if [ "$has_last_text" != "true" ] && command -v jq >/dev/null 2>&1 \
+  && [ -n "$transcript" ] && [ -f "$transcript" ]; then
   last_text=$(jq -rs '
     def assistant_content:
       if .type == "assistant" then
@@ -82,16 +99,24 @@ if printf '%s\n' "$last_text" | grep -q '^What changed:' \
 $out
 Fix every FAIL line, re-run check-state.sh --strict until it prints 'check-state: OK', then re-issue the report."
   fi
-  touch "$marker" 2>/dev/null || true
+  if dirty; then
+    touch "$marker" 2>/dev/null || true
+  else
+    rm -f "$marker" 2>/dev/null || true
+  fi
   exit 0
 fi
 
-# B — throttled dirty-tree reminder: arm on first stop, nag at most per 45 min.
+# B — time the observed dirty period, not the age of the session.
+if ! dirty; then
+  rm -f "$marker" 2>/dev/null || true
+  exit 0
+fi
 if [ ! -f "$marker" ]; then
   touch "$marker" 2>/dev/null || true
   exit 0
 fi
-if dirty && [ -n "$(find "$marker" -mmin +45 2>/dev/null)" ]; then
+if [ -n "$(find "$marker" -mmin +45 2>/dev/null)" ]; then
   block "sdlc gate: the working tree has had uncommitted changes for over 45 minutes. If this session is wrapping up, invoke Skill(sdlc-finish); otherwise continue — this reminder repeats roughly every 45 minutes while changes sit uncommitted."
 fi
 

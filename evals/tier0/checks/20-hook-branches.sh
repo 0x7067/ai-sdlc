@@ -47,11 +47,17 @@ write_codex_transcript() { # write_codex_transcript <path> <assistant-text>
 # --- runners ----------------------------------------------------------------
 
 HG_OUT=""; HG_ERR=""; HG_CODE=0
-run_handoff() { # run_handoff <cwd> <session_id> <stop_hook_active> <transcript_path> [path_override] [scratch]
-  local cwd="$1" sid="$2" active="$3" transcript="$4" path_override="${5:-}" scratch="${6:-0}"
+run_handoff() { # run_handoff <cwd> <session_id> <stop_hook_active> <transcript_path> [path_override] [scratch] [last_message]
+  local cwd="$1" sid="$2" active="$3" transcript="$4" path_override="${5:-}" scratch="${6:-0}" last_message="${7:-}"
   local stdin_json errfile
-  stdin_json=$(printf '{"session_id":"%s","transcript_path":"%s","stop_hook_active":%s}' \
-    "$sid" "$transcript" "$active")
+  if [ -n "$last_message" ]; then
+    stdin_json=$(jq -cn --arg sid "$sid" --arg transcript "$transcript" --arg message "$last_message" \
+      --argjson active "$active" \
+      '{session_id:$sid, transcript_path:$transcript, stop_hook_active:$active, last_assistant_message:$message}')
+  else
+    stdin_json=$(printf '{"session_id":"%s","transcript_path":"%s","stop_hook_active":%s}' \
+      "$sid" "$transcript" "$active")
+  fi
   errfile=$(mktemp)
   if [ -n "$path_override" ]; then
     # BASH_ENV="" matters here: this environment's non-interactive bash
@@ -158,17 +164,28 @@ What was verified: fixture
 Remaining risk: none"
 run_handoff "$repo" "h5" false "$t"
 assert_exit "hook.handoff.branchA-pass.exit" "$HG_CODE" 0
-assert_file_exists "hook.handoff.branchA-pass.marker" "$(marker_path h5)"
+assert_file_exists "hook.handoff.branchA-pass.dirty-marker" "$(marker_path h5)"
 rm -rf "$repo/.ai-sdlc"
 
-# H5b — branch A: the Codex rollout shape triggers the same validation.
+# H5b — branch A: current event text wins over a lagging transcript.
 mkdir -p "$repo/.ai-sdlc"; write_valid_state_dir "$repo"
-t="$sandbox/h5b.jsonl"; write_codex_transcript "$t" "What changed: fixture
+t="$sandbox/h5b.jsonl"; write_transcript "$t" "stale transcript text"
+run_handoff "$repo" "h5b" false "$t" "" 0 "What changed: fixture
 What was verified: fixture
 Remaining risk: none"
-run_handoff "$repo" "h5b" false "$t"
+assert_exit "hook.handoff.branchA-current-message-pass.exit" "$HG_CODE" 0
+assert_file_exists "hook.handoff.branchA-current-message-pass.dirty-marker" "$(marker_path h5b)"
+rm -rf "$repo/.ai-sdlc"
+
+# H5c — branch A fallback: the Codex rollout shape triggers validation when
+# an older event payload omits last_assistant_message.
+mkdir -p "$repo/.ai-sdlc"; write_valid_state_dir "$repo"
+t="$sandbox/h5c.jsonl"; write_codex_transcript "$t" "What changed: fixture
+What was verified: fixture
+Remaining risk: none"
+run_handoff "$repo" "h5c" false "$t"
 assert_exit "hook.handoff.branchA-codex-pass.exit" "$HG_CODE" 0
-assert_file_exists "hook.handoff.branchA-codex-pass.marker" "$(marker_path h5b)"
+assert_file_exists "hook.handoff.branchA-codex-pass.dirty-marker" "$(marker_path h5c)"
 rm -rf "$repo/.ai-sdlc"
 
 # H6 — retired VERDICT token does not trigger validation; dirty-tree logic arms.
@@ -185,7 +202,7 @@ t="$sandbox/h7.jsonl"; write_transcript "$t" "Handoff report
 this retired phrase is inert."
 run_handoff "$repo" "h7" false "$t"
 assert_exit "hook.handoff.retired-handoff.exit" "$HG_CODE" 0
-assert_file_exists "hook.handoff.retired-handoff.marker" "$(marker_path h7)"
+assert_file_absent "hook.handoff.retired-handoff.no-clean-marker" "$(marker_path h7)"
 
 # H8 — branch C: first stop ever for this session (marker absent) arms the
 # marker without nagging, even though the tree is dirty.
@@ -212,6 +229,21 @@ make_clean "$repo"
 run_handoff "$repo" "h8" false "$empty_transcript"
 assert_exit "hook.handoff.branchC-clean-tree.exit" "$HG_CODE" 0
 assert_empty "hook.handoff.branchC-clean-tree.stderr" "$HG_ERR"
+assert_file_absent "hook.handoff.branchC-clean-tree.marker-removed" "$(marker_path h8)"
+
+# H11b — an old marker from clean session time cannot make a new dirty period
+# look 45 minutes old.
+touch "$(marker_path h11b)"
+touch -t "$(past_touch_stamp 90)" "$(marker_path h11b)"
+run_handoff "$repo" "h11b" false "$empty_transcript"
+assert_file_absent "hook.handoff.branchC-old-clean-marker-removed" "$(marker_path h11b)"
+make_dirty "$repo"
+run_handoff "$repo" "h11b" false "$empty_transcript"
+assert_exit "hook.handoff.branchC-new-dirty-period.exit" "$HG_CODE" 0
+assert_empty "hook.handoff.branchC-new-dirty-period.stderr" "$HG_ERR"
+assert_file_exists "hook.handoff.branchC-new-dirty-period.marker" "$(marker_path h11b)"
+assert_empty "hook.handoff.branchC-new-dirty-period.marker-fresh" "$(find "$(marker_path h11b)" -mmin +45 2>/dev/null)"
+make_clean "$repo"
 
 # H12 — no jq on PATH: report inspection is unavailable, so the exact report
 # is invisible and the hook degrades to dirty-tree timing.
@@ -221,7 +253,7 @@ assert_empty "hook.handoff.branchC-clean-tree.stderr" "$HG_ERR"
 # where /bin symlinks to /usr/bin, jq stays reachable through the alias).
 shim="$sandbox/nojq-bin"; mkdir -p "$shim"
 shim_ok=1
-for tool in bash cat git grep sed head find touch; do
+for tool in bash cat git grep sed head find touch rm; do
   p=$(command -v "$tool" 2>/dev/null) || { shim_ok=0; missing="$tool"; break; }
   ln -s "$p" "$shim/$tool"
 done

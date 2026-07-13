@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/sdlc-handoff-gate",
+            "command": "hook=\"$HOME/.claude/hooks/sdlc-handoff-gate\"; [ -x \"$hook\" ] || hook=\"$CLAUDE_PLUGIN_ROOT/hooks/sdlc-handoff-gate\"; exec \"$hook\"",
             "timeout": 10
           }
         ]

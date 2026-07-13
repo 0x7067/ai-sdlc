@@ -8,12 +8,12 @@ Scripts do what scripts can; skills stay advice-shaped. Claude Code
 plugin install; install.sh elsewhere; STANDARD.md governs execution.
 
 ## Now
-The Stop gate validates the same exact three-field evidence report from Claude
-Code and Codex transcript shapes. Hook branch tests cover both formats while
-preserving the existing scratch, dirty-tree, and strict-state behavior.
+The Stop gate prefers the event's current assistant text, retains transcript
+fallback for older harnesses, and times actual dirty-tree duration. Claude
+plugin and direct registrations use one deduplicable command.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 195 assertions (2026-07-13).
+- `bash evals/tier0/run.sh` — exit 0, 203 assertions (2026-07-13).
 - `bash evals/tier0/run.sh --self-test` — 7/7 caught (2026-07-10).
 - `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` then
   `compare.sh --baseline evals/tier1/baseline.json --results <file>` — OK.
@@ -27,6 +27,8 @@ preserving the existing scratch, dirty-tree, and strict-state behavior.
 - Never push main from agent sessions; claude/* branch pushes are fine.
 - Equal A/B scores at haiku tier = saturated scenarios, not "no effect".
 - Journal compaction is the sole sanctioned journal rewrite.
+- Current Stop event text is authoritative; transcript parsing is compatibility
+  fallback. Clean trees clear dirty-duration markers.
 
 ## Landmines
 - Pedro's machine only: ~/.agents/skills → third checkout; ~/.claude/hooks

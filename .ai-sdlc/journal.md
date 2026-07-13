@@ -181,3 +181,10 @@
 - Verified: tier0 exits 0 with 195 assertions, including the Codex report branch.
 - Learned: Claude and Codex store assistant text under different JSONL shapes.
 - Left: scenario hardening and Sonnet-tier A/B remain unchanged.
+
+## 2026-07-13 — harden current Stop event handling
+- Did: preferred current assistant text, retained legacy transcript fallback, and timed only observed dirty periods.
+- Did: made Claude plugin/direct Stop commands identical and taught the manifest check their fallback form.
+- Verified: tier0 exits 0 with 203 assertions; both installed hook paths match this source and execute.
+- Learned: transcript writes may lag Stop events; session-age markers falsely age later dirty work.
+- Left: scenario hardening and Sonnet-tier A/B remain unchanged.

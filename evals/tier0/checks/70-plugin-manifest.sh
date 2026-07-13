@@ -47,8 +47,15 @@ for event in SessionStart Stop; do
     fail "plugin.hooks.$event" "no command registered for $event in hooks/hooks.json"
     continue
   fi
-  # Resolve ${CLAUDE_PLUGIN_ROOT} (quoted or bare) to the repo root.
+  # Resolve a direct ${CLAUDE_PLUGIN_ROOT} command first. Stop may use the
+  # installed user hook before falling back to this plugin's copy; in that
+  # case validate the fallback path shipped by the plugin.
   script=$(printf '%s' "$cmd" | sed -e 's/"//g' -e "s|\${CLAUDE_PLUGIN_ROOT}|$REPO_ROOT|")
+  if [ ! -x "$script" ]; then
+    plugin_relative=$(printf '%s' "$cmd" \
+      | sed -nE 's|.*\$CLAUDE_PLUGIN_ROOT/(hooks/[^"; ]+).*|\1|p')
+    [ -n "$plugin_relative" ] && script="$REPO_ROOT/$plugin_relative"
+  fi
   if [ -x "$script" ]; then
     pass "plugin.hooks.$event" "$event -> $(basename "$script") exists and is executable"
   else
