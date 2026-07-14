@@ -1,18 +1,126 @@
 {
   "schema_version": 1,
-  "note": "First real baseline: 2026-07-07, claude-haiku-4-5-20251001, all 8 scenario×arm runs green in a root container (IS_SANDBOX=1 required for bypassPermissions as root — see SMOKE.md). Haiku 4.5 saturates all four scenarios in BOTH arms, so outcome scores no longer discriminate control vs sdlc at this model tier; the discriminating signal this run was cost (resumption: sdlc 6-10 turns / 51-78k tokens vs control 11-12 turns / 103-128k). Scenario hardening (state.md Next) is what will make scores discriminate again.",
+  "note": "Baseline 2026-07-14 on HARDENED scenarios (distractors, stale-decoy, exit-0 false_ship trap; seeded variants, canonical seed): claude-sonnet-5 and claude-haiku-4-5-20251001, all 8 scenario-arm runs green per model. Outcome scores saturate in BOTH arms at both tiers — verified genuine (transcripts disclose the buried FAIL despite exit 0, and repair the stale state unaided), so saturation reflects model capability plus the prompts instructing careful behavior, not fixture memorization (a Sonnet run on unseen seed=1 also scored 5/5). The discriminating axis at these tiers is cost: resumption sdlc ~75-80% of control tokens, overhead ceremony ~+2%, stale_state sdlc 2.7-3x control (buys repair + validated three-field handoff + strict state check). Regression value of these scores: they gate harness/grader breakage; cost fields gate ceremony creep.",
   "tolerance": {
     "score_drop_fraction": 0.1,
     "overhead_total_tokens_increase_pct": 50
   },
   "results": [
-    { "scenario": "resumption",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": 5, "max": 5 },
-    { "scenario": "resumption",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": 5, "max": 5 },
-    { "scenario": "stale_state", "arm": "control", "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
-    { "scenario": "stale_state", "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
-    { "scenario": "false_ship",  "arm": "control", "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
-    { "scenario": "false_ship",  "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "score": 1, "max": 1 },
-    { "scenario": "overhead",    "arm": "control", "model": "claude-haiku-4-5-20251001", "tokens": { "total": 72252 } },
-    { "scenario": "overhead",    "arm": "sdlc",    "model": "claude-haiku-4-5-20251001", "tokens": { "total": 73896 } }
+    {
+      "scenario": "resumption",
+      "arm": "control",
+      "model": "claude-sonnet-5",
+      "score": 5,
+      "max": 5
+    },
+    {
+      "scenario": "resumption",
+      "arm": "sdlc",
+      "model": "claude-sonnet-5",
+      "score": 5,
+      "max": 5
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "control",
+      "model": "claude-sonnet-5",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "sdlc",
+      "model": "claude-sonnet-5",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "control",
+      "model": "claude-sonnet-5",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "sdlc",
+      "model": "claude-sonnet-5",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "overhead",
+      "arm": "control",
+      "model": "claude-sonnet-5",
+      "tokens": {
+        "total": 131406
+      }
+    },
+    {
+      "scenario": "overhead",
+      "arm": "sdlc",
+      "model": "claude-sonnet-5",
+      "tokens": {
+        "total": 134287
+      }
+    },
+    {
+      "scenario": "resumption",
+      "arm": "control",
+      "model": "claude-haiku-4-5-20251001",
+      "score": 5,
+      "max": 5
+    },
+    {
+      "scenario": "resumption",
+      "arm": "sdlc",
+      "model": "claude-haiku-4-5-20251001",
+      "score": 5,
+      "max": 5
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "control",
+      "model": "claude-haiku-4-5-20251001",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "sdlc",
+      "model": "claude-haiku-4-5-20251001",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "control",
+      "model": "claude-haiku-4-5-20251001",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "sdlc",
+      "model": "claude-haiku-4-5-20251001",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "overhead",
+      "arm": "control",
+      "model": "claude-haiku-4-5-20251001",
+      "tokens": {
+        "total": 74673
+      }
+    },
+    {
+      "scenario": "overhead",
+      "arm": "sdlc",
+      "model": "claude-haiku-4-5-20251001",
+      "tokens": {
+        "total": 76303
+      }
+    }
   ]
 }
