@@ -35,6 +35,15 @@ fi
 mkt_name=$(jq -r '.plugins[0].name // ""' "$MARKETPLACE_JSON" 2>/dev/null)
 assert_eq "plugin.marketplace.plugin-name" "$mkt_name" "$name"
 
+# Relative plugin sources ("./") resolve for path-added marketplaces but
+# NOT for GitHub-added ones (verified against CLI 2.1.209: install fails
+# with "Plugin not found in marketplace"), and GitHub is the documented
+# install path — pin the explicit github source form.
+mkt_src_type=$(jq -r '.plugins[0].source.source // ""' "$MARKETPLACE_JSON" 2>/dev/null)
+assert_eq "plugin.marketplace.source-type" "$mkt_src_type" "github"
+mkt_src_repo=$(jq -r '.plugins[0].source.repo // ""' "$MARKETPLACE_JSON" 2>/dev/null)
+assert_eq "plugin.marketplace.source-repo" "$mkt_src_repo" "0x7067/ai-sdlc"
+
 # --- P3: hooks.json parses; every command resolves to an executable ----
 if jq -e . "$HOOKS_JSON" >/dev/null 2>&1; then
   pass "plugin.hooks.parses" "hooks/hooks.json is valid JSON"

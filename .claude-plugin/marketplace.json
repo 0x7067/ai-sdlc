@@ -4,7 +4,7 @@
   "plugins": [
     {
       "name": "ai-sdlc",
-      "source": "./",
+      "source": { "source": "github", "repo": "0x7067/ai-sdlc" },
       "description": "Session lifecycle discipline: orient + plan at start, validate + hand off at finish, engineering standard in between."
     }
   ]
