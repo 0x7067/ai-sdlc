@@ -13,7 +13,7 @@
 # Usage:
 #   run.sh --scenario <resumption|stale_state|false_ship|overhead|all>
 #          --arm <control|sdlc|both>
-#          [--model MODEL] [--dry-run] [--out DIR]
+#          [--model MODEL] [--dry-run] [--out DIR] [--seed N]
 #   run.sh --compare NEW_RESULTS.json [--baseline BASELINE.json] [--tolerance N]
 #
 # Exit: 0 on completion of requested runs (grading pass/fail is recorded in
@@ -33,6 +33,7 @@ scenario_arg="all"
 arm_arg="both"
 model="$DEFAULT_MODEL"
 dry_run=0
+seed_arg=""
 out_dir="$HERE/results"
 compare_file=""
 baseline_file="$HERE/baseline.json"
@@ -46,6 +47,7 @@ while [ $# -gt 0 ]; do
     --arm) arm_arg="$2"; shift 2 ;;
     --model) model="$2"; shift 2 ;;
     --dry-run) dry_run=1; shift ;;
+    --seed) seed_arg="$2"; shift 2 ;;
     --out) out_dir="$2"; shift 2 ;;
     --compare) compare_file="$2"; shift 2 ;;
     --baseline) baseline_file="$2"; shift 2 ;;
@@ -76,6 +78,14 @@ require_cmd jq
 require_cmd git
 [ "$dry_run" -eq 1 ] || require_cmd claude
 
+# Dry-run canned transcripts are written against the canonical (variant 0)
+# fixtures — a nonzero seed would grade them against a different variant's
+# ground truth and fail spuriously.
+if [ "$dry_run" -eq 1 ] && [ -n "$seed_arg" ] && [ "$seed_arg" != "canonical" ]; then
+  echo "run.sh: --seed is ignored with --dry-run (canned transcripts are canonical-only)" >&2
+  seed_arg=""
+fi
+
 mkdir -p "$out_dir/raw"
 results_file="$out_dir/results-$(ts_now).json"
 records_tmp="$(mktemp)"
@@ -99,7 +109,7 @@ run_one() {
   local is_error=false result_text="" grade_json='{}'
 
   workdir="$(mktemp -d "${TMPDIR:-/tmp}/tier1-work.XXXXXX")"
-  bash "$scen_dir/generate.sh" "$workdir" >/dev/null
+  TIER1_SEED="$seed_arg" bash "$scen_dir/generate.sh" "$workdir" >/dev/null
   repo="$workdir/repo"
   gt="$workdir/ground_truth.json"
   prompt="$(cat "$scen_dir/prompt.txt")"
@@ -165,6 +175,7 @@ run_one() {
     --arg scenario "$scenario" \
     --arg arm "$arm" \
     --arg model "$model" \
+    --arg seed "${seed_arg:-canonical}" \
     --argjson dry_run "$([ "$dry_run" -eq 1 ] && echo true || echo false)" \
     --argjson is_error "$is_error" \
     --argjson grade "$grade_json" \
@@ -176,7 +187,7 @@ run_one() {
     --arg raw_json_path "$raw_json" \
     --arg repo_path "$repo" \
     '{
-      scenario: $scenario, arm: $arm, model: $model, dry_run: $dry_run,
+      scenario: $scenario, arm: $arm, model: $model, seed: $seed, dry_run: $dry_run,
       is_error: $is_error,
       score: $grade.score, max: $grade.max, detail: $grade.detail,
       note: ($grade.note // null),
@@ -196,7 +207,7 @@ run_one() {
   echo "  $scenario/$arm: score=$(jq -r '.score' <<<"$grade_json")/$(jq -r '.max' <<<"$grade_json") is_error=$is_error turns=$num_turns tokens_total=$((input_tokens + output_tokens + cache_read + cache_creation))" >&2
 }
 
-echo "tier1: model=$model dry_run=$dry_run scenarios=(${scenarios[*]}) arms=(${arms[*]})" >&2
+echo "tier1: model=$model dry_run=$dry_run seed=${seed_arg:-canonical} scenarios=(${scenarios[*]}) arms=(${arms[*]})" >&2
 for scenario in "${scenarios[@]}"; do
   for arm in "${arms[@]}"; do
     run_one "$scenario" "$arm"
