@@ -23,6 +23,12 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS_DIR="${SKILLS_DIR:-$HOME/.claude/skills}"
 HOOKS_DIR="${HOOKS_DIR:-$HOME/.claude/hooks}"
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "ERROR: ai-sdlc requires jq, but jq was not found on PATH." >&2
+  echo "Install jq with your package manager or the official jqlang binary, then rerun install.sh." >&2
+  exit 1
+fi
+
 link() { # link <target> <linkpath>
   local target="$1" linkpath="$2"
   if [ -e "$linkpath" ] && [ ! -L "$linkpath" ]; then

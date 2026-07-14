@@ -1,40 +1,26 @@
 #!/usr/bin/env bash
 # Stop hook: mechanical handoff enforcement in project repos.
 #
-# The SessionStart gate makes models *start* the lifecycle; this closes the
-# other end — sessions that finish work but never persist it. Two checks,
-# cheapest signal first, each self-limiting so it never nags every turn:
-#
-#   A. The response just issued the three-field SDLC report -> verify the
-#      claim: run check-state.sh --strict; any FAIL blocks with the FAIL lines.
-#   B. The tree has been dirty for >45 min since the last reminder -> gentle
-#      nudge (armed at the first stop, so a pre-existing dirty tree does not
-#      nag on turn 1).
-#
-# Blocking uses exit 2 + stderr (fed back to the model). `stop_hook_active`
-# short-circuits so a blocked stop never re-blocks its own continuation.
-# Current-message inspection (A) needs jq; older harnesses fall back to the
-# transcript. Without jq only B runs. Emits nothing outside git repos.
+# The SessionStart gate makes models start the lifecycle; this closes the other
+# end — sessions that finish work but never persist it. JSON input and
+# transcript inspection require jq. Blocking uses exit 2 + stderr.
 
 set -uo pipefail
 
 [ "${AI_SDLC_SCRATCH:-}" = "1" ] && exit 0
-input=$(cat 2>/dev/null || true)
 
-git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
-if command -v jq >/dev/null 2>&1; then
-  [ "$(printf '%s' "$input" | jq -r '.stop_hook_active == true' 2>/dev/null)" = "true" ] && exit 0
-else
-  printf '%s' "$input" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
+if ! command -v jq >/dev/null 2>&1; then
+  printf '%s\n' "sdlc gate: jq is required but was not found on PATH; install jq (package manager or official jqlang binary) and retry." >&2
+  exit 2
 fi
 
+input=$(cat 2>/dev/null || true)
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+
+[ "$(printf '%s' "$input" | jq -r '.stop_hook_active == true' 2>/dev/null)" = "true" ] && exit 0
+
 json_str() {
-  if command -v jq >/dev/null 2>&1; then
-    printf '%s' "$input" | jq -r --arg key "$1" '.[$key] // empty | strings' 2>/dev/null
-  else
-    printf '%s' "$input" \
-      | sed -nE 's/.*"'"$1"'"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p' | head -1
-  fi
+  printf '%s' "$input" | jq -r --arg key "$1" '.[$key] // empty | strings' 2>/dev/null
 }
 
 session_id=$(json_str session_id)
@@ -51,18 +37,13 @@ block() {
 }
 
 # Prefer the event's current final message. Transcript writes can lag Stop;
-# only older harnesses that omit last_assistant_message need the fallback.
+# only older harnesses that omit last_assistant_message need the transcript.
 last_text=""
-has_last_text=false
-if command -v jq >/dev/null 2>&1; then
-  has_last_text=$(printf '%s' "$input" | jq -r 'has("last_assistant_message")' 2>/dev/null || true)
-  if [ "$has_last_text" = "true" ]; then
-    last_text=$(printf '%s' "$input" | jq -r '.last_assistant_message // "" | strings' 2>/dev/null || true)
-  fi
-fi
-if [ "$has_last_text" != "true" ] && command -v jq >/dev/null 2>&1 \
-  && [ -n "$transcript" ] && [ -f "$transcript" ]; then
-  last_text=$(jq -rs '
+has_last_text=$(printf '%s' "$input" | jq -r 'has("last_assistant_message")' 2>/dev/null || true)
+if [ "$has_last_text" = "true" ]; then
+  last_text=$(printf '%s' "$input" | jq -r '.last_assistant_message // "" | strings' 2>/dev/null || true)
+elif [ -n "$transcript" ] && [ -f "$transcript" ]; then
+  last_text=$(jq -Rr -s '
     def assistant_content:
       if .type == "assistant" then
         (.message.content // [])
@@ -73,7 +54,9 @@ if [ "$has_last_text" != "true" ] && command -v jq >/dev/null 2>&1 \
       else
         empty
       end;
-    [ .[]
+    [ split("\n")[]
+      | select(length > 0)
+      | fromjson?
       | assistant_content
       | (if type == "array" then . else [] end)
       | map(select((.type == "text" or .type == "output_text") and (.text | type == "string")) | .text)

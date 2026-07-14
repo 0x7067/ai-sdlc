@@ -34,6 +34,12 @@ can cold-start from the repo alone.
 
 ## Install
 
+**Required dependency:** `jq` must be installed and available on `PATH`.
+Install it with your platform's package manager or the official binary from
+<https://jqlang.org/download/>. The installer refuses to proceed when `jq`
+is missing; the handoff hook also fails clearly rather than falling back to
+another JSON parser.
+
 **Claude Code — as a plugin (zero manual steps):**
 
 ```
@@ -86,8 +92,10 @@ three report fields — `What changed:`, `What was verified:`, and
 the FAIL lines when the persisted artifacts do not support the report.
 Independently, it nudges at most every ~45 minutes while uncommitted changes
 sit.
-`stop_hook_active` keeps it from looping; transcript inspection needs `jq`
-and degrades to the dirty-tree nudge without it.
+`stop_hook_active` keeps it from looping. Current-message and Claude/Codex
+JSONL transcript inspection use `jq` exclusively; malformed JSON degrades to
+empty extraction, while a missing `jq` dependency blocks with an actionable
+error.
 
 ## Evals
 

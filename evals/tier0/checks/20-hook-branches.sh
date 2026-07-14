@@ -30,18 +30,12 @@ chmod +x "$fakehome/.agents/skills/sdlc-core/scripts/check-state.sh"
 
 write_transcript() { # write_transcript <path> <assistant-text>
   local path="$1" text="$2"
-  # jq -Rs turns arbitrary text into a valid JSON string, keeping this
-  # robust to any special characters in the fixture text.
-  local json_text
-  json_text=$(printf '%s' "$text" | jq -Rs .)
-  printf '{"type":"assistant","message":{"content":[{"type":"text","text":%s}]}}\n' "$json_text" > "$path"
+  jq -cn --arg text "$text" '{type:"assistant",message:{content:[{type:"text",text:$text}]}}' > "$path"
 }
 
 write_codex_transcript() { # write_codex_transcript <path> <assistant-text>
   local path="$1" text="$2"
-  local json_text
-  json_text=$(printf '%s' "$text" | jq -Rs .)
-  printf '{"type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":%s}]}}\n' "$json_text" > "$path"
+  jq -cn --arg text "$text" '{type:"response_item",payload:{type:"message",role:"assistant",content:[{type:"output_text",text:$text}]}}' > "$path"
 }
 
 # --- runners ----------------------------------------------------------------
@@ -51,12 +45,11 @@ run_handoff() { # run_handoff <cwd> <session_id> <stop_hook_active> <transcript_
   local cwd="$1" sid="$2" active="$3" transcript="$4" path_override="${5:-}" scratch="${6:-0}" last_message="${7:-}"
   local stdin_json errfile
   if [ -n "$last_message" ]; then
-    stdin_json=$(jq -cn --arg sid "$sid" --arg transcript "$transcript" --arg message "$last_message" \
-      --argjson active "$active" \
-      '{session_id:$sid, transcript_path:$transcript, stop_hook_active:$active, last_assistant_message:$message}')
+    stdin_json=$(jq -cn --arg sid "$sid" --arg transcript "$transcript" --arg active "$active" --arg last "$last_message" \
+      '{session_id:$sid,transcript_path:$transcript,stop_hook_active:($active == "true"),last_assistant_message:$last}')
   else
-    stdin_json=$(printf '{"session_id":"%s","transcript_path":"%s","stop_hook_active":%s}' \
-      "$sid" "$transcript" "$active")
+    stdin_json=$(jq -cn --arg sid "$sid" --arg transcript "$transcript" --arg active "$active" \
+      '{session_id:$sid,transcript_path:$transcript,stop_hook_active:($active == "true")}')
   fi
   errfile=$(mktemp)
   if [ -n "$path_override" ]; then
@@ -245,29 +238,26 @@ assert_file_exists "hook.handoff.branchC-new-dirty-period.marker" "$(marker_path
 assert_empty "hook.handoff.branchC-new-dirty-period.marker-fresh" "$(find "$(marker_path h11b)" -mmin +45 2>/dev/null)"
 make_clean "$repo"
 
-# H12 — no jq on PATH: report inspection is unavailable, so the exact report
-# is invisible and the hook degrades to dirty-tree timing.
-# only (documented in the hook's own header comment). The jq-free PATH is a
-# shim directory holding exactly the external tools the hook needs —
+# H12 — no jq on PATH: the hook refuses clearly before parsing input or
+# running validation. The jq-free PATH is a shim directory holding exactly
+# the external tools the hook needs —
 # subtracting jq's directory from $PATH is not deterministic (on layouts
 # where /bin symlinks to /usr/bin, jq stays reachable through the alias).
 shim="$sandbox/nojq-bin"; mkdir -p "$shim"
 shim_ok=1
-for tool in bash cat git grep sed head find touch rm; do
+for tool in bash cat git grep find touch rm; do
   p=$(command -v "$tool" 2>/dev/null) || { shim_ok=0; missing="$tool"; break; }
   ln -s "$p" "$shim/$tool"
 done
 if [ "$shim_ok" -ne 1 ]; then
   warnrep "hook.handoff.no-jq" "cannot resolve hook dependency '$missing' for the shim PATH — skipping"
 else
-  make_dirty "$repo"
   t="$sandbox/h12.jsonl"; write_transcript "$t" "What changed: fixture
 What was verified: fixture
 Remaining risk: none"
   run_handoff "$repo" "h12" false "$t" "$shim"
-  assert_exit "hook.handoff.no-jq.exit" "$HG_CODE" 0
-  assert_file_exists "hook.handoff.no-jq.marker" "$(marker_path h12)"
-  make_clean "$repo"
+  assert_exit "hook.handoff.no-jq.exit" "$HG_CODE" 2
+  assert_contains "hook.handoff.no-jq.msg" "$HG_ERR" "jq is required"
 fi
 
 # H13 — the agentctl harness is high-blast-radius, not exempt from handoff.

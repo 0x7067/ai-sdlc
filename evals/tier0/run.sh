@@ -27,6 +27,11 @@ set -uo pipefail
 TIER0_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KNOWN_DRIFT_FILE="$TIER0_DIR/KNOWN-DRIFT"
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "tier0: jq is required but was not found on PATH; install jq and rerun." >&2
+  exit 2
+fi
+
 if [ "${1:-}" = "--self-test" ]; then
   exec bash "$TIER0_DIR/selftest/run-selftest.sh"
 fi
