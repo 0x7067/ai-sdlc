@@ -101,6 +101,9 @@ if [ "$dry_run" -eq 1 ] && [ -n "$seed_arg" ] && [ "$seed_arg" != "canonical" ];
 fi
 
 mkdir -p "$out_dir/raw"
+# Absolutize: run_one redirects into $out_dir/raw *after* cd-ing into the
+# fixture repo, so a relative --out would resolve against the wrong dir.
+out_dir="$(cd "$out_dir" && pwd)"
 results_file="$out_dir/results-$(ts_now).json"
 records_tmp="$(mktemp)"
 echo "[" > "$records_tmp"
