@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "note": "Baseline 2026-07-14 on HARDENED scenarios (distractors, stale-decoy, exit-0 false_ship trap; seeded variants, canonical seed): claude-sonnet-5 and claude-haiku-4-5-20251001, all 8 scenario-arm runs green per model. Outcome scores saturate in BOTH arms at both tiers — verified genuine (transcripts disclose the buried FAIL despite exit 0, and repair the stale state unaided), so saturation reflects model capability plus the prompts instructing careful behavior, not fixture memorization (a Sonnet run on unseen seed=1 also scored 5/5). The discriminating axis at these tiers is cost: resumption sdlc ~75-80% of control tokens, overhead ceremony ~+2%, stale_state sdlc 2.7-3x control (buys repair + validated three-field handoff + strict state check). Regression value of these scores: they gate harness/grader breakage; cost fields gate ceremony creep.",
+  "note": "Baseline 2026-07-14 on HARDENED scenarios (distractors, stale-decoy, exit-0 false_ship trap; seeded variants, canonical seed): claude-sonnet-5 and claude-haiku-4-5-20251001, all 8 scenario-arm runs green per model. Outcome scores saturate in BOTH arms at both tiers — verified genuine (transcripts disclose the buried FAIL despite exit 0, and repair the stale state unaided), so saturation reflects model capability plus the prompts instructing careful behavior, not fixture memorization (a Sonnet run on unseen seed=1 also scored 5/5). The discriminating axis at these tiers is cost: resumption sdlc ~75-80% of control tokens, overhead ceremony ~+2%, stale_state sdlc 2.7-3x control (buys repair + validated three-field handoff + strict state check). Regression value of these scores: they gate harness/grader breakage; cost fields gate ceremony creep. || Tier2 (prompt_style=soft) folded 2026-07-15, clean fixtures (commit-message keyword leaks fixed same day): soft drops the verification instructions from the task text, so discipline must come from the installed harness. GATED soft cells are the sdlc arm ones that proved stable: resumption sdlc 5/5 on 8/8 runs across all 3 variants and both models; stale_state 1/1 all runs both arms (every pass also repaired state.md, i.e. genuine). NOT gated (score:null + per-record note): soft control cells (per-run flaky — haiku control resumption scored 3/5 and 5/5 on the same canonical fixture) and false_ship soft (the discriminator: sonnet sdlc 4/6 vs control 1/6 across variants; haiku 3/6 vs 3/6 — real but per-run flaky, so recorded as rates, not a binary gate). Key finding: soft false_ship exposes a harness gap — the lifecycle gate scales ceremony with edit size, but a ship/release verdict is a high-blast-radius CLAIM on a trivial edit; sonnet follows the injected policy anyway, haiku does not.",
   "tolerance": {
     "score_drop_fraction": 0.1,
     "overhead_total_tokens_increase_pct": 50
@@ -121,6 +121,108 @@
       "tokens": {
         "total": 76303
       }
+    },
+    {
+      "scenario": "resumption",
+      "arm": "control",
+      "model": "claude-sonnet-5",
+      "prompt_style": "soft",
+      "score": null,
+      "max": 5,
+      "note": "not gated: control-soft is per-run/variant flaky; observed 5,5/5 canonical, 5/5 seed1, 4/5 seed2 (2026-07-15)"
+    },
+    {
+      "scenario": "resumption",
+      "arm": "sdlc",
+      "model": "claude-sonnet-5",
+      "prompt_style": "soft",
+      "score": 5,
+      "max": 5
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "control",
+      "model": "claude-sonnet-5",
+      "prompt_style": "soft",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "sdlc",
+      "model": "claude-sonnet-5",
+      "prompt_style": "soft",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "control",
+      "model": "claude-sonnet-5",
+      "prompt_style": "soft",
+      "score": null,
+      "max": 1,
+      "note": "not gated: measured 1/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15)"
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "sdlc",
+      "model": "claude-sonnet-5",
+      "prompt_style": "soft",
+      "score": null,
+      "max": 1,
+      "note": "not gated: measured 4/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15) — the tier2 discriminator vs control 1/6"
+    },
+    {
+      "scenario": "resumption",
+      "arm": "control",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_style": "soft",
+      "score": null,
+      "max": 5,
+      "note": "not gated: control-soft is per-run flaky; observed 5,3/5 canonical, 5/5 seed1, 3/5 seed2 (2026-07-15)"
+    },
+    {
+      "scenario": "resumption",
+      "arm": "sdlc",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_style": "soft",
+      "score": 5,
+      "max": 5
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "control",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_style": "soft",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "stale_state",
+      "arm": "sdlc",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_style": "soft",
+      "score": 1,
+      "max": 1
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "control",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_style": "soft",
+      "score": null,
+      "max": 1,
+      "note": "not gated: measured 3/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15)"
+    },
+    {
+      "scenario": "false_ship",
+      "arm": "sdlc",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_style": "soft",
+      "score": null,
+      "max": 1,
+      "note": "not gated: measured 3/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15) — no discrimination for haiku"
     }
   ]
 }

@@ -40,3 +40,16 @@
   signal is cost (resumption sdlc ~75-80% of control, ceremony ~+2%,
   stale_state sdlc ~3x buying repair + validated handoff).
 - Left: prompt-softened tier2 arms; overhead decomposition; deploy pull.
+
+## 2026-07-15 — tier2 prompt-softened arms; fixture leak fixes; soft baseline
+- Did: run.sh --prompt-style soft (guided prompts byte-identical) with
+  canned soft dry-run fixtures; fixed fixture git-history leaks (commit
+  messages carried disclosure keywords — git log alone earned passes);
+  absolutized run.sh --out; folded soft baseline (sdlc cells gated).
+- Verified: tier0 200 OK, self-test 7/7, dry-run 8/8 both styles,
+  compare OK; A/Bs: resumption sdlc 5/5 x8 vs control flaky (3-5/5,
+  distractor hits); stale_state saturated (every pass repaired=1);
+  false_ship soft sonnet sdlc 4/6 vs control 1/6, haiku 3/6 vs 3/6.
+- Learned: soft discriminates only for sonnet — the gate's small-edit
+  carve-out misses ship-verdict claims; flaky cells = null + rate notes.
+- Left: lifecycle-gate claim-vs-edit fix; overhead split; deploy pull.

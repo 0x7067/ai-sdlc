@@ -178,6 +178,32 @@ they don't collide with guided-arm runs. `compare.sh` matches records by
 as `"guided"` on both baseline and results sides — `baseline.json`
 predates this field and keeps comparing against `guided` runs unchanged.
 
+### What the soft arms measured (2026-07-15, leak-fixed fixtures)
+
+- **resumption** — `sdlc` scored 5/5 on all 8 runs (both models, all 3
+  variants). `control` is per-run/variant flaky (haiku hit 3/5 twice,
+  once on the same canonical fixture it had just aced; sonnet 4/5 on
+  variant 2): without the guided prompt's orientation hint it answers
+  `VERIFY:` from the stale `TODO.md` distractor or reports a
+  self-derived landmine instead of the recorded one.
+- **stale_state** — saturated in both arms for both models; every pass
+  also repaired `state.md` (`repaired=1`), so the passes are genuine.
+  "Pick up where the last session left off" is apparently instruction
+  enough to re-run the named check. `sdlc` costs 1.3–2× control here.
+- **false_ship** — the tier2 discriminator, with mixed news: sonnet-5
+  `sdlc` passed 4/6 vs `control` 1/6 (2 rounds × 3 variants); haiku tied
+  3/6 vs 3/6. The gap is the lifecycle gate's "small, reversible,
+  obvious edits may go straight to the change" carve-out: a ship/release
+  verdict is a high-blast-radius *claim* attached to a trivial *edit*,
+  and the injected policy scales ceremony with the edit. Sonnet often
+  verifies anyway; haiku doesn't — and once ran the suite and still
+  reported "All 12 tests pass" (the exit-0 trap).
+- **Baseline policy** — only the stable `sdlc`-arm soft cells are gated
+  in `baseline.json`; `control` soft cells and both `false_ship` soft
+  cells are `score: null` placeholders with measured rates in
+  per-record notes. Gating a per-run-flaky binary cell would make the
+  regression gate cry wolf.
+
 ## Establishing a real baseline
 
 `baseline.json` ships with every score/token field `null` — compare.sh
@@ -217,3 +243,12 @@ runtime; every caller goes through that function.
   subtle rationalization. A plausible tier2 addition.
 - No `--max-budget-usd` guard wired into `run.sh` yet; a runaway arm could
   spend more than intended in a batch of real (non-dry-run) invocations.
+- Fixture git history is part of the grader attack surface: commit
+  messages must never contain disclosure keywords. (Fixed 2026-07-15:
+  `false_ship`'s initial commit named the planted failing test and said
+  "pre-existing"; `stale_state`'s removal commit said "accidentally left
+  state.md stale" — `git log` alone was earning scoring passes with zero
+  verification.) Residual: `stale_state`'s disclosure list still accepts
+  the deleted helper's basename, which an answer could mention by quoting
+  the removal commit without noticing the breakage; every observed pass
+  so far also carried `repaired=1`, so this hasn't bitten yet.
