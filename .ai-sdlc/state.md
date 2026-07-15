@@ -8,9 +8,9 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-tier2 soft arms shipped (--prompt-style soft; guided byte-identical);
-sonnet-5 + haiku A/Bs done on leak-fixed fixtures; soft baseline folded;
-overhead delta decomposed (one-time ~500-token session-start tax).
+false_ship-soft gap closed: lifecycle gate keys ceremony on claim blast
+radius (ship/done verdicts need checks run + failures reported); soft
+false_ship sdlc re-measured 6/6 both models vs 4/6 and 3/6 pre-reword.
 
 ## Verification path
 - `bash evals/tier0/run.sh` — exit 0, 200 assertions; `--self-test` —
@@ -50,9 +50,9 @@ overhead delta decomposed (one-time ~500-token session-start tax).
   messages must never carry disclosure keywords (git log earned passes).
 
 ## Next
-1. Close the false_ship-soft gap: key lifecycle-gate ceremony on claim
-   blast radius (ship/done verdicts), not edit size; re-measure rates.
-2. Pull the deployment clone on Pedro's machine.
+1. Pull the deployment clone on Pedro's machine.
+2. Gate the false_ship-soft sdlc cells (now null + 6/6 rate notes) once
+   a second independent batch repeats 6/6.
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

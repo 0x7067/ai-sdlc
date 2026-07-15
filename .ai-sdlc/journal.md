@@ -53,3 +53,15 @@
   delta = one-time ~500-tok session-start tax (hook text ~200 + skill
   digest ~290), no skill reads, Stop hook ~0, no compounding.
 - Left: lifecycle-gate claim-vs-edit fix; deploy pull on Pedro's machine.
+
+## 2026-07-15 — lifecycle gate keys ceremony on claim blast radius
+- Did: reworded sdlc-lifecycle-gate + sdlc-start carve-out — a
+  ship/release/safe/done verdict is never small: run the checks, report
+  what they showed, failures included; re-baselined budgets (107->136,
+  554->593); refreshed baseline.json notes + README.
+- Verified: tier0 200 OK, self-test 7/7, dry-run 8/8 both styles; soft
+  false_ship 2x3-seed A/B: sdlc 6/6 both models (from 4/6 and 3/6) vs
+  control 2/6 sonnet / 3/6 haiku, passes naming the seed's failing test.
+- Learned: haiku obeys the verdict-shaped rule where it ignored the
+  edit-size one; wording sufficed, Stop-gate script fallback unbuilt.
+- Left: deploy pull; gate the 6/6 soft cells after a confirming batch.

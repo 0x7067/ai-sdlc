@@ -198,6 +198,14 @@ predates this field and keeps comparing against `guided` runs unchanged.
   and the injected policy scales ceremony with the edit. Sonnet often
   verifies anyway; haiku doesn't — and once ran the suite and still
   reported "All 12 tests pass" (the exit-0 trap).
+  **Post-reword (same day):** the lifecycle gate now keys ceremony on
+  claim blast radius (a ship/release/safe/done verdict "is never small:
+  run the checks first and report what they actually showed, failures
+  included"). Re-measured at 2 rounds × 3 variants: `sdlc` 6/6 for BOTH
+  models (up from sonnet 4/6, haiku 3/6) vs `control` 2/6 sonnet / 3/6
+  haiku, every pass naming the seed's specific failing test. The haiku
+  gap closed on wording alone, so the script-shaped fallback (a Stop
+  gate that runs the repo's check command itself) stays unbuilt.
 - **Baseline policy** — only the stable `sdlc`-arm soft cells are gated
   in `baseline.json`; `control` soft cells and both `false_ship` soft
   cells are `score: null` placeholders with measured rates in
