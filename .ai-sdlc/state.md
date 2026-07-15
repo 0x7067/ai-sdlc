@@ -8,13 +8,13 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Reconcile local main's deployment record with origin/main's nine eval and
-marketplace commits via a merge (preserve both histories; do not rewrite).
-Then refresh Claude/Codex global links and prove graph, hooks, tier0, and state.
+Local main contains origin/main's eval/marketplace work and the standalone
+deployment record via merge. Claude/Codex global skills and hooks resolve to
+this checkout; local main is ahead of origin and deliberately unpushed.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 200 assertions; `--self-test` —
-  7/7 caught (2026-07-15; deploy checks add 3 on Pedro's machine).
+- `bash evals/tier0/run.sh` — exit 0, 205 assertions on Pedro's machine;
+  `--self-test` — 7/7 caught (2026-07-15).
 - `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` +
   `compare.sh` — guided OK 2026-07-14, soft gated cells OK 2026-07-15;
   dry-run 8/8 both styles; and
@@ -49,9 +49,8 @@ Then refresh Claude/Codex global links and prove graph, hooks, tier0, and state.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-1. Complete the origin/main merge with the state/journal union.
-2. Re-run global installs for Claude Code and Codex without clobbering config.
-3. Verify ancestry, live links/hooks, tier0, and strict state hygiene.
+1. Close false_ship-soft gap: key ceremony on claim blast radius; re-measure.
+2. Pedro may push local main; agent sessions must not push main.
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

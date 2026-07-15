@@ -65,3 +65,11 @@
   delta = one-time ~500-tok session-start tax (hook text ~200 + skill
   digest ~290), no skill reads, Stop hook ~0, no compounding.
 - Left: lifecycle-gate claim-vs-edit fix; deploy pull on Pedro's machine.
+
+## 2026-07-15 — reconcile main and refresh Claude/Codex installs
+- Did: merged origin/main into local main, preserving the deployment commit;
+  unioned state/journal conflicts and refreshed both global skill roots/hooks.
+- Verified: both parent histories reachable; 8/8 links resolve; Claude and
+  Codex hook registrations target this checkout; tier0 205/205.
+- Learned: Codex Stop resolves through ~/.agents/ai-sdlc; Claude owns both gates.
+- Left: local main remains unpushed per standing policy.
