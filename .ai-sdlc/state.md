@@ -1,24 +1,24 @@
 # Project State
-updated: 2026-07-14
+updated: 2026-07-15
 
 ## Goal
-A skill library (sdlc-start/finish/core) that lets models — weaker ones
+A skill library (sdlc-start/finish/core) letting models — weaker ones
 included — carry a project across sessions at a consistent standard.
-Scripts do what scripts can; skills stay advice-shaped. Claude Code
-plugin install; install.sh elsewhere; STANDARD.md governs execution.
+Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
+plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-The Stop gate prefers the event's current assistant text, retains transcript
-fallback for older harnesses, and times actual dirty-tree duration. Claude
-plugin and direct registrations use one deduplicable command. Global Claude,
-Codex, Pi, and oh-my-pi skill deployments point at this checkout.
+Reconcile local main's deployment record with origin/main's nine eval and
+marketplace commits via a merge (preserve both histories; do not rewrite).
+Then refresh Claude/Codex global links and prove graph, hooks, tier0, and state.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 203 assertions (2026-07-14).
-- `bash evals/tier0/run.sh --self-test` — 7/7 caught (2026-07-10).
-- `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` then
-  `compare.sh --baseline evals/tier1/baseline.json --results <file>` — OK.
-- `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-07).
+- `bash evals/tier0/run.sh` — exit 0, 200 assertions; `--self-test` —
+  7/7 caught (2026-07-15; deploy checks add 3 on Pedro's machine).
+- `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` +
+  `compare.sh` — guided OK 2026-07-14, soft gated cells OK 2026-07-15;
+  dry-run 8/8 both styles; and
+  `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-15).
 
 ## Decisions
 - Routing is the SessionStart hook's job; frontmatter stays untouched.
@@ -26,13 +26,15 @@ Codex, Pi, and oh-my-pi skill deployments point at this checkout.
 - Word/size deltas are smell checks; acceptance = tier0/tier1 green.
 - Hook-grepped literals must be instructed by a live surface (tier0 C5/6).
 - Never push main from agent sessions; claude/* branch pushes are fine.
-- Equal A/B scores at haiku tier = saturated scenarios, not "no effect".
+- Guided outcomes saturate >=haiku-4.5; cost is the guided A/B axis;
+  soft (tier2) discriminates for sonnet. Gate only stable sdlc soft
+  cells; flaky cells (control, false_ship) = score:null + rate notes.
 - Journal compaction is the sole sanctioned journal rewrite.
-- Current Stop event text is authoritative; transcript parsing is compatibility
-  fallback. Clean trees clear dirty-duration markers.
+- Current Stop event text is authoritative; transcript parsing is
+  compatibility fallback. Clean trees clear dirty-duration markers.
 
 ## Landmines
-- Pedro's machine only: Claude/Codex/Pi/oh-my-pi skill paths and Claude hooks
+- Pedro's machine only: Claude/Codex/Pi/oh-my-pi skills and Claude hooks
   symlink to this checkout; repointing another checkout changes the live install.
 - Scaffold placeholder token: construct at runtime in eval code and never
   put in .ai-sdlc files; skills scripts may contain it literally.
@@ -42,16 +44,16 @@ Codex, Pi, and oh-my-pi skill deployments point at this checkout.
   plugin keeps sibling resolution only while all skills ship together.
 - tier0 self-test build_sandbox copies an explicit dir list — add any new
   top-level path a check reads (.claude-plugin bit this, 2026-07-07).
-- Root tier1 runs error without IS_SANDBOX=1.
+- Root tier1 needs IS_SANDBOX=1; --seed is ignored in dry-run (canonical).
+- GitHub-added marketplaces need the explicit github source; tier0 pins it.
+- Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-1. Resume scenario hardening and Sonnet-tier A/B.
-2. Verify the Claude marketplace-add installation path.
+1. Complete the origin/main merge with the state/journal union.
+2. Re-run global installs for Claude Code and Codex without clobbering config.
+3. Verify ancestry, live links/hooks, tier0, and strict state hygiene.
 
 ## History (digest through 2026-07-07)
-- Sonnet probes honored fenced contracts and script-triggered gates; toy repos
-  with planted debris are a cheap compliance test.
-- Tier1 isolated-home model runs work because remote auth arrives via env;
-  preserve HOME isolation so the control arm stays clean.
-- Claude plugin end-to-end via `--plugin-dir` passed; marketplace-add remains
-  the unverified installation path.
+- Six phase skills → start/finish + STANDARD.md; fenced templates and
+  gated verdict tokens proved Sonnet-reproducible. Goodhart audit birthed
+  OBJECTIVE.md + tier0/tier1; first haiku baseline 2026-07-07.

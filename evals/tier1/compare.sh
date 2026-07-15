@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Compare a tier1 results file against baseline.json; exit nonzero on
 # regression beyond the stated tolerance. Records are matched by
-# (scenario, arm, model). A baseline record with score:null is a
-# placeholder — "no baseline established yet" — and is skipped, not
-# treated as a regression floor of zero.
+# (scenario, arm, model, prompt_style). prompt_style defaults to "guided"
+# on both sides when absent, so baseline.json (predates prompt_style)
+# keeps matching guided-arm results unchanged. A baseline record with
+# score:null is a placeholder — "no baseline established yet" — and is
+# skipped, not treated as a regression floor of zero.
 #
 # Usage: compare.sh --baseline baseline.json --results results.json
 #                    [--tolerance N]   (overrides both tolerances, as a
@@ -41,14 +43,21 @@ for ((i=0; i<n; i++)); do
   scenario="$(jq -r ".results[$i].scenario" "$baseline")"
   arm="$(jq -r ".results[$i].arm" "$baseline")"
   model="$(jq -r ".results[$i].model" "$baseline")"
+  prompt_style="$(jq -r ".results[$i].prompt_style // \"guided\"" "$baseline")"
   base_score="$(jq -r ".results[$i].score" "$baseline")"
   base_max="$(jq -r ".results[$i].max" "$baseline")"
 
-  new_rec="$(jq -c --arg s "$scenario" --arg a "$arm" --arg m "$model" \
-    '.results[] | select(.scenario==$s and .arm==$a and .model==$m)' "$results" | tail -1)"
+  if [ "$prompt_style" = "soft" ]; then
+    key="$scenario/$arm/$model/soft"
+  else
+    key="$scenario/$arm/$model"
+  fi
+
+  new_rec="$(jq -c --arg s "$scenario" --arg a "$arm" --arg m "$model" --arg ps "$prompt_style" \
+    '.results[] | select(.scenario==$s and .arm==$a and .model==$m and ((.prompt_style // "guided") == $ps))' "$results" | tail -1)"
 
   if [ -z "$new_rec" ]; then
-    report+=("SKIP  $scenario/$arm/$model — no matching record in new results")
+    report+=("SKIP  $key — no matching record in new results")
     continue
   fi
 
@@ -56,22 +65,22 @@ for ((i=0; i<n; i++)); do
     base_total="$(jq -r ".results[$i].tokens.total // \"null\"" "$baseline")"
     new_total="$(jq -r '.tokens.total // "null"' <<<"$new_rec")"
     if [ "$base_total" = "null" ] || [ -z "$base_total" ]; then
-      report+=("SKIP  $scenario/$arm/$model — no baseline token count yet (placeholder)")
+      report+=("SKIP  $key — no baseline token count yet (placeholder)")
       continue
     fi
     pct=$(awk -v b="$base_total" -v n="$new_total" 'BEGIN { if (b==0) { print "inf" } else { printf "%.1f", (n-b)/b*100 } }')
     over=$(awk -v p="$pct" -v t="$overhead_tol_pct" 'BEGIN { print (p+0 > t) ? "1" : "0" }')
     if [ "$over" = "1" ]; then
       regressions=$((regressions+1))
-      report+=("FAIL  $scenario/$arm/$model — tokens $base_total -> $new_total (+${pct}%, tolerance ${overhead_tol_pct}%)")
+      report+=("FAIL  $key — tokens $base_total -> $new_total (+${pct}%, tolerance ${overhead_tol_pct}%)")
     else
-      report+=("OK    $scenario/$arm/$model — tokens $base_total -> $new_total (${pct}%)")
+      report+=("OK    $key — tokens $base_total -> $new_total (${pct}%)")
     fi
     continue
   fi
 
   if [ "$base_score" = "null" ] || [ -z "$base_score" ]; then
-    report+=("SKIP  $scenario/$arm/$model — no baseline score yet (placeholder)")
+    report+=("SKIP  $key — no baseline score yet (placeholder)")
     continue
   fi
 
@@ -79,7 +88,7 @@ for ((i=0; i<n; i++)); do
   new_max="$(jq -r '.max // "null"' <<<"$new_rec")"
   if [ "$new_score" = "null" ]; then
     regressions=$((regressions+1))
-    report+=("FAIL  $scenario/$arm/$model — new run errored (score: null)")
+    report+=("FAIL  $key — new run errored (score: null)")
     continue
   fi
 
@@ -88,9 +97,9 @@ for ((i=0; i<n; i++)); do
   regressed=$(awk -v d="$drop" -v t="$score_drop_tol" 'BEGIN { print (d > t) ? "1" : "0" }')
   if [ "$regressed" = "1" ]; then
     regressions=$((regressions+1))
-    report+=("FAIL  $scenario/$arm/$model — score $base_score/$base_max -> $new_score/$new_max (drop $drop > tolerance $score_drop_tol)")
+    report+=("FAIL  $key — score $base_score/$base_max -> $new_score/$new_max (drop $drop > tolerance $score_drop_tol)")
   else
-    report+=("OK    $scenario/$arm/$model — score $base_score/$base_max -> $new_score/$new_max")
+    report+=("OK    $key — score $base_score/$base_max -> $new_score/$new_max")
   fi
 done
 

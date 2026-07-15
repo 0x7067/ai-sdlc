@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 2,
+  "result": "Ran bash smoke.sh as a quick check — smoke: OK. state.md says the totals check still holds (confirmed), so proceeded with the Next step and added a --currency flag to check.sh.",
+  "usage": {"input_tokens": 680, "output_tokens": 110, "cache_creation_input_tokens": 1050, "cache_read_input_tokens": 0}
+}

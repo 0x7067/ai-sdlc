@@ -13,8 +13,15 @@
 # Usage:
 #   run.sh --scenario <resumption|stale_state|false_ship|overhead|all>
 #          --arm <control|sdlc|both>
-#          [--model MODEL] [--dry-run] [--out DIR]
+#          [--model MODEL] [--dry-run] [--out DIR] [--seed N]
+#          [--prompt-style <guided|soft>]
 #   run.sh --compare NEW_RESULTS.json [--baseline BASELINE.json] [--tolerance N]
+#
+# --prompt-style (default: guided) selects between the tier1 prompts
+# (prompt.txt, unchanged, explicit verification instructions) and the
+# tier2 "softened" prompts (prompt.soft.txt where present, verification
+# discipline dropped from the task text — see README's "Prompt styles"
+# section).
 #
 # Exit: 0 on completion of requested runs (grading pass/fail is recorded in
 # the results file, not the exit code — use --compare for a pass/fail gate).
@@ -33,12 +40,14 @@ scenario_arg="all"
 arm_arg="both"
 model="$DEFAULT_MODEL"
 dry_run=0
+seed_arg=""
 out_dir="$HERE/results"
 compare_file=""
 baseline_file="$HERE/baseline.json"
 tolerance_override=""
+prompt_style="guided"
 
-usage() { sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,25p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -46,14 +55,21 @@ while [ $# -gt 0 ]; do
     --arm) arm_arg="$2"; shift 2 ;;
     --model) model="$2"; shift 2 ;;
     --dry-run) dry_run=1; shift ;;
+    --seed) seed_arg="$2"; shift 2 ;;
     --out) out_dir="$2"; shift 2 ;;
     --compare) compare_file="$2"; shift 2 ;;
     --baseline) baseline_file="$2"; shift 2 ;;
     --tolerance) tolerance_override="$2"; shift 2 ;;
+    --prompt-style) prompt_style="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "run.sh: unknown arg '$1'" >&2; usage; exit 1 ;;
   esac
 done
+
+case "$prompt_style" in
+  guided|soft) ;;
+  *) echo "run.sh: --prompt-style must be 'guided' or 'soft' (got '$prompt_style')" >&2; usage; exit 1 ;;
+esac
 
 if [ -n "$compare_file" ]; then
   args=(--baseline "$baseline_file" --results "$compare_file")
@@ -76,7 +92,18 @@ require_cmd jq
 require_cmd git
 [ "$dry_run" -eq 1 ] || require_cmd claude
 
+# Dry-run canned transcripts are written against the canonical (variant 0)
+# fixtures — a nonzero seed would grade them against a different variant's
+# ground truth and fail spuriously.
+if [ "$dry_run" -eq 1 ] && [ -n "$seed_arg" ] && [ "$seed_arg" != "canonical" ]; then
+  echo "run.sh: --seed is ignored with --dry-run (canned transcripts are canonical-only)" >&2
+  seed_arg=""
+fi
+
 mkdir -p "$out_dir/raw"
+# Absolutize: run_one redirects into $out_dir/raw *after* cd-ing into the
+# fixture repo, so a relative --out would resolve against the wrong dir.
+out_dir="$(cd "$out_dir" && pwd)"
 results_file="$out_dir/results-$(ts_now).json"
 records_tmp="$(mktemp)"
 echo "[" > "$records_tmp"
@@ -99,10 +126,14 @@ run_one() {
   local is_error=false result_text="" grade_json='{}'
 
   workdir="$(mktemp -d "${TMPDIR:-/tmp}/tier1-work.XXXXXX")"
-  bash "$scen_dir/generate.sh" "$workdir" >/dev/null
+  TIER1_SEED="$seed_arg" bash "$scen_dir/generate.sh" "$workdir" >/dev/null
   repo="$workdir/repo"
   gt="$workdir/ground_truth.json"
-  prompt="$(cat "$scen_dir/prompt.txt")"
+  if [ "$prompt_style" = "soft" ] && [ -f "$scen_dir/prompt.soft.txt" ]; then
+    prompt="$(cat "$scen_dir/prompt.soft.txt")"
+  else
+    prompt="$(cat "$scen_dir/prompt.txt")"
+  fi
 
   iso_home="$(mktemp -d "${TMPDIR:-/tmp}/tier1-home.XXXXXX")"
   if [ "$arm" = "sdlc" ]; then
@@ -111,10 +142,17 @@ run_one() {
     setup_control_home "$iso_home"
   fi
 
-  raw_json="$out_dir/raw/${scenario}-${arm}-$(ts_now).json"
+  if [ "$prompt_style" = "soft" ]; then
+    raw_json="$out_dir/raw/${scenario}-${arm}-soft-$(ts_now).json"
+  else
+    raw_json="$out_dir/raw/${scenario}-${arm}-$(ts_now).json"
+  fi
 
   if [ "$dry_run" -eq 1 ]; then
     canned="$HERE/dry_run/${scenario}-${arm}.json"
+    if [ "$prompt_style" = "soft" ] && [ -f "$HERE/dry_run/${scenario}-${arm}-soft.json" ]; then
+      canned="$HERE/dry_run/${scenario}-${arm}-soft.json"
+    fi
     if [ ! -f "$canned" ]; then
       echo "run.sh: no dry-run fixture for $scenario/$arm at $canned" >&2
       return 1
@@ -165,6 +203,8 @@ run_one() {
     --arg scenario "$scenario" \
     --arg arm "$arm" \
     --arg model "$model" \
+    --arg seed "${seed_arg:-canonical}" \
+    --arg prompt_style "$prompt_style" \
     --argjson dry_run "$([ "$dry_run" -eq 1 ] && echo true || echo false)" \
     --argjson is_error "$is_error" \
     --argjson grade "$grade_json" \
@@ -176,7 +216,7 @@ run_one() {
     --arg raw_json_path "$raw_json" \
     --arg repo_path "$repo" \
     '{
-      scenario: $scenario, arm: $arm, model: $model, dry_run: $dry_run,
+      scenario: $scenario, arm: $arm, model: $model, seed: $seed, prompt_style: $prompt_style, dry_run: $dry_run,
       is_error: $is_error,
       score: $grade.score, max: $grade.max, detail: $grade.detail,
       note: ($grade.note // null),
@@ -193,10 +233,10 @@ run_one() {
   if [ "$first" -eq 1 ]; then first=0; else echo "," >> "$records_tmp"; fi
   printf '%s\n' "$record" >> "$records_tmp"
 
-  echo "  $scenario/$arm: score=$(jq -r '.score' <<<"$grade_json")/$(jq -r '.max' <<<"$grade_json") is_error=$is_error turns=$num_turns tokens_total=$((input_tokens + output_tokens + cache_read + cache_creation))" >&2
+  echo "  $scenario/$arm: prompt_style=$prompt_style score=$(jq -r '.score' <<<"$grade_json")/$(jq -r '.max' <<<"$grade_json") is_error=$is_error turns=$num_turns tokens_total=$((input_tokens + output_tokens + cache_read + cache_creation))" >&2
 }
 
-echo "tier1: model=$model dry_run=$dry_run scenarios=(${scenarios[*]}) arms=(${arms[*]})" >&2
+echo "tier1: model=$model dry_run=$dry_run seed=${seed_arg:-canonical} prompt_style=$prompt_style scenarios=(${scenarios[*]}) arms=(${arms[*]})" >&2
 for scenario in "${scenarios[@]}"; do
   for arm in "${arms[@]}"; do
     run_one "$scenario" "$arm"

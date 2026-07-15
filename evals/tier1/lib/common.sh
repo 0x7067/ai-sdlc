@@ -99,6 +99,26 @@ setup_sdlc_home() {
 EOF
 }
 
+# --- fixture variants ------------------------------------------------------
+#
+# Each scenario ships a small pool of complete, coherent fixture variants —
+# project name, file names, landmine, and ground-truth keywords change
+# together, so keyword hygiene (distractors never contain answer keywords)
+# holds per variant, not just per scenario. TIER1_SEED selects one:
+# unset / empty / "canonical" -> variant 0, the canonical fixture that the
+# dry_run/ canned transcripts are graded against; any non-negative integer
+# -> seed % pool size. run.sh records the seed so runs are reproducible.
+tier1_variant() { # tier1_variant POOL_SIZE -> prints the selected index
+  local pool="$1" seed="${TIER1_SEED:-}"
+  case "$seed" in
+    ''|canonical) echo 0 ;;
+    *[!0-9]*)
+      echo "tier1: TIER1_SEED must be a non-negative integer or 'canonical' (got '$seed')" >&2
+      return 1 ;;
+    *) echo $(( seed % pool )) ;;
+  esac
+}
+
 # --- misc ----------------------------------------------------------------
 
 # Portable mtime-independent timestamp for filenames.
