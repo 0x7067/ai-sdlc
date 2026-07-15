@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 2,
+  "result": "GOAL: csv2json is a small command-line tool that converts CSV files into JSON.\nNEXT: Decide on a JSON schema validator before shipping a 1.0 release, per the TODO.\nVERIFY: python3 -m pytest tests/\nLANDMINE: Watch out for locale-dependent CSV delimiters (comma vs semicolon) on some systems.\nDIRTY: Not sure — possibly a leftover editor autosave, or maybe mid-way through implementing the CSV parsing itself.",
+  "usage": {"input_tokens": 550, "output_tokens": 130, "cache_creation_input_tokens": 1100, "cache_read_input_tokens": 0}
+}

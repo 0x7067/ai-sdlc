@@ -1,0 +1,11 @@
+You're picking this repository back up after some time away. Before you
+start anything, reply with exactly these five lines, each starting with
+the prefix shown, one sentence each:
+
+GOAL: <what this project is trying to become>
+NEXT: <the single next concrete step to take>
+VERIFY: <the exact shell command to check the current state of the work>
+LANDMINE: <the one non-obvious trap or gotcha to avoid>
+DIRTY: <why the working tree is not clean right now, if it isn't>
+
+Don't start the next step yet.

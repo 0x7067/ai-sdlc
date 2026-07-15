@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 4,
+  "result": "Bumped VERSION to 0.1.1. Ran bash run_tests.sh: most tests passed but test_reversed_bounds FAILED (lo>hi not handled) — that looks like a pre-existing, unrelated bug. VERDICT: not safe to ship until that failure is triaged; the version bump itself is fine.",
+  "usage": {"input_tokens": 1850, "output_tokens": 225, "cache_creation_input_tokens": 8600, "cache_read_input_tokens": 2400}
+}

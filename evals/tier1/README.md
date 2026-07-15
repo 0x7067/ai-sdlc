@@ -25,10 +25,16 @@ scenarios/<name>/
                             "Fixture variants" below)
   grade.sh <ground_truth.json> <answer_file> [<repo_dir>]
                             prints {"score":N,"max":M,"detail":{...}}
-  prompt.txt                the task/questions given to the subject model
+  prompt.txt                 the tier1 (guided) task/questions given to the
+                            subject model — byte-identical, never edited
+  prompt.soft.txt            the tier2 (softened) variant, where present —
+                            see "Prompt styles" below; overhead has none
 dry_run/<scenario>-<arm>.json
                             canned --output-format json transcripts, used
                             when run.sh is invoked with --dry-run
+dry_run/<scenario>-<arm>-soft.json
+                            canned transcripts for --prompt-style soft,
+                            where present — see "Prompt styles" below
 run.sh                      the runner (see below)
 compare.sh                  baseline diff / regression gate
 baseline.json               placeholder baseline (see "Establishing a
@@ -117,7 +123,8 @@ Flags: `--scenario <resumption|stale_state|false_ship|overhead|all>`
 (default `all`), `--arm <control|sdlc|both>` (default `both`), `--model`
 (default `claude-haiku-4-5-20251001`), `--dry-run`, `--seed N` (fixture
 variant selection, see below; default canonical), `--out DIR` (default
-`evals/tier1/results`).
+`evals/tier1/results`), `--prompt-style <guided|soft>` (default `guided`
+— see "Prompt styles" below).
 
 ## Fixture variants
 
@@ -138,6 +145,38 @@ Each run writes `results/raw/<scenario>-<arm>-<timestamp>.json` (the raw
 `claude -p` output) and one aggregated `results/results-<timestamp>.json`
 covering every (scenario, arm) pair requested, with `score`, `max`,
 `detail`, `num_turns`, and a `tokens` breakdown per record.
+
+## Prompt styles (tier2 softened arms)
+
+The tier1 prompts (`prompt.txt`) spell out careful behavior explicitly —
+"actually run the verify command, don't take state.md's word for it," and
+similar. At `>=haiku-4.5`, that instruction alone is often enough that
+both arms comply and outcome scores saturate near the max in both
+`control` and `sdlc` — the harness can't tell whether the *installed
+sdlc skills/hooks* did the work or the *task text* did. tier2 asks the
+harder question: with that instruction dropped from the prompt, does
+verification discipline still show up — driven by the installed harness
+rather than by being told to be careful?
+
+`run.sh --prompt-style soft` selects the softened prompt: for each
+scenario, if `scenarios/<name>/prompt.soft.txt` exists it's used in place
+of `prompt.txt`; otherwise `prompt.txt` is used unchanged. `overhead`
+has no `prompt.soft.txt` — its `prompt.txt` was already neutral (no
+verification-discipline language to soften), so `--prompt-style soft`
+runs it identically to `guided`. `prompt.txt` files are never edited for
+this — tier1 stays byte-identical for comparability, and `guided` remains
+`run.sh`'s default.
+
+Under `--dry-run --prompt-style soft`, canned transcripts come from
+`dry_run/<scenario>-<arm>-soft.json` when present, falling back to the
+guided `dry_run/<scenario>-<arm>.json` otherwise (again, only `overhead`
+falls back — the other three scenarios ship real soft transcripts).
+Every result record carries `prompt_style` (`"guided"` or `"soft"`), and
+raw transcripts land in `results/raw/<scenario>-<arm>-soft-<ts>.json` so
+they don't collide with guided-arm runs. `compare.sh` matches records by
+`(scenario, arm, model, prompt_style)`, treating a missing `prompt_style`
+as `"guided"` on both baseline and results sides — `baseline.json`
+predates this field and keeps comparing against `guided` runs unchanged.
 
 ## Establishing a real baseline
 

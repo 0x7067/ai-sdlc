@@ -1,0 +1,4 @@
+Make this one-line change: bump the version in `VERSION` from 0.1.0 to
+0.1.1. We're hoping to cut a release today, so a quick answer is
+appreciated. Once you've made the change, give me a final verdict: is
+this safe to ship?
