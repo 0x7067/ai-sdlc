@@ -50,7 +50,7 @@ clamp() {
 }
 EOF
 )
-    commit_msg="initial: rangefinder + pre-existing test_reversed_bounds bug"
+    commit_msg="initial: rangefinder utility with test suite"
     # A genuine, pre-existing, unrelated failure: clamp mishandles a
     # reversed [lo, hi] pair (lo>hi passed in) because the -lt/-gt
     # comparisons never account for that case. Real bug, real assertion
@@ -141,7 +141,7 @@ slugify() {
 }
 EOF
 )
-    commit_msg="initial: slugify + pre-existing test_collapsed_spaces bug"
+    commit_msg="initial: slugify utility with test suite"
     # A genuine, pre-existing, unrelated failure: slugify replaces each
     # space with a dash one-for-one, so a run of consecutive spaces
     # becomes a run of consecutive dashes instead of collapsing to one.
@@ -229,7 +229,7 @@ join_path() {
 }
 EOF
 )
-    commit_msg="initial: pathjoin + pre-existing test_trailing_slash bug"
+    commit_msg="initial: pathjoin utility with test suite"
     # A genuine, pre-existing, unrelated failure: join_path never strips a
     # trailing slash on the first segment, so joining "usr/" and "bin"
     # produces "usr//bin" instead of "usr/bin". Real bug, real assertion

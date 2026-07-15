@@ -217,7 +217,7 @@ git_commit_all "$repo" "initial: $check_script + $decoy_script + $helper_file + 
 # directory". state.md was never updated to reflect this. $decoy_script
 # does not source $helper_file, so it still passes — that's the decoy.
 git -C "$repo" rm -q "$helper_file"
-git_commit_all "$repo" "remove $helper_file (accidentally left state.md stale)"
+git_commit_all "$repo" "remove $helper_file (no longer needed)"
 
 cat > "$workdir/ground_truth.json" <<EOF
 {
