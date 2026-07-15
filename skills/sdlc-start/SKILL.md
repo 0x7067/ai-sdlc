@@ -43,7 +43,11 @@ written, which is not the same as true now.
 ## Objective 2 — Plan, when the work is non-trivial
 
 Small, reversible, obvious edits go straight to the change — planning
-ceremony there is pure overhead. Everything else deserves a plan recorded
+ceremony there is pure overhead. But size that exemption by the claim,
+not the edit: a ship/release/safe/done verdict is high blast radius even
+on a one-line diff, and needs the project's checks run — with their real
+output reported, failures included — before it is issued. Everything
+else deserves a plan recorded
 in `.ai-sdlc/state.md` before source files change. A plan is done when it
 records:
 

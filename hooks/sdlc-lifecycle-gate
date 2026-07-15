@@ -6,9 +6,9 @@ git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 
 cat <<'EOF'
 SDLC LIFECYCLE (installed policy):
-1. Invoke Skill(sdlc-start) before the first substantive task of the session, and again to plan any multi-step or risky change. Small, reversible, obvious edits may go straight to the change.
+1. Invoke Skill(sdlc-start) before the first substantive task of the session, and again to plan any multi-step or risky change. Small, reversible, obvious edits may go straight to the change — but a ship/release/safe/done verdict is never small: run the checks first and report what they actually showed, failures included.
 2. Execution is governed by the engineering standard (sdlc-core/references/STANDARD.md): root cause over patch, smallest coherent change, verification ladder.
 3. Invoke Skill(sdlc-finish) before declaring a nontrivial change done and before the session ends if anything changed — it is what makes the project resumable by the next session.
-Scale ceremony with blast radius, not file count — config that propagates to other agents/machines counts as high blast radius even when the diff is small.
+Scale ceremony with the blast radius of the claim, not the edit size — config that propagates to other agents/machines counts as high blast radius even when the diff is small.
 Plugin installs namespace the skills: ai-sdlc:sdlc-start, ai-sdlc:sdlc-finish.
 EOF
