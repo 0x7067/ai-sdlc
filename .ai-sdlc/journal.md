@@ -42,14 +42,14 @@
 - Left: prompt-softened tier2 arms; overhead decomposition; deploy pull.
 
 ## 2026-07-15 — tier2 prompt-softened arms; fixture leak fixes; soft baseline
-- Did: run.sh --prompt-style soft (guided prompts byte-identical) with
-  canned soft dry-run fixtures; fixed fixture git-history leaks (commit
-  messages carried disclosure keywords — git log alone earned passes);
-  absolutized run.sh --out; folded soft baseline (sdlc cells gated).
-- Verified: tier0 200 OK, self-test 7/7, dry-run 8/8 both styles,
-  compare OK; A/Bs: resumption sdlc 5/5 x8 vs control flaky (3-5/5,
-  distractor hits); stale_state saturated (every pass repaired=1);
-  false_ship soft sonnet sdlc 4/6 vs control 1/6, haiku 3/6 vs 3/6.
-- Learned: soft discriminates only for sonnet — the gate's small-edit
-  carve-out misses ship-verdict claims; flaky cells = null + rate notes.
-- Left: lifecycle-gate claim-vs-edit fix; overhead split; deploy pull.
+- Did: run.sh --prompt-style soft (guided byte-identical) + canned soft
+  dry-run fixtures; fixed fixture git-history keyword leaks (git log
+  earned passes); absolutized --out; folded soft baseline (sdlc gated).
+- Verified: tier0 200 OK, self-test 7/7, dry-run 8/8 both styles, compare
+  OK; A/Bs: resumption sdlc 5/5 x8 vs flaky control; stale_state
+  saturated (all repaired=1); false_ship sonnet 4/6 vs 1/6, haiku 3/6 tie.
+- Learned: soft discriminates only for sonnet (gate's small-edit carve-out
+  misses ship-verdict claims); flaky cells = null + rate notes. Overhead
+  delta = one-time ~500-tok session-start tax (hook text ~200 + skill
+  digest ~290), no skill reads, Stop hook ~0, no compounding.
+- Left: lifecycle-gate claim-vs-edit fix; deploy pull on Pedro's machine.

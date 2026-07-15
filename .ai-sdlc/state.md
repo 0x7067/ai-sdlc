@@ -9,7 +9,8 @@ plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
 tier2 soft arms shipped (--prompt-style soft; guided byte-identical);
-sonnet-5 + haiku A/Bs done on leak-fixed fixtures; soft baseline folded.
+sonnet-5 + haiku A/Bs done on leak-fixed fixtures; soft baseline folded;
+overhead delta decomposed (one-time ~500-token session-start tax).
 
 ## Verification path
 - `bash evals/tier0/run.sh` — exit 0, 200 assertions; `--self-test` —
@@ -51,8 +52,7 @@ sonnet-5 + haiku A/Bs done on leak-fixed fixtures; soft baseline folded.
 ## Next
 1. Close the false_ship-soft gap: key lifecycle-gate ceremony on claim
    blast radius (ship/done verdicts), not edit size; re-measure rates.
-2. Decompose overhead via stream-json (hook text vs skills vs turns);
-   pull the deployment clone on Pedro's machine.
+2. Pull the deployment clone on Pedro's machine.
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

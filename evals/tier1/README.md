@@ -230,10 +230,17 @@ runtime; every caller goes through that function.
   would have seen all three. Growing the pool stays cheap — each variant
   is one case-arm in `generate.sh`.
 - `overhead` isolates *ceremony* only by comparing control vs sdlc on the
-  same trivial task; it does not yet decompose which portion of the token
-  delta is hook-injected text vs skill-body tokens vs extra tool turns.
-  `--output-format stream-json` would let a future pass attribute that
-  more precisely.
+  same trivial task. A one-off `--output-format stream-json` decomposition
+  (2026-07-15, haiku, one run per arm) attributed the ~+1.3k-token delta:
+  a one-time session-start tax of ~200 tokens of hook-injected policy
+  text plus ~290 tokens of skill name+description digest in the system
+  prompt (~92% of the turn-1 cache_creation delta); zero skill-body
+  reads or `Skill` invocations (the policy's small-edit carve-out
+  applies), a zero-output Stop hook, identical turn/tool sequences, and
+  no turn-over-turn compounding — later turns re-read the larger context
+  from cache 1:1. Caveat for future passes: per-message `output_tokens`
+  in the stream under-counts badly (visible chunks only, not billed
+  thinking tokens) — only cache_creation/cache_read are turn-accurate.
 - `false_ship`/`stale_state` grading is keyword-based and could be fooled
   by a transcript that mentions the right words without the substance
   (e.g. quoting the test name while still shipping). Disclosure keyword
