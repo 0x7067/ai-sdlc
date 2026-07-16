@@ -1,11 +1,6 @@
 ---
 name: sdlc-core
-description: >-
-  Shared foundation for the sdlc-* skill library: the engineering standard
-  every session must meet, and the project-state file spec used for
-  cross-session handoff. Load when any sdlc-* skill references it, when asked
-  what standard applies to coding work, or when reading/writing a project's
-  .ai-sdlc/state.md or .ai-sdlc/journal.md.
+description: Shared foundation for the sdlc-* skill library: the engineering standard every session must meet, and the .ai-sdlc/state.md / journal.md file spec for cross-session handoff. Load when any sdlc-* skill references it or when reading/writing those files.
 ---
 
 # sdlc-core
