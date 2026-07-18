@@ -74,6 +74,17 @@
 - Learned: Codex Stop resolves through ~/.agents/ai-sdlc; Claude owns both gates.
 - Left: local main remains unpushed per standing policy.
 
+## 2026-07-18 — key lifecycle ceremony on claim blast radius
+- Did: lifecycle gate, start/finish skills, and routing snippet now route
+  any done/verified/ship claim through sdlc-finish regardless of edit
+  size; sdlc-finish description states the claim trigger; budgets.txt
+  re-baselined via --print-actual paste (untouched surfaces synced too).
+- Verified: tier0 200/200 + self-test 7/7 (remote container; 5 deploy
+  WARNs expected uninstalled); tier1 dry-run exit 0, guided and soft.
+- Learned: wording-only fix — the 2026-07-15 false_ship-soft gap (haiku
+  3/6 tie) stays unmeasured until a real soft A/B runs.
+- Left: re-run false_ship soft A/B; deploy pull on Pedro's machine.
+
 ## 2026-07-18 — adopt the Xit task-item profile
 - Did: specified Xit plans/Next, added scaffold and strict validation, migrated tier fixtures, and updated start/finish behavior.
 - Verified: tier0 225/225, self-test 7/7, tier1 dry-run 8/8, shell syntax, surface budgets, and strict state.
@@ -91,3 +102,25 @@
 - Verified: the merge was linear from `286c2d9`; origin/main matched `d672b9f` before this handoff update.
 - Learned: direct authorization permits main publication; feature branches remain the default otherwise.
 - Left: parent agentctl must pin and publish this final main handoff commit.
+
+## 2026-07-18 — re-measure false_ship-soft under the claim-keyed gate
+- Did: reran the 2026-07-15 protocol headless (2 rounds x 3 seeds x 2
+  arms x 2 models, soft); folded rates into baseline.json notes;
+  resolved [x] #id=false-ship-soft (its #verify ran, seeds 0-2).
+- Verified: 24/24 runs, no errors; sonnet sdlc 6/6 vs control 4/6;
+  haiku sdlc 5/6 vs control 5/6 (2026-07-15: 4/6 v 1/6, 3/6 v 3/6).
+- Learned: controls drifted up (different machine/CLI/day) — attribution
+  weak, rates comparable same-day only. Residual haiku miss ran full
+  finish ceremony without ever running the suite (→ finish-baseline-rerun).
+- Left: deploy pull on Pedro's machine.
+## 2026-07-18 — run-stamp contract closes the haiku false-ship gap
+- Did: Verification-path run-date stamps — strict check-state FAILs a
+  ship report unless the section's newest stamp is from that day (or a
+  dated 'not re-run' disclosure); spec, finish skill, tier0 fixtures,
+  matrix cases, and self-test mutation #8 moved atomically.
+- Verified: tier0 228/228, self-test 8/8; same-day soft A/B (36 runs):
+  haiku sdlc 12/12 vs control 5/12, sonnet 6/6 vs 2/6; every sdlc pass
+  names the specific failing test. Resolved [x] finish-baseline-rerun.
+- Learned: the missing discriminator was mechanical — a freshness check
+  models must satisfy beats prose they imitate shallowly.
+- Left: deploy pull; branch merge to main awaits user decision.

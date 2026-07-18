@@ -107,7 +107,7 @@ repo tracks to one of those axes. Two gates keep the proxies honest:
 
 - `bash evals/tier0/run.sh` — deterministic, seconds, no model calls. Run
   after any change to `skills/`, `hooks/`, or `scripts/`. `--self-test`
-  seeds 7 mutations and asserts the suite catches them.
+  seeds 8 mutations and asserts the suite catches them.
 - `bash evals/tier1/run.sh` — model-in-the-loop scenarios graded on
   outcomes (resumption Q&A, stale-state trap, false-SHIP honesty,
   overhead), with a control-vs-sdlc A/B mode. `--dry-run` is free;

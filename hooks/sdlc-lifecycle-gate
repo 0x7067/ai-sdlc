@@ -8,7 +8,7 @@ cat <<'EOF'
 SDLC LIFECYCLE (installed policy):
 1. Invoke Skill(sdlc-start) before the first substantive task of the session, and again to plan any multi-step or risky change. Small, reversible, obvious edits may go straight to the change.
 2. Execution is governed by the engineering standard (sdlc-core/references/STANDARD.md): root cause over patch, smallest coherent change, verification ladder.
-3. Invoke Skill(sdlc-finish) before declaring a nontrivial change done and before the session ends if anything changed — it is what makes the project resumable by the next session.
-Scale ceremony with blast radius, not file count — config that propagates to other agents/machines counts as high blast radius even when the diff is small.
+3. Invoke Skill(sdlc-finish) before claiming any change is done, verified, or ready to ship — however small the edit — and before the session ends if anything changed; it is what makes the project resumable by the next session.
+Scale ceremony with blast radius, not file count. The carve-out in (1) exempts the edit, never the claim: a done/ship verdict is high blast radius by itself — the next session builds on it unchecked — and so is config that propagates to other agents/machines, even when the diff is small.
 Plugin installs namespace the skills: ai-sdlc:sdlc-start, ai-sdlc:sdlc-finish.
 EOF

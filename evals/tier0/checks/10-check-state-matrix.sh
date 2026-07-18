@@ -127,6 +127,26 @@ run_check "$d"
 assert_exit "check-state.stale-updated.exit" "$CS_CODE" 0
 assert_contains "check-state.stale-updated.warn" "$CS_OUT" "modified more than 24h after"
 
+# --- i2. 'Verification path' stamp older than today ----------------------
+d="$tmp_root/vp-stale"; write_valid_state_dir "$d"
+set_line "$d/.ai-sdlc/state.md" 11 "Fixture verification path: none, synthetic fixture (last ran 2020-01-01)."
+run_check "$d"
+assert_exit "check-state.vp-stale.exit" "$CS_CODE" 0
+assert_contains "check-state.vp-stale.warn" "$CS_OUT" "re-run the commands before trusting them"
+run_check_strict "$d"
+assert_exit "check-state.vp-stale.strict-exit" "$CS_CODE" 1
+assert_contains "check-state.vp-stale.strict-msg" "$CS_OUT" "newest run-date stamp is 2020-01-01, not today"
+
+# --- i3. 'Verification path' has no run-date stamp at all -----------------
+d="$tmp_root/vp-no-stamp"; write_valid_state_dir "$d"
+set_line "$d/.ai-sdlc/state.md" 11 "Fixture verification path: none, never dated."
+run_check "$d"
+assert_exit "check-state.vp-no-stamp.exit" "$CS_CODE" 0
+assert_contains "check-state.vp-no-stamp.warn" "$CS_OUT" "has no run-date stamp"
+run_check_strict "$d"
+assert_exit "check-state.vp-no-stamp.strict-exit" "$CS_CODE" 1
+assert_contains "check-state.vp-no-stamp.strict-msg" "$CS_OUT" "has no run-date stamp"
+
 # --- j. 'Next' references external state (PR/deploy/other agent) --------
 d="$tmp_root/next-external"; write_valid_state_dir "$d"
 truncate_after_heading "$d/.ai-sdlc/state.md" "## Next"

@@ -8,17 +8,19 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Xit task-item grammar is implemented across the state contract, scaffold,
-validator, lifecycle skills, and executable evals, and published on `main`.
-Global skills and hooks resolve to this checkout.
+Branch claude/tune-instructions-hooks-ciulko: sdlc-finish ceremony keyed
+on claim blast radius, plus the Verification-path run-stamp contract
+(strict check-state FAILs a ship report whose newest vp stamp isn't from
+that day). Same-day soft A/B: haiku sdlc 12/12 vs control 5/12, sonnet
+6/6 vs 2/6 — discrimination restored; rates in baseline.json notes.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 225 assertions;
-  `--self-test` — 7/7 caught (2026-07-18).
-- `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` +
-  `compare.sh` — guided OK 2026-07-14, soft gated cells OK 2026-07-15;
-  dry-run 8/8 both styles; and
-  `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-15).
+- `bash evals/tier0/run.sh` — 228/228 in remote container 2026-07-18
+  (deploy WARNs expected uninstalled); `--self-test` — 8/8 caught.
+- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — exit 0
+  both prompt styles (2026-07-18); false_ship soft same-day A/B 36/36
+  runs completed 2026-07-18 (run-stamp contract arm-discriminates).
+- `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-18).
 
 ## Decisions
 - Routing is the SessionStart hook's job; frontmatter stays untouched.
@@ -49,7 +51,8 @@ Global skills and hooks resolve to this checkout.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-[ ] Close the false_ship-soft gap by keying ceremony to claim blast radius. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
+[ ] Pull this branch on the machine whose global symlinks resolve here, then restart harness sessions. #id=deploy-pull #owner=pedro
+[?] Merge claude/tune-instructions-hooks-ciulko into main (open a PR?). #id=merge-tune-branch #needs=user
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and
