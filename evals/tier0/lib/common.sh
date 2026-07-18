@@ -161,7 +161,7 @@ None yet.
 None known.
 
 ## Next
-1. Fixture next step.
+[ ] Complete the fixture next step. #id=fixture-next #verify=fixture-check
 EOF
   cat > "$dir/.ai-sdlc/journal.md" <<EOF
 # Journal
@@ -199,7 +199,7 @@ None yet.
 None known.
 
 ## Next
-1. Fixture next step.
+[ ] Complete the fixture next step. #id=fixture-next #verify=fixture-check
 EOF
 }
 

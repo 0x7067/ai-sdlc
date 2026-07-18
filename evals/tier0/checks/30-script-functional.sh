@@ -27,6 +27,7 @@ first_line=$(head -n1 "$d/.ai-sdlc/state.md")
 assert_eq "scaffold.create.first-line" "$first_line" "# Project State"
 assert_contains "scaffold.create.updated" "$(cat "$d/.ai-sdlc/state.md")" "updated: $(date +%F)"
 assert_contains "scaffold.create.placeholder" "$(cat "$d/.ai-sdlc/state.md")" "$(placeholder_token)"
+assert_contains "scaffold.create.xit-task" "$(cat "$d/.ai-sdlc/state.md")" "[ ] $(placeholder_token)"
 
 # Refuses to overwrite an existing state.md.
 out=$(bash "$SCAFFOLD_STATE_SH" "$d" 2>&1); code=$?

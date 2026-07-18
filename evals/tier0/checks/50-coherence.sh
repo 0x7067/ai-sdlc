@@ -34,6 +34,21 @@ for sec in "Goal" "Now" "Verification path" "Decisions" "Landmines" "Next"; do
   fi
 done
 
+# --- C1b: every Xit status enforced by check-state is documented ----------
+while IFS='|' read -r status slug; do
+  if grep -qF -- "$status" "$STATE_SPEC_MD" && grep -qF -- "$status" "$CHECK_STATE_SH"; then
+    pass "coherence.xit-status.$slug" "$status is documented and enforced"
+  else
+    fail "coherence.xit-status.$slug" "$status must appear in STATE-SPEC.md and check-state.sh"
+  fi
+done <<'EOF'
+[ ]|queued
+[@]|active
+[x]|verified
+[~]|terminal
+[?]|question
+EOF
+
 # --- C2: em-dash journal header form is documented where journals are specced
 emdash_pattern='## YYYY-MM-DD'
 if grep -F -- "$emdash_pattern" "$STATE_SPEC_MD" | grep -q '—'; then

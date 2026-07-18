@@ -58,6 +58,9 @@ records:
   assumption and keep moving.
 - **A verification path per step** — each step stoppable, each provable,
   so a killed session loses one step, not the plan.
+- **The Xit task profile** — record plan items under `state.md` `Next` using
+  `STATE-SPEC.md`; use `[@]` only for active work and `[x]` only after its
+  `#verify` proof has run.
 
 Ground every step in files you have actually opened. A plan built on an
 imagined codebase reads fine and fails on contact.

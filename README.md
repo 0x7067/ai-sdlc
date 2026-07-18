@@ -30,7 +30,9 @@ the bar and the model decides how to clear it.
 The handoff medium is two committed files per project:
 `.ai-sdlc/state.md` (current truth, <60 lines) and `.ai-sdlc/journal.md`
 (append-only session log), so any future session — any model, any harness —
-can cold-start from the repo alone.
+can cold-start from the repo alone. Agent plans and `state.md` `Next` use the
+Xit task profile defined in `references/STATE-SPEC.md`; no parallel task file
+is created by default.
 
 ## Install
 

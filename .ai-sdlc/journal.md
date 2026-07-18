@@ -84,3 +84,22 @@
 - Learned: wording-only fix — the 2026-07-15 false_ship-soft gap (haiku
   3/6 tie) stays unmeasured until a real soft A/B runs.
 - Left: re-run false_ship soft A/B; deploy pull on Pedro's machine.
+
+## 2026-07-18 — adopt the Xit task-item profile
+- Did: specified Xit plans/Next, added scaffold and strict validation, migrated tier fixtures, and updated start/finish behavior.
+- Verified: tier0 225/225, self-test 7/7, tier1 dry-run 8/8, shell syntax, surface budgets, and strict state.
+- Learned: validate mechanical line shape only; ownership, dependencies, deadlines, and proof quality remain model judgment.
+- Left: detached checkout is intentionally dirty/unpushed; publish through a branch and parent pin after review.
+
+## 2026-07-18 — publish the Xit profile branch
+- Did: committed the complete profile as `edcc330` on `codex/xit-task-profile` and pushed it to origin.
+- Verified: remote branch resolved to the implementation commit before this handoff update; strict state and diff hygiene passed.
+- Learned: feature-branch publication preserves the standing no-direct-main-push decision for AI-SDLC.
+- Left: parent agentctl must pin and publish this final handoff commit.
+
+## 2026-07-18 — fast-forward Xit into AI-SDLC main
+- Did: fast-forwarded `main` through `d672b9f` and pushed it with the user's direct authorization.
+- Verified: the merge was linear from `286c2d9`; origin/main matched `d672b9f` before this handoff update.
+- Learned: direct authorization permits main publication; feature branches remain the default otherwise.
+- Left: parent agentctl must pin and publish this final main handoff commit.
+

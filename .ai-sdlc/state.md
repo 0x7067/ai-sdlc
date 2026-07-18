@@ -8,14 +8,14 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Branch claude/tune-instructions-hooks-ciulko keys sdlc-finish ceremony on
-claim blast radius (gate, both skills, snippet); budgets re-baselined via
---print-actual paste. Effect on false_ship-soft is unmeasured. On Pedro's
-machine, local main stays ahead of origin and deliberately unpushed.
+Branch claude/tune-instructions-hooks-ciulko, reconciled with main's Xit
+task grammar, keys sdlc-finish ceremony on claim blast radius (gate, both
+skills, snippet); budgets re-baselined via --print-actual paste. The
+false_ship-soft re-measure is running headless in this remote session.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — 200/200 in remote container 2026-07-18
-  (5 deploy WARNs expected uninstalled); `--self-test` — 7/7 caught.
+- `bash evals/tier0/run.sh` — exit 0 in remote container 2026-07-18
+  (deploy WARNs expected uninstalled); `--self-test` — 7/7 caught.
 - `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — exit 0
   both prompt styles (2026-07-18); real A/Bs last run 2026-07-14/15.
 - `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-18).
@@ -25,17 +25,17 @@ machine, local main stays ahead of origin and deliberately unpushed.
 - Judgment a script can absorb goes in a script (orient/diff-inventory).
 - Word/size deltas are smell checks; acceptance = tier0/tier1 green.
 - Hook-grepped literals must be instructed by a live surface (tier0 C5/6).
-- Never push main from agent sessions; claude/* branch pushes are fine.
+- Push `main` only with direct user authorization; otherwise use feature branches.
 - Guided outcomes saturate >=haiku-4.5; cost is the guided A/B axis;
   soft (tier2) discriminates for sonnet. Gate only stable sdlc soft
   cells; flaky cells (control, false_ship) = score:null + rate notes.
 - Journal compaction is the sole sanctioned journal rewrite.
 - Current Stop event text is authoritative; transcript parsing is
   compatibility fallback. Clean trees clear dirty-duration markers.
+- Xit owns task-item syntax only; state/current truth and journal/history remain separate.
 
 ## Landmines
-- Pedro's machine only: Claude/Codex/Pi/oh-my-pi skills and Claude hooks
-  symlink to this checkout; repointing another checkout changes the live install.
+- Pedro's global agent skills and Claude hooks symlink here; edits change the live install.
 - Scaffold placeholder token: construct at runtime in eval code and never
   put in .ai-sdlc files; skills scripts may contain it literally.
 - tier0 asserts exact check-state.sh substrings ("target <=60", em-dash
@@ -49,9 +49,7 @@ machine, local main stays ahead of origin and deliberately unpushed.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-1. Re-measure false_ship soft A/B (sonnet+haiku) against the claim-keyed
-   wording; fold results into baseline notes.
-2. Pedro may push local main; agent sessions must not push main.
+[@] Close the false_ship-soft gap by keying ceremony to claim blast radius. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

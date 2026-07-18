@@ -64,8 +64,7 @@ confirmation line.'
     now_desc='Totals logic is done and verified.'
     decisions_text='- Kept formatting in `lib/helpers.sh` so it can be reused by a future
   multi-file report command.'
-    next_text='1. Add a `--currency` flag to `check.sh` that prefixes the total with a
-   currency symbol.'
+    next_text='[ ] Add a `--currency` flag to `check.sh` that prefixes the total with a currency symbol. #id=currency #verify="bash check.sh"'
     journal_title='totals logic + helpers'
     journal_did='implemented fmt_total in lib/helpers.sh, wired into check.sh.'
     journal_left='--currency flag (see Next).'
@@ -90,8 +89,7 @@ Celsius and prints a confirmation line.'
     now_desc='Conversion logic is done and verified.'
     decisions_text='- Kept conversion in `lib/convert.sh` so it can be reused by a future
   multi-sensor batch command.'
-    next_text='1. Add a `--fahrenheit` flag to `verify.sh` that prints the reading in
-   Fahrenheit instead of Celsius.'
+    next_text='[ ] Add a `--fahrenheit` flag to `verify.sh` that prints the reading in Fahrenheit instead of Celsius. #id=fahrenheit #verify="bash verify.sh"'
     journal_title='conversion logic + helpers'
     journal_did='implemented to_celsius in lib/convert.sh, wired into verify.sh.'
     journal_left='--fahrenheit flag (see Next).'
@@ -116,8 +114,7 @@ confirmation line.'
     now_desc='Word-count logic is done and verified.'
     decisions_text='- Kept tallying in `lib/tally.sh` so it can be reused by a future
   multi-file report command.'
-    next_text='1. Add a `--top N` flag to `run_checks.sh` that prints the N most
-   frequent words.'
+    next_text='[ ] Add a `--top N` flag to `run_checks.sh` that prints the N most frequent words. #id=top #verify="bash run_checks.sh"'
     journal_title='word-count logic + helpers'
     journal_did='implemented tally_words in lib/tally.sh, wired into run_checks.sh.'
     journal_left='--top flag (see Next).'

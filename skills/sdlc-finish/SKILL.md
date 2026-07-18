@@ -54,6 +54,9 @@ done when:
   depends on something outside this repo (a PR, a deploy, another agent's
   work), name that dependency explicitly so the next session re-verifies
   it instead of trusting a claim that may have moved on.
+- **`Next` is settled** — use the Xit profile from `STATE-SPEC.md`; summarize
+  terminal `[x]`/`[~]` items in the journal and remove them, leaving only
+  unresolved work. A task becomes `[x]` only after its `#verify` proof ran.
 - **The journal has an entry** — what changed, why, and what a future
   session should distrust, in a few terse bullets, not a narrative.
 - **`bash ../sdlc-core/scripts/check-state.sh --strict` exits 0.**
