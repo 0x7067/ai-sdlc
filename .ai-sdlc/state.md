@@ -49,6 +49,7 @@ validator, lifecycle skills, and executable evals, and published on
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
+[@] Fast-forward the Xit branch into AI-SDLC `main` and publish the handoff. #id=merge-xit-main #verify="origin/main SHA equals local main"
 [ ] Close the false_ship-soft gap by keying ceremony to claim blast radius. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
 
 ## History (digest through 2026-07-07)
