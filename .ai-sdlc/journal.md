@@ -79,3 +79,9 @@
 - Verified: tier0 225/225, self-test 7/7, tier1 dry-run 8/8, shell syntax, surface budgets, and strict state.
 - Learned: validate mechanical line shape only; ownership, dependencies, deadlines, and proof quality remain model judgment.
 - Left: detached checkout is intentionally dirty/unpushed; publish through a branch and parent pin after review.
+
+## 2026-07-18 — publish the Xit profile branch
+- Did: committed the complete profile as `edcc330` on `codex/xit-task-profile` and pushed it to origin.
+- Verified: remote branch resolved to the implementation commit before this handoff update; strict state and diff hygiene passed.
+- Learned: feature-branch publication preserves the standing no-direct-main-push decision for AI-SDLC.
+- Left: parent agentctl must pin and publish this final handoff commit.

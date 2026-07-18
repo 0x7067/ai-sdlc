@@ -9,8 +9,8 @@ plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
 Xit task-item grammar is implemented across the state contract, scaffold,
-validator, lifecycle skills, and executable evals. Global skills and hooks
-resolve here; detached HEAD remains deliberately dirty and unpushed for review.
+validator, lifecycle skills, and executable evals, and published on
+`codex/xit-task-profile`. Global skills and hooks resolve to this checkout.
 
 ## Verification path
 - `bash evals/tier0/run.sh` — exit 0, 225 assertions;
@@ -50,7 +50,6 @@ resolve here; detached HEAD remains deliberately dirty and unpushed for review.
 
 ## Next
 [ ] Close the false_ship-soft gap by keying ceremony to claim blast radius. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
-[@] Publish Xit changes through an AI-SDLC branch and parent pin. #id=publish-xit #verify="remote branch SHA equals local commit"
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and
