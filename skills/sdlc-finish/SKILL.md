@@ -1,6 +1,6 @@
 ---
 name: sdlc-finish
-description: End-of-work discipline for project repos: hostile validation of the diff before declaring nontrivial work done, and handoff (settle the tree, update state.md, append the journal) before ending a session with changes. Use even for small changes.
+description: End-of-work discipline for project repos: hostile validation of the diff before declaring work done, and handoff (settle the tree, update state.md, append the journal) before ending a session with changes. Triggered by the claim, not the diff — use before any done/ship verdict, even for small edits.
 ---
 
 # sdlc-finish — validate, then hand off
@@ -13,7 +13,10 @@ project resumable by a session that remembers nothing of this one.
 You wrote the change, which makes you its least suspicious reader. The
 objective is to switch sides: re-read the work as a reviewer who assumes
 it is broken, and let the evidence — not the memory of writing it — carry
-the claim. Validation is done when:
+the claim. Scale the depth to the blast radius of the claim, not the size
+of the diff: a done or ship verdict is inherited unchecked by everything
+downstream, so a one-line edit under that verdict still earns the full
+hostile read. Validation is done when:
 
 - **You have re-read the full diff cold** — run
   `bash ../sdlc-core/scripts/diff-inventory.sh` for the complete inventory

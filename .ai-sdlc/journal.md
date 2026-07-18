@@ -73,3 +73,14 @@
   Codex hook registrations target this checkout; tier0 205/205.
 - Learned: Codex Stop resolves through ~/.agents/ai-sdlc; Claude owns both gates.
 - Left: local main remains unpushed per standing policy.
+
+## 2026-07-18 — key lifecycle ceremony on claim blast radius
+- Did: lifecycle gate, start/finish skills, and routing snippet now route
+  any done/verified/ship claim through sdlc-finish regardless of edit
+  size; sdlc-finish description states the claim trigger; budgets.txt
+  re-baselined via --print-actual paste (untouched surfaces synced too).
+- Verified: tier0 200/200 + self-test 7/7 (remote container; 5 deploy
+  WARNs expected uninstalled); tier1 dry-run exit 0, guided and soft.
+- Learned: wording-only fix — the 2026-07-15 false_ship-soft gap (haiku
+  3/6 tie) stays unmeasured until a real soft A/B runs.
+- Left: re-run false_ship soft A/B; deploy pull on Pedro's machine.

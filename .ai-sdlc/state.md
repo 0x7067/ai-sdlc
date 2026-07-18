@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-15
+updated: 2026-07-18
 
 ## Goal
 A skill library (sdlc-start/finish/core) letting models — weaker ones
@@ -8,17 +8,17 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Local main contains origin/main's eval/marketplace work and the standalone
-deployment record via merge. Claude/Codex global skills and hooks resolve to
-this checkout; local main is ahead of origin and deliberately unpushed.
+Branch claude/tune-instructions-hooks-ciulko keys sdlc-finish ceremony on
+claim blast radius (gate, both skills, snippet); budgets re-baselined via
+--print-actual paste. Effect on false_ship-soft is unmeasured. On Pedro's
+machine, local main stays ahead of origin and deliberately unpushed.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 205 assertions on Pedro's machine;
-  `--self-test` — 7/7 caught (2026-07-15).
-- `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` +
-  `compare.sh` — guided OK 2026-07-14, soft gated cells OK 2026-07-15;
-  dry-run 8/8 both styles; and
-  `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-15).
+- `bash evals/tier0/run.sh` — 200/200 in remote container 2026-07-18
+  (5 deploy WARNs expected uninstalled); `--self-test` — 7/7 caught.
+- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — exit 0
+  both prompt styles (2026-07-18); real A/Bs last run 2026-07-14/15.
+- `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-18).
 
 ## Decisions
 - Routing is the SessionStart hook's job; frontmatter stays untouched.
@@ -49,7 +49,8 @@ this checkout; local main is ahead of origin and deliberately unpushed.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-1. Close false_ship-soft gap: key ceremony on claim blast radius; re-measure.
+1. Re-measure false_ship soft A/B (sonnet+haiku) against the claim-keyed
+   wording; fold results into baseline notes.
 2. Pedro may push local main; agent sessions must not push main.
 
 ## History (digest through 2026-07-07)
