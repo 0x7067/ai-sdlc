@@ -152,7 +152,7 @@ Fixture goal: exercise check-state.sh against a conformant state.md.
 Fixture now: nothing real, this is a tier0 test fixture.
 
 ## Verification path
-Fixture verification path: none, this is a synthetic fixture.
+Fixture verification path: none, synthetic fixture (last ran $(date +%F)).
 
 ## Decisions
 None yet.
@@ -190,7 +190,7 @@ Fixture goal: exercise a sdlc-core script against a conformant state.md.
 Fixture now: nothing real, this is a tier0 test fixture.
 
 ## Verification path
-Fixture verification path: none, this is a synthetic fixture.
+Fixture verification path: none, synthetic fixture (last ran $(date +%F)).
 
 ## Decisions
 None yet.

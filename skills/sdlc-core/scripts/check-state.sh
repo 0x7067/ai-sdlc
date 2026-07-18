@@ -119,6 +119,29 @@ if [ -n "$vp_start" ]; then
     [ -e "${1:-.}/$tok" ] || vp_missing="$vp_missing $tok"
   done
   [ -z "$vp_missing" ] || warn "state.md: 'Verification path' names path(s) missing from the repo:$vp_missing — stale claim? re-run the commands and fix the section, don't just re-stamp the date"
+
+  # Run-date stamps: each entry records when it last actually ran. Strict
+  # mode (the Stop hook's ship-report path) requires the newest stamp to be
+  # from today — so a ship verdict rests on a baseline run this session, or
+  # on an explicit, dated 'not re-run' disclosure. A stamp is a claim about
+  # a run that happened; re-stamping without re-running is lying to the
+  # next session, which no mechanical check can catch.
+  vp_newest=$(sed -n "$((vp_start + 1)),${vp_end}p" "$STATE" \
+    | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort | tail -1 || true)
+  today=$(date +%F)
+  if [ -z "$vp_newest" ]; then
+    if [ "$strict" -eq 1 ]; then
+      fail "state.md: 'Verification path' has no run-date stamp — run the commands this session and stamp each entry (YYYY-MM-DD), or mark it 'not re-run ($today)'"
+    else
+      warn "state.md: 'Verification path' has no run-date stamp — stamp each entry with the date it last actually ran (YYYY-MM-DD); strict handoff requires a stamp from that day"
+    fi
+  elif [ "$vp_newest" != "$today" ]; then
+    if [ "$strict" -eq 1 ]; then
+      fail "state.md: 'Verification path' newest run-date stamp is $vp_newest, not today ($today) — re-run the verification commands this session and re-stamp, or mark them 'not re-run ($today)'; a ship verdict on an unrun baseline is the false-SHIP failure"
+    else
+      warn "state.md: 'Verification path' newest run-date stamp is $vp_newest — re-run the commands before trusting them (strict handoff requires a $today stamp)"
+    fi
+  fi
 fi
 
 if grep -q 'TODO-SDLC' "$STATE"; then

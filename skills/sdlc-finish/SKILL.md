@@ -33,6 +33,12 @@ hostile read. Validation is done when:
   nothing about your change.
 - **The must-NOT-change list is confirmed**, the same way — by running,
   not by inspection.
+- **The verification baseline ran this session** — the `Verification
+  path` commands in state.md, re-run now and re-stamped with today's
+  date; the strict state check refuses a stale stamp. If a command
+  genuinely cannot run here, mark it `not re-run (today's date)` and say
+  so in the report — a disclosed gap is honest; an implied pass on an
+  unrun suite is the false-SHIP failure this library exists to stop.
 - **The evidence report** (format: STANDARD §7) states what was verified
   at which rung of the ladder, and — honestly — what was not.
 
