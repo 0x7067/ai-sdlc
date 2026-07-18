@@ -85,3 +85,9 @@
 - Verified: remote branch resolved to the implementation commit before this handoff update; strict state and diff hygiene passed.
 - Learned: feature-branch publication preserves the standing no-direct-main-push decision for AI-SDLC.
 - Left: parent agentctl must pin and publish this final handoff commit.
+
+## 2026-07-18 — fast-forward Xit into AI-SDLC main
+- Did: fast-forwarded `main` through `d672b9f` and pushed it with the user's direct authorization.
+- Verified: the merge was linear from `286c2d9`; origin/main matched `d672b9f` before this handoff update.
+- Learned: direct authorization permits main publication; feature branches remain the default otherwise.
+- Left: parent agentctl must pin and publish this final main handoff commit.

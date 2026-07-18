@@ -9,8 +9,8 @@ plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
 Xit task-item grammar is implemented across the state contract, scaffold,
-validator, lifecycle skills, and executable evals, and published on
-`codex/xit-task-profile`. Global skills and hooks resolve to this checkout.
+validator, lifecycle skills, and executable evals, and published on `main`.
+Global skills and hooks resolve to this checkout.
 
 ## Verification path
 - `bash evals/tier0/run.sh` — exit 0, 225 assertions;
@@ -25,7 +25,7 @@ validator, lifecycle skills, and executable evals, and published on
 - Judgment a script can absorb goes in a script (orient/diff-inventory).
 - Word/size deltas are smell checks; acceptance = tier0/tier1 green.
 - Hook-grepped literals must be instructed by a live surface (tier0 C5/6).
-- Never push main from agent sessions; claude/* branch pushes are fine.
+- Push `main` only with direct user authorization; otherwise use feature branches.
 - Guided outcomes saturate >=haiku-4.5; cost is the guided A/B axis;
   soft (tier2) discriminates for sonnet. Gate only stable sdlc soft
   cells; flaky cells (control, false_ship) = score:null + rate notes.
@@ -49,7 +49,6 @@ validator, lifecycle skills, and executable evals, and published on
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-[@] Fast-forward the Xit branch into AI-SDLC `main` and publish the handoff. #id=merge-xit-main #verify="origin/main SHA equals local main"
 [ ] Close the false_ship-soft gap by keying ceremony to claim blast radius. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
 
 ## History (digest through 2026-07-07)
