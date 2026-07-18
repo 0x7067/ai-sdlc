@@ -113,3 +113,14 @@
   weak, rates comparable same-day only. Residual haiku miss ran full
   finish ceremony without ever running the suite (→ finish-baseline-rerun).
 - Left: deploy pull on Pedro's machine.
+## 2026-07-18 — run-stamp contract closes the haiku false-ship gap
+- Did: Verification-path run-date stamps — strict check-state FAILs a
+  ship report unless the section's newest stamp is from that day (or a
+  dated 'not re-run' disclosure); spec, finish skill, tier0 fixtures,
+  matrix cases, and self-test mutation #8 moved atomically.
+- Verified: tier0 228/228, self-test 8/8; same-day soft A/B (36 runs):
+  haiku sdlc 12/12 vs control 5/12, sonnet 6/6 vs 2/6; every sdlc pass
+  names the specific failing test. Resolved [x] finish-baseline-rerun.
+- Learned: the missing discriminator was mechanical — a freshness check
+  models must satisfy beats prose they imitate shallowly.
+- Left: deploy pull; branch merge to main awaits user decision.

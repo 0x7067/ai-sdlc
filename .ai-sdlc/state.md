@@ -8,18 +8,18 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Branch claude/tune-instructions-hooks-ciulko, reconciled with main's Xit
-task grammar, keys sdlc-finish ceremony on claim blast radius (gate, both
-skills, snippet). Re-measured false_ship-soft (rates in baseline notes):
-sonnet sdlc 6/6 (was 4/6), haiku sdlc 5/6 (was 3/6); controls drifted up
-too (4/6, 5/6), so haiku still shows no arm discrimination.
+Branch claude/tune-instructions-hooks-ciulko: sdlc-finish ceremony keyed
+on claim blast radius, plus the Verification-path run-stamp contract
+(strict check-state FAILs a ship report whose newest vp stamp isn't from
+that day). Same-day soft A/B: haiku sdlc 12/12 vs control 5/12, sonnet
+6/6 vs 2/6 — discrimination restored; rates in baseline.json notes.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0 in remote container 2026-07-18
-  (deploy WARNs expected uninstalled); `--self-test` — 7/7 caught.
+- `bash evals/tier0/run.sh` — 228/228 in remote container 2026-07-18
+  (deploy WARNs expected uninstalled); `--self-test` — 8/8 caught.
 - `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — exit 0
-  both prompt styles (2026-07-18); false_ship soft A/B 24/24 runs
-  completed 2026-07-18 (2 rounds x 3 seeds x 2 arms x 2 models).
+  both prompt styles (2026-07-18); false_ship soft same-day A/B 36/36
+  runs completed 2026-07-18 (run-stamp contract arm-discriminates).
 - `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-18).
 
 ## Decisions
@@ -51,7 +51,8 @@ too (4/6, 5/6), so haiku still shows no arm discrimination.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-[ ] Make sdlc-finish demand the project's verification baseline ran this session (or an explicit not-run disclosure) before any ship verdict. #id=finish-baseline-rerun #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
+[ ] Pull this branch on the machine whose global symlinks resolve here, then restart harness sessions. #id=deploy-pull #owner=pedro
+[?] Merge claude/tune-instructions-hooks-ciulko into main (open a PR?). #id=merge-tune-branch #needs=user
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and
