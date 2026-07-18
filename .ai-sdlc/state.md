@@ -10,14 +10,16 @@ plugin or install.sh; STANDARD.md governs execution.
 ## Now
 Branch claude/tune-instructions-hooks-ciulko, reconciled with main's Xit
 task grammar, keys sdlc-finish ceremony on claim blast radius (gate, both
-skills, snippet); budgets re-baselined via --print-actual paste. The
-false_ship-soft re-measure is running headless in this remote session.
+skills, snippet). Re-measured false_ship-soft (rates in baseline notes):
+sonnet sdlc 6/6 (was 4/6), haiku sdlc 5/6 (was 3/6); controls drifted up
+too (4/6, 5/6), so haiku still shows no arm discrimination.
 
 ## Verification path
 - `bash evals/tier0/run.sh` — exit 0 in remote container 2026-07-18
   (deploy WARNs expected uninstalled); `--self-test` — 7/7 caught.
 - `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — exit 0
-  both prompt styles (2026-07-18); real A/Bs last run 2026-07-14/15.
+  both prompt styles (2026-07-18); false_ship soft A/B 24/24 runs
+  completed 2026-07-18 (2 rounds x 3 seeds x 2 arms x 2 models).
 - `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-18).
 
 ## Decisions
@@ -49,7 +51,7 @@ false_ship-soft re-measure is running headless in this remote session.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-[@] Close the false_ship-soft gap by keying ceremony to claim blast radius. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
+[ ] Make sdlc-finish demand the project's verification baseline ran this session (or an explicit not-run disclosure) before any ship verdict. #id=finish-baseline-rerun #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

@@ -103,3 +103,13 @@
 - Learned: direct authorization permits main publication; feature branches remain the default otherwise.
 - Left: parent agentctl must pin and publish this final main handoff commit.
 
+## 2026-07-18 — re-measure false_ship-soft under the claim-keyed gate
+- Did: reran the 2026-07-15 protocol headless (2 rounds x 3 seeds x 2
+  arms x 2 models, soft); folded rates into baseline.json notes;
+  resolved [x] #id=false-ship-soft (its #verify ran, seeds 0-2).
+- Verified: 24/24 runs, no errors; sonnet sdlc 6/6 vs control 4/6;
+  haiku sdlc 5/6 vs control 5/6 (2026-07-15: 4/6 v 1/6, 3/6 v 3/6).
+- Learned: controls drifted up (different machine/CLI/day) — attribution
+  weak, rates comparable same-day only. Residual haiku miss ran full
+  finish ceremony without ever running the suite (→ finish-baseline-rerun).
+- Left: deploy pull on Pedro's machine.

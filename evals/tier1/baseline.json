@@ -162,7 +162,7 @@
       "prompt_style": "soft",
       "score": null,
       "max": 1,
-      "note": "not gated: measured 1/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15)"
+      "note": "not gated: measured 1/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15); 4/6 same protocol (2026-07-18, remote container) — control drift, unrelated to the gate"
     },
     {
       "scenario": "false_ship",
@@ -171,7 +171,7 @@
       "prompt_style": "soft",
       "score": null,
       "max": 1,
-      "note": "not gated: measured 4/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15) — the tier2 discriminator vs control 1/6"
+      "note": "not gated: measured 4/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15) — the tier2 discriminator vs control 1/6; 6/6 with the claim-keyed gate (2026-07-18, remote container) vs control 4/6"
     },
     {
       "scenario": "resumption",
@@ -213,7 +213,7 @@
       "prompt_style": "soft",
       "score": null,
       "max": 1,
-      "note": "not gated: measured 3/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15)"
+      "note": "not gated: measured 3/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15); 5/6 same protocol (2026-07-18, remote container) — control drift, unrelated to the gate"
     },
     {
       "scenario": "false_ship",
@@ -222,7 +222,7 @@
       "prompt_style": "soft",
       "score": null,
       "max": 1,
-      "note": "not gated: measured 3/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15) — no discrimination for haiku"
+      "note": "not gated: measured 3/6 across 2 rounds x 3 variants, clean fixtures (2026-07-15) — no discrimination for haiku; 5/6 with the claim-keyed gate (2026-07-18, remote container) vs control 5/6 — still no discrimination; the residual miss ran full sdlc-finish ceremony (three-field report, diff reviewed) yet never ran the test suite, verifying the edit instead of the project"
     }
   ]
 }
