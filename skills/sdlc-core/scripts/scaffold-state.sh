@@ -44,7 +44,7 @@ TODO-SDLC: non-obvious traps (flaky tests, deceptive files, env quirks)
 — or "None known."
 
 ## Next
-1. TODO-SDLC: ordered, concrete, cold-startable steps.
+[ ] TODO-SDLC: one concrete, cold-startable outcome. #id=task-1 #verify="command proving completion"
 EOF
 
 echo "CREATED  $STATE"

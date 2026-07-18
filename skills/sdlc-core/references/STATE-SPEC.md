@@ -44,8 +44,25 @@ Non-obvious traps: flaky tests, files that look dead but aren't,
 env quirks, ordering constraints.
 
 ## Next
-Ordered, concrete next steps. Each one small enough to start cold.
+[ ] One concrete, cold-startable outcome. #id=task-1 #verify="command proving completion"
 ```
+
+### Xit task-item profile
+
+`Next` is empty or one [Xit 1.1](https://github.com/jotaen/xit/blob/main/Specification.md) item per line:
+
+```
+[status] [priority ]imperative outcome [tags] [-> due date]
+```
+
+- Statuses: `[ ]` queued, `[@]` active, `[x]` verified, `[~]` terminal, `[?]`
+  needs decision.
+- Priorities: none normal, `!` important, `!!` milestone-blocking; dots unused.
+- Tags: `#id`, `#owner`, `#after`, `#blocked-by`, `#needs`, and `#verify`.
+- Use `-> YYYY-MM-DD` for deadlines, never estimates.
+
+One `[@]` per owner; `[x]` only after `#verify`. At handoff, journal/remove
+`[x]` and `[~]`. Keep state/journal separate; no `tasks.xit` unless canonical.
 
 ### History — compaction target (tool-managed)
 

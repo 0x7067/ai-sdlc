@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-15
+updated: 2026-07-18
 
 ## Goal
 A skill library (sdlc-start/finish/core) letting models — weaker ones
@@ -8,13 +8,13 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Local main contains origin/main's eval/marketplace work and the standalone
-deployment record via merge. Claude/Codex global skills and hooks resolve to
-this checkout; local main is ahead of origin and deliberately unpushed.
+Xit task-item grammar is implemented across the state contract, scaffold,
+validator, lifecycle skills, and executable evals. Global skills and hooks
+resolve here; detached HEAD remains deliberately dirty and unpushed for review.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 205 assertions on Pedro's machine;
-  `--self-test` — 7/7 caught (2026-07-15).
+- `bash evals/tier0/run.sh` — exit 0, 225 assertions;
+  `--self-test` — 7/7 caught (2026-07-18).
 - `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` +
   `compare.sh` — guided OK 2026-07-14, soft gated cells OK 2026-07-15;
   dry-run 8/8 both styles; and
@@ -32,10 +32,10 @@ this checkout; local main is ahead of origin and deliberately unpushed.
 - Journal compaction is the sole sanctioned journal rewrite.
 - Current Stop event text is authoritative; transcript parsing is
   compatibility fallback. Clean trees clear dirty-duration markers.
+- Xit owns task-item syntax only; state/current truth and journal/history remain separate.
 
 ## Landmines
-- Pedro's machine only: Claude/Codex/Pi/oh-my-pi skills and Claude hooks
-  symlink to this checkout; repointing another checkout changes the live install.
+- Pedro's global agent skills and Claude hooks symlink here; edits change the live install.
 - Scaffold placeholder token: construct at runtime in eval code and never
   put in .ai-sdlc files; skills scripts may contain it literally.
 - tier0 asserts exact check-state.sh substrings ("target <=60", em-dash
@@ -49,8 +49,8 @@ this checkout; local main is ahead of origin and deliberately unpushed.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-1. Close false_ship-soft gap: key ceremony on claim blast radius; re-measure.
-2. Pedro may push local main; agent sessions must not push main.
+[ ] Close the false_ship-soft gap by keying ceremony to claim blast radius. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both --prompt-style soft"
+[@] Publish Xit changes through an AI-SDLC branch and parent pin. #id=publish-xit #verify="remote branch SHA equals local commit"
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

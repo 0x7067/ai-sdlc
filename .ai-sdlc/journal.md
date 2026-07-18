@@ -73,3 +73,9 @@
   Codex hook registrations target this checkout; tier0 205/205.
 - Learned: Codex Stop resolves through ~/.agents/ai-sdlc; Claude owns both gates.
 - Left: local main remains unpushed per standing policy.
+
+## 2026-07-18 — adopt the Xit task-item profile
+- Did: specified Xit plans/Next, added scaffold and strict validation, migrated tier fixtures, and updated start/finish behavior.
+- Verified: tier0 225/225, self-test 7/7, tier1 dry-run 8/8, shell syntax, surface budgets, and strict state.
+- Learned: validate mechanical line shape only; ownership, dependencies, deadlines, and proof quality remain model judgment.
+- Left: detached checkout is intentionally dirty/unpushed; publish through a branch and parent pin after review.

@@ -50,7 +50,7 @@ README and scaffolding only; no code yet.
 - None known.
 
 ## Next
-1. Fix the README typo ("recieve" -> "receive").
+[ ] Fix the README typo ("recieve" -> "receive"). #id=readme-typo #verify="rg -n recieve README.md"
 EOF
 
 cat > "$repo/.ai-sdlc/journal.md" <<'EOF'

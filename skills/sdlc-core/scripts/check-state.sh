@@ -67,6 +67,34 @@ if [ -n "$next_start" ]; then
   next_end=$(awk -v s="$next_start" 'NR > s && /^## / { print NR - 1; exit }' "$STATE")
   [ -z "$next_end" ] && next_end=$(wc -l < "$STATE" | tr -d ' ')
   next_body=$(sed -n "$((next_start + 1)),${next_end}p" "$STATE")
+
+  bad_next=$(printf '%s\n' "$next_body" | awk -v offset="$next_start" '
+    function valid(line, rest, token) {
+      if (line !~ /^\[( |x|@|~|\?)\] +/) return 0
+      rest = line
+      sub(/^\[( |x|@|~|\?)\] +/, "", rest)
+      if (rest ~ /^[.!]+ +/) {
+        token = rest
+        sub(/ .*/, "", token)
+        if (token != "!" && token != "!!") return 0
+        sub(/^!!? +/, "", rest)
+      }
+      return rest ~ /[^[:space:]]/
+    }
+    NF && !valid($0) { print offset + NR ":" $0 }
+  ')
+  [ -z "$bad_next" ] || fail "state.md: invalid Xit task item(s) in 'Next' (use [ ], [@], [x], [~], or [?], optionally followed by ! or !!):
+$bad_next"
+
+  terminal_next=$(printf '%s\n' "$next_body" | grep -nE '^\[(x|~)\] +' || true)
+  if [ -n "$terminal_next" ]; then
+    if [ "$strict" -eq 1 ]; then
+      fail "state.md: terminal [x]/[~] item(s) remain in 'Next' — summarize them in journal.md and remove them before handoff"
+    else
+      warn "state.md: terminal [x]/[~] item(s) remain in 'Next' — summarize and remove them at sdlc-finish"
+    fi
+  fi
+
   if printf '%s' "$next_body" | grep -qiE 'PR ?#|pull request|deploy|\bmerged?\b|other agent|another agent'; then
     warn "state.md: 'Next' references external state (PR/deploy/other agent) — re-verify it before trusting, don't assume it still holds"
   fi
