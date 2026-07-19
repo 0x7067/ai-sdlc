@@ -1,6 +1,6 @@
 ---
 name: sdlc-finish
-description: End-of-work discipline for project repos: hostile validation of the diff before declaring work done, and handoff (settle the tree, update state.md, append the journal) before ending a session with changes. Triggered by the claim, not the diff — use before any done/ship verdict, even for small edits.
+description: "End-of-work discipline for project repos: hostile validation of the diff before declaring work done, and handoff (settle the tree, update state.md, append the journal) before ending a session with changes. Triggered by the claim, not the diff — use before any done/ship verdict, even for small edits."
 ---
 
 # sdlc-finish — validate, then hand off

@@ -1,6 +1,6 @@
 ---
 name: sdlc-start
-description: Start-of-work discipline for project repos: orientation before the first substantive task of a session, and planning whenever a task is multi-step, risky, ambiguous, or touches config that propagates beyond this machine. Execution is governed by sdlc-core.
+description: "Start-of-work discipline for project repos: orientation before the first substantive task of a session, and planning whenever a task is multi-step, risky, ambiguous, or touches config that propagates beyond this machine. Execution is governed by sdlc-core."
 ---
 
 # sdlc-start — orient, then plan
