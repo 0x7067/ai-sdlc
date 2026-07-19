@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-18
+updated: 2026-07-19
 
 ## Goal
 A skill library (sdlc-start/finish/core) letting models — weaker ones
@@ -8,19 +8,14 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Branch claude/tune-instructions-hooks-ciulko: sdlc-finish ceremony keyed
-on claim blast radius, plus the Verification-path run-stamp contract
-(strict check-state FAILs a ship report whose newest vp stamp isn't from
-that day). Same-day soft A/B: haiku sdlc 12/12 vs control 5/12, sonnet
-6/6 vs 2/6 — discrimination restored; rates in baseline.json notes.
+Main includes the claim-blast-radius finish ceremony and Verification-path
+run-stamp contract from PR #2. Local follow-up `cffb193` quotes all three
+skill descriptions so Pi parses their YAML frontmatter; publication is pending.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — 228/228 in remote container 2026-07-18
-  (deploy WARNs expected uninstalled); `--self-test` — 8/8 caught.
-- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — exit 0
-  both prompt styles (2026-07-18); false_ship soft same-day A/B 36/36
-  runs completed 2026-07-18 (run-stamp contract arm-discriminates).
-- `bash skills/sdlc-core/scripts/check-state.sh .` — OK (2026-07-18).
+- `bash evals/tier0/run.sh` — 233/233 (2026-07-19); `--self-test` not re-run (2026-07-19).
+- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — not re-run (2026-07-19); prior false_ship soft A/B remains recorded in `evals/tier1/baseline.json`.
+- `bash skills/sdlc-core/scripts/check-state.sh --strict` — OK (2026-07-19).
 
 ## Decisions
 - Routing is the SessionStart hook's job; frontmatter stays untouched.
@@ -51,8 +46,7 @@ that day). Same-day soft A/B: haiku sdlc 12/12 vs control 5/12, sonnet
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-[ ] Pull this branch on the machine whose global symlinks resolve here, then restart harness sessions. #id=deploy-pull #owner=pedro
-[?] Merge claude/tune-instructions-hooks-ciulko into main (open a PR?). #id=merge-tune-branch #needs=user
+[ ] Restart fresh harness sessions so they load the merged claim-blast-radius and run-stamp guidance. #id=restart-harnesses #owner=pedro #verify="fresh sessions expose current sdlc-start/core/finish"
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

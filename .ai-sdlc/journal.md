@@ -124,3 +124,9 @@
 - Learned: the missing discriminator was mechanical — a freshness check
   models must satisfy beats prose they imitate shallowly.
 - Left: deploy pull; branch merge to main awaits user decision.
+
+## 2026-07-19 — carry Pi-safe metadata over the merged main
+- Did: rebased the YAML-quoting change onto PR #2, retaining its newer claim-blast-radius wording, and refreshed the main handoff truth.
+- Verified: tier0 233/233, strict state, clean rebase, and all three skill descriptions parse as quoted YAML scalars.
+- Learned: the run-stamp gate correctly blocks publication when a prior-day verification section is merely inherited.
+- Left: tier0 self-test and tier1 were explicitly not rerun; fresh harness sessions still need to reload the merged guidance.
