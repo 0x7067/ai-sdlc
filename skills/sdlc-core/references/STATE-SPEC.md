@@ -12,6 +12,13 @@ Both are committed to the repo (they are project knowledge, not scratch).
 If the repo's conventions forbid committing them, gitignore them and note
 that in state.md itself.
 
+When work ships through a pull request, these artifacts travel with the
+implementation on the same pull request and describe its intended settled
+state before final CI and merge. Amend the original branch when they become
+stale; do not create a follow-up AI-SDLC-only pull request just to repair the
+handoff. Post-merge readback belongs in the final report unless it uncovers a
+substantive new defect.
+
 ## state.md — current truth
 
 Keep it under 60 lines (hard cap 120 — the hygiene check below fails past

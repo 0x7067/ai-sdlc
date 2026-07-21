@@ -148,3 +148,21 @@
 - Verified: tier0 214/214, self-test 8/8, direct live-hook smoke, strict state, and diff hygiene passed.
 - Learned: the older standalone checkout shares this remote and must merge the published head rather than push a competing main.
 - Left: tier1 and a fresh Codex-process probe were not rerun; the parent must pin the final reconciled ai-sdlc SHA.
+
+## 2026-07-20 — keep AI-SDLC work inside its original PR
+- Did: made same-PR handoff a finish/spec invariant and added a semantic Tier 0 coherence guard.
+- Verified: tier0 216/216, self-test 8/8, Tier 1 dry-run 8/8 scenario arms, and surface budgets within tolerance.
+- Learned: post-merge readback is report evidence; only a substantive newly discovered defect starts new work.
+- Left: changes are intentionally uncommitted and unpushed; no paid Tier 1 behavioral run was performed.
+
+## 2026-07-20 — attempt the paid guided Tier 1 evaluation
+- Did: invoked the real all-scenario, both-arm Tier 1 command; it stopped before model calls.
+- Verified: Claude CLI is logged in, but neither supported token variable is exported; no calls or charges occurred.
+- Learned: the isolated A/B homes cannot safely reuse the normal Claude profile without contaminating control.
+- Left: export `CLAUDE_CODE_OAUTH_TOKEN` or `ANTHROPIC_API_KEY`, then rerun the recorded command.
+
+## 2026-07-20 — authorize direct-main publication of the one-PR rule
+- Did: finalized the implementation, regression guard, state, and journal for one atomic direct-main commit.
+- Verified: local main matched origin/main before commit; tier0 216/216, self-test 8/8, strict state, and diff hygiene passed.
+- Learned: the failed paid Tier 1 attempt remains a disclosed follow-up, not publication evidence.
+- Left: export supported auth and run paid Tier 1; restart fresh harness sessions to load the guidance.

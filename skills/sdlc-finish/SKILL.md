@@ -52,6 +52,13 @@ done when:
 
 - **The tree is settled** — committed, or deliberately left dirty with the
   reason stated in state.md. No silent half-states.
+- **A pull request is self-contained** — when work ships through a PR, its
+  implementation, verification evidence, `state.md`, and `journal.md` settle
+  on the same pull request before final CI and merge. If the handoff changes
+  while the PR is open, update that branch and rerun its required checks.
+  Never open a follow-up AI-SDLC-only pull request merely to close or repair
+  the original handoff. Record post-merge readback in the final report; only
+  a newly discovered substantive defect starts new work.
 - **`.ai-sdlc/state.md` is the current truth** — goals, decisions, next
   steps, and known landmines as they stand *now*, not as they stood when
   the session started. Format: `../sdlc-core/references/STATE-SPEC.md`.

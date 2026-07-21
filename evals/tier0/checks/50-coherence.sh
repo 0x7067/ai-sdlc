@@ -119,3 +119,13 @@ if grep -qF "Skill(sdlc-finish)" "$HOOK_HANDOFF"; then
 else
   fail "coherence.handoff-gate-skill-ref" "sdlc-handoff-gate's messages do not reference Skill(sdlc-finish)"
 fi
+
+# --- C12: PR handoff self-containment is present in procedure and spec ----
+for surface in "$REPO_ROOT/skills/sdlc-finish/SKILL.md" "$STATE_SPEC_MD"; do
+  surface_slug=$(basename "$(dirname "$surface")")-$(basename "$surface")
+  if grep -qF -- "same pull request" "$surface" && grep -qF -- "follow-up AI-SDLC-only pull request" "$surface"; then
+    pass "coherence.pr-self-contained.$surface_slug" "$(basename "$surface") keeps implementation and AI-SDLC handoff in one PR"
+  else
+    fail "coherence.pr-self-contained.$surface_slug" "$(basename "$surface") must require the same pull request and forbid a follow-up AI-SDLC-only pull request"
+  fi
+done

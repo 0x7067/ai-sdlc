@@ -8,12 +8,12 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Main removes the dirty-tree timer that interrupted ordinary Codex responses.
-Explicit three-field completion claims still run strict state validation.
+Main carries the PR self-containment rule and Tier 0 guard. Paid Tier 1
+remains blocked until an auth token is explicitly exported.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — 214/214; `--self-test` caught 8/8 seeded regressions (2026-07-20).
-- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — not re-run (2026-07-19); prior false_ship soft A/B remains recorded in `evals/tier1/baseline.json`.
+- `bash evals/tier0/run.sh` — 216/216; `--self-test` caught 8/8 seeded regressions (2026-07-20).
+- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — 8/8 scenario-arm runs completed without errors (2026-07-20); not a paid behavioral evaluation.
 - `bash skills/sdlc-core/scripts/check-state.sh --strict` — OK (2026-07-20).
 
 ## Decisions
@@ -26,6 +26,7 @@ Explicit three-field completion claims still run strict state validation.
   soft (tier2) discriminates for sonnet. Gate only stable sdlc soft
   cells; flaky cells (control, false_ship) = score:null + rate notes.
 - Journal compaction is the sole sanctioned journal rewrite.
+- A PR carries its implementation, verification, state, and journal together; no SDLC-only cleanup PR.
 - Current Stop event text is authoritative; transcript parsing is
   compatibility fallback. Only explicit three-field completion claims block.
 - Xit owns task-item syntax only; state/current truth and journal/history remain separate.
@@ -45,6 +46,7 @@ Explicit three-field completion claims still run strict state validation.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
+[?] Export Tier 1 auth, then run the guided control-vs-SDLC evaluation. #id=paid-tier1 #owner=pedro #needs="CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY" #verify="bash evals/tier1/run.sh --scenario all --arm both"
 [ ] Restart fresh harness sessions so they load the merged claim-blast-radius and run-stamp guidance. #id=restart-harnesses #owner=pedro #verify="fresh sessions expose current sdlc-start/core/finish"
 
 ## History (digest through 2026-07-07)
