@@ -66,8 +66,6 @@ run_handoff() { # run_handoff <cwd> <session_id> <stop_hook_active> <transcript_
   HG_ERR=$(cat "$errfile"); rm -f "$errfile"
 }
 
-marker_path() { printf '%s/sdlc-handoff-gate-%s' "$fakehome/tmp" "$1"; }
-
 make_dirty() { # make_dirty <repo> -- adds an untracked file
   touch "$1/untracked-fixture.txt"
 }
@@ -101,31 +99,28 @@ assert_exit "hook.lifecycle.scratch.exit" "$code" 0
 assert_empty "hook.lifecycle.scratch.silent" "$out"
 
 # ============================================================================
-# sdlc-handoff-gate (Stop) — each case gets its own session_id (own marker).
+# sdlc-handoff-gate (Stop)
 # ============================================================================
 
 empty_transcript="$sandbox/empty.jsonl"; : > "$empty_transcript"
 
-# H1 — outside a git repo: silent, exit 0, no marker.
+# H1 — outside a git repo: silent, exit 0.
 run_handoff "$nongit" "h1" false "$empty_transcript"
 assert_exit "hook.handoff.non-git.exit" "$HG_CODE" 0
 assert_empty "hook.handoff.non-git.stdout" "$HG_OUT"
 assert_empty "hook.handoff.non-git.stderr" "$HG_ERR"
-assert_file_absent "hook.handoff.non-git.no-marker" "$(marker_path h1)"
 
-# H2 — stop_hook_active=true: silent, exit 0, no marker (short-circuits
+# H2 — stop_hook_active=true: silent, exit 0 (short-circuits
 # before any of the other logic, so a blocked stop can't re-block itself).
 run_handoff "$repo" "h2" true "$empty_transcript"
 assert_exit "hook.handoff.stop-active.exit" "$HG_CODE" 0
 assert_empty "hook.handoff.stop-active.stdout" "$HG_OUT"
 assert_empty "hook.handoff.stop-active.stderr" "$HG_ERR"
-assert_file_absent "hook.handoff.stop-active.no-marker" "$(marker_path h2)"
 
 # H2b — explicit scratch mode bypasses all handoff enforcement.
 run_handoff "$repo" "h2b" false "$empty_transcript" "" 1
 assert_exit "hook.handoff.scratch.exit" "$HG_CODE" 0
 assert_empty "hook.handoff.scratch.stderr" "$HG_ERR"
-assert_file_absent "hook.handoff.scratch.no-marker" "$(marker_path h2b)"
 
 # H3 — branch A: the exact report issued, .ai-sdlc/ absent -> block.
 t="$sandbox/h3.jsonl"; write_transcript "$t" "What changed: fixture
@@ -157,7 +152,6 @@ What was verified: fixture
 Remaining risk: none"
 run_handoff "$repo" "h5" false "$t"
 assert_exit "hook.handoff.branchA-pass.exit" "$HG_CODE" 0
-assert_file_exists "hook.handoff.branchA-pass.dirty-marker" "$(marker_path h5)"
 rm -rf "$repo/.ai-sdlc"
 
 # H5b — branch A: current event text wins over a lagging transcript.
@@ -167,7 +161,6 @@ run_handoff "$repo" "h5b" false "$t" "" 0 "What changed: fixture
 What was verified: fixture
 Remaining risk: none"
 assert_exit "hook.handoff.branchA-current-message-pass.exit" "$HG_CODE" 0
-assert_file_exists "hook.handoff.branchA-current-message-pass.dirty-marker" "$(marker_path h5b)"
 rm -rf "$repo/.ai-sdlc"
 
 # H5c — branch A fallback: the Codex rollout shape triggers validation when
@@ -178,10 +171,9 @@ What was verified: fixture
 Remaining risk: none"
 run_handoff "$repo" "h5c" false "$t"
 assert_exit "hook.handoff.branchA-codex-pass.exit" "$HG_CODE" 0
-assert_file_exists "hook.handoff.branchA-codex-pass.dirty-marker" "$(marker_path h5c)"
 rm -rf "$repo/.ai-sdlc"
 
-# H6 — retired VERDICT token does not trigger validation; dirty-tree logic arms.
+# H6 — retired VERDICT token does not trigger validation.
 make_dirty "$repo"
 t="$sandbox/h6.jsonl"; write_transcript "$t" "VERDICT: SHIP
 the change is validated."
@@ -195,47 +187,13 @@ t="$sandbox/h7.jsonl"; write_transcript "$t" "Handoff report
 this retired phrase is inert."
 run_handoff "$repo" "h7" false "$t"
 assert_exit "hook.handoff.retired-handoff.exit" "$HG_CODE" 0
-assert_file_absent "hook.handoff.retired-handoff.no-clean-marker" "$(marker_path h7)"
 
-# H8 — branch C: first stop ever for this session (marker absent) arms the
-# marker without nagging, even though the tree is dirty.
+# H8 — an ordinary response in a dirty tree never blocks or emits a reminder.
 make_dirty "$repo"
 run_handoff "$repo" "h8" false "$empty_transcript"
-assert_exit "hook.handoff.branchC-first-stop.exit" "$HG_CODE" 0
-assert_empty "hook.handoff.branchC-first-stop.stderr" "$HG_ERR"
-assert_file_exists "hook.handoff.branchC-first-stop.marker" "$(marker_path h8)"
-
-# H9 — branch C: marker older than 45 minutes, tree still dirty -> nag.
-touch -t "$(past_touch_stamp 46)" "$(marker_path h8)"
-run_handoff "$repo" "h8" false "$empty_transcript"
-assert_exit "hook.handoff.branchC-nag.exit" "$HG_CODE" 2
-assert_contains "hook.handoff.branchC-nag.msg" "$HG_ERR" "45 minutes"
-
-# H10 — branch C: marker fresh (<45min), tree dirty -> no nag.
-run_handoff "$repo" "h8" false "$empty_transcript"
-assert_exit "hook.handoff.branchC-fresh-marker.exit" "$HG_CODE" 0
-assert_empty "hook.handoff.branchC-fresh-marker.stderr" "$HG_ERR"
-
-# H11 — branch C: marker present (any age) but tree clean -> no nag.
-touch -t "$(past_touch_stamp 90)" "$(marker_path h8)"
-make_clean "$repo"
-run_handoff "$repo" "h8" false "$empty_transcript"
-assert_exit "hook.handoff.branchC-clean-tree.exit" "$HG_CODE" 0
-assert_empty "hook.handoff.branchC-clean-tree.stderr" "$HG_ERR"
-assert_file_absent "hook.handoff.branchC-clean-tree.marker-removed" "$(marker_path h8)"
-
-# H11b — an old marker from clean session time cannot make a new dirty period
-# look 45 minutes old.
-touch "$(marker_path h11b)"
-touch -t "$(past_touch_stamp 90)" "$(marker_path h11b)"
-run_handoff "$repo" "h11b" false "$empty_transcript"
-assert_file_absent "hook.handoff.branchC-old-clean-marker-removed" "$(marker_path h11b)"
-make_dirty "$repo"
-run_handoff "$repo" "h11b" false "$empty_transcript"
-assert_exit "hook.handoff.branchC-new-dirty-period.exit" "$HG_CODE" 0
-assert_empty "hook.handoff.branchC-new-dirty-period.stderr" "$HG_ERR"
-assert_file_exists "hook.handoff.branchC-new-dirty-period.marker" "$(marker_path h11b)"
-assert_empty "hook.handoff.branchC-new-dirty-period.marker-fresh" "$(find "$(marker_path h11b)" -mmin +45 2>/dev/null)"
+assert_exit "hook.handoff.dirty-ordinary-response.exit" "$HG_CODE" 0
+assert_empty "hook.handoff.dirty-ordinary-response.stdout" "$HG_OUT"
+assert_empty "hook.handoff.dirty-ordinary-response.stderr" "$HG_ERR"
 make_clean "$repo"
 
 # H12 — no jq on PATH: the hook refuses clearly before parsing input or
@@ -245,7 +203,7 @@ make_clean "$repo"
 # where /bin symlinks to /usr/bin, jq stays reachable through the alias).
 shim="$sandbox/nojq-bin"; mkdir -p "$shim"
 shim_ok=1
-for tool in bash cat git grep find touch rm; do
+for tool in bash cat git grep; do
   p=$(command -v "$tool" 2>/dev/null) || { shim_ok=0; missing="$tool"; break; }
   ln -s "$p" "$shim/$tool"
 done

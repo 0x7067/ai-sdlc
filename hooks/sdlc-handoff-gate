@@ -19,20 +19,10 @@ git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 
 [ "$(printf '%s' "$input" | jq -r '.stop_hook_active == true' 2>/dev/null)" = "true" ] && exit 0
 
-json_str() {
-  printf '%s' "$input" | jq -r --arg key "$1" '.[$key] // empty | strings' 2>/dev/null
-}
-
-session_id=$(json_str session_id)
-[ -n "$session_id" ] || session_id=unknown
-transcript=$(json_str transcript_path)
-marker="${TMPDIR:-/tmp}/sdlc-handoff-gate-${session_id}"
-
-dirty() { [ -n "$(git status --porcelain 2>/dev/null)" ]; }
+transcript=$(printf '%s' "$input" | jq -r '.transcript_path // empty | strings' 2>/dev/null)
 
 block() {
   printf '%s\n' "$1" >&2
-  touch "$marker" 2>/dev/null || true
   exit 2
 }
 
@@ -82,25 +72,7 @@ if printf '%s\n' "$last_text" | grep -q '^What changed:' \
 $out
 Fix every FAIL line, re-run check-state.sh --strict until it prints 'check-state: OK', then re-issue the report."
   fi
-  if dirty; then
-    touch "$marker" 2>/dev/null || true
-  else
-    rm -f "$marker" 2>/dev/null || true
-  fi
   exit 0
-fi
-
-# B — time the observed dirty period, not the age of the session.
-if ! dirty; then
-  rm -f "$marker" 2>/dev/null || true
-  exit 0
-fi
-if [ ! -f "$marker" ]; then
-  touch "$marker" 2>/dev/null || true
-  exit 0
-fi
-if [ -n "$(find "$marker" -mmin +45 2>/dev/null)" ]; then
-  block "sdlc gate: the working tree has had uncommitted changes for over 45 minutes. If this session is wrapping up, invoke Skill(sdlc-finish); otherwise continue — this reminder repeats roughly every 45 minutes while changes sit uncommitted."
 fi
 
 exit 0

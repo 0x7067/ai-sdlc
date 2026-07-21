@@ -130,3 +130,15 @@
 - Verified: tier0 233/233, strict state, clean rebase, and all three skill descriptions parse as quoted YAML scalars.
 - Learned: the run-stamp gate correctly blocks publication when a prior-day verification section is merely inherited.
 - Left: tier0 self-test and tier1 were explicitly not rerun; fresh harness sessions still need to reload the merged guidance.
+
+## 2026-07-20 — remove the Codex-breaking dirty-tree Stop timer
+- Did: removed the 45-minute blocking reminder and marker state from the canonical live hook; updated regression tests, docs, and its reduced surface budget.
+- Verified: tier0 214/214, self-test 8/8, dirty ordinary-response regression, and diff check passed.
+- Learned: a Stop-hook reminder implemented with exit 2 becomes a new Codex user turn and disrupts the answer it meant to annotate.
+- Left: changes are intentionally uncommitted and unpushed; tier1 and a fresh Codex-process probe were not run.
+
+## 2026-07-20 — authorize timer-removal publication
+- Did: finalized the canonical live checkout for direct main publication; explicit completion-claim blocking remains unchanged.
+- Verified: tier0 214/214, self-test 8/8, direct live-hook smoke, strict state, and diff hygiene passed.
+- Learned: the older standalone checkout shares this remote and must merge the published head rather than push a competing main.
+- Left: tier1 and a fresh Codex-process probe were not rerun; the parent must pin the final reconciled ai-sdlc SHA.

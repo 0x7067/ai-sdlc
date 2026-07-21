@@ -92,8 +92,6 @@ lifecycle the SessionStart gate opens. When the final response contains all
 three report fields — `What changed:`, `What was verified:`, and
 `Remaining risk:` — it runs `check-state.sh --strict`, blocking the stop with
 the FAIL lines when the persisted artifacts do not support the report.
-Independently, it nudges at most every ~45 minutes while uncommitted changes
-sit.
 `stop_hook_active` keeps it from looping. Current-message and Claude/Codex
 JSONL transcript inspection use `jq` exclusively; malformed JSON degrades to
 empty extraction, while a missing `jq` dependency blocks with an actionable
@@ -140,7 +138,7 @@ skills/sdlc-*/SKILL.md           the three skills (start, finish, core)
 skills/sdlc-core/references/     STANDARD.md, STATE-SPEC.md
 skills/sdlc-core/scripts/        orient, check-state, scaffold-state, compact-journal, diff-inventory
 hooks/sdlc-lifecycle-gate        SessionStart hook (git repos only)
-hooks/sdlc-handoff-gate          Stop hook: handoff verification + dirty-tree nudge
+hooks/sdlc-handoff-gate          Stop hook: explicit handoff-claim verification
 hooks/hooks.json                 plugin hook registration (${CLAUDE_PLUGIN_ROOT})
 agents-md/sdlc-lifecycle.md      routing snippet for AGENTS.md / CLAUDE.md
 install.sh                       symlink installer for non-plugin harnesses

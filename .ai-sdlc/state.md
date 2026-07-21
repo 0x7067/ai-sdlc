@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-19
+updated: 2026-07-20
 
 ## Goal
 A skill library (sdlc-start/finish/core) letting models — weaker ones
@@ -8,14 +8,13 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Main includes the claim-blast-radius finish ceremony and Verification-path
-run-stamp contract from PR #2. Local follow-up `cffb193` quotes all three
-skill descriptions so Pi parses their YAML frontmatter; publication is pending.
+Main removes the dirty-tree timer that interrupted ordinary Codex responses.
+Explicit three-field completion claims still run strict state validation.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — 233/233 (2026-07-19); `--self-test` not re-run (2026-07-19).
+- `bash evals/tier0/run.sh` — 214/214; `--self-test` caught 8/8 seeded regressions (2026-07-20).
 - `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — not re-run (2026-07-19); prior false_ship soft A/B remains recorded in `evals/tier1/baseline.json`.
-- `bash skills/sdlc-core/scripts/check-state.sh --strict` — OK (2026-07-19).
+- `bash skills/sdlc-core/scripts/check-state.sh --strict` — OK (2026-07-20).
 
 ## Decisions
 - Routing is the SessionStart hook's job; frontmatter stays untouched.
@@ -28,7 +27,7 @@ skill descriptions so Pi parses their YAML frontmatter; publication is pending.
   cells; flaky cells (control, false_ship) = score:null + rate notes.
 - Journal compaction is the sole sanctioned journal rewrite.
 - Current Stop event text is authoritative; transcript parsing is
-  compatibility fallback. Clean trees clear dirty-duration markers.
+  compatibility fallback. Only explicit three-field completion claims block.
 - Xit owns task-item syntax only; state/current truth and journal/history remain separate.
 
 ## Landmines

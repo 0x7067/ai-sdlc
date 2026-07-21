@@ -14,7 +14,7 @@ skill:sdlc-start        592
 skill:sdlc-finish       712
 skill:sdlc-core         178
 hook:lifecycle-gate     145
-hook:handoff-gate       92
+hook:handoff-gate       59
 agents-md:snippet       163
 ref:standard-md         519
 ref:state-spec-md       1061
