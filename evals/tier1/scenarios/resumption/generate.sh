@@ -161,9 +161,7 @@ SMH_EOF
 
     state_md_next="$(cat <<'SMN_EOF'
 ## Next
-1. Finish the `--pretty` flag: wire the already-started argument parsing
-   in `csv2json.py` to `json.dumps(..., indent=2)` when `--pretty` is
-   passed, then re-run `bash verify.sh`.
+[ ] Finish the `--pretty` flag by wiring the parser to indented JSON output. #id=pretty #verify="bash verify.sh"
 SMN_EOF
 )"
 
@@ -323,9 +321,7 @@ SMH_EOF
 
     state_md_next="$(cat <<'SMN_EOF'
 ## Next
-1. Finish the `--min-count` flag: wire the already-started argument
-   parsing in `wordfreq.py` to filter the `Counter` output by a frequency
-   threshold when `--min-count` is passed, then re-run `bash check.sh`.
+[ ] Finish the `--min-count` flag by filtering output at the requested threshold. #id=min-count #verify="bash check.sh"
 SMN_EOF
 )"
 
@@ -482,9 +478,7 @@ SMH_EOF
 
     state_md_next="$(cat <<'SMN_EOF'
 ## Next
-1. Finish the `--max-length` flag: wire the already-started argument
-   parsing in `slugify.py` to truncate slugs longer than N characters
-   when `--max-length` is passed, then re-run `bash run_checks.sh`.
+[ ] Finish the `--max-length` flag by truncating slugs at the requested length. #id=max-length #verify="bash run_checks.sh"
 SMN_EOF
 )"
 

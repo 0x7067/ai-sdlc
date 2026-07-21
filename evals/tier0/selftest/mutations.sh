@@ -87,6 +87,16 @@ mutate_skill_bloat() {
   } >> "$f"
 }
 
+# check-state.sh: stop failing on a stale Verification-path run stamp in
+# strict mode. Breaks 10-check-state-matrix.sh's vp-stale.strict assertions.
+mutate_check_state_vp_freshness() {
+  local root="$1"
+  replace_line_containing \
+    "$root/skills/sdlc-core/scripts/check-state.sh" \
+    'elif [ "$vp_newest" != "$today" ]; then' \
+    '  elif false; then # MUTATED: vp run-stamp freshness check neutralized'
+}
+
 # STATE-SPEC.md: remove the em-dash journal header documentation. Breaks
 # 50-coherence.sh's coherence.emdash-doc assertion.
 mutate_spec_remove_emdash_doc() {

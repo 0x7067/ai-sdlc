@@ -67,6 +67,34 @@ if [ -n "$next_start" ]; then
   next_end=$(awk -v s="$next_start" 'NR > s && /^## / { print NR - 1; exit }' "$STATE")
   [ -z "$next_end" ] && next_end=$(wc -l < "$STATE" | tr -d ' ')
   next_body=$(sed -n "$((next_start + 1)),${next_end}p" "$STATE")
+
+  bad_next=$(printf '%s\n' "$next_body" | awk -v offset="$next_start" '
+    function valid(line, rest, token) {
+      if (line !~ /^\[( |x|@|~|\?)\] +/) return 0
+      rest = line
+      sub(/^\[( |x|@|~|\?)\] +/, "", rest)
+      if (rest ~ /^[.!]+ +/) {
+        token = rest
+        sub(/ .*/, "", token)
+        if (token != "!" && token != "!!") return 0
+        sub(/^!!? +/, "", rest)
+      }
+      return rest ~ /[^[:space:]]/
+    }
+    NF && !valid($0) { print offset + NR ":" $0 }
+  ')
+  [ -z "$bad_next" ] || fail "state.md: invalid Xit task item(s) in 'Next' (use [ ], [@], [x], [~], or [?], optionally followed by ! or !!):
+$bad_next"
+
+  terminal_next=$(printf '%s\n' "$next_body" | grep -nE '^\[(x|~)\] +' || true)
+  if [ -n "$terminal_next" ]; then
+    if [ "$strict" -eq 1 ]; then
+      fail "state.md: terminal [x]/[~] item(s) remain in 'Next' — summarize them in journal.md and remove them before handoff"
+    else
+      warn "state.md: terminal [x]/[~] item(s) remain in 'Next' — summarize and remove them at sdlc-finish"
+    fi
+  fi
+
   if printf '%s' "$next_body" | grep -qiE 'PR ?#|pull request|deploy|\bmerged?\b|other agent|another agent'; then
     warn "state.md: 'Next' references external state (PR/deploy/other agent) — re-verify it before trusting, don't assume it still holds"
   fi
@@ -91,6 +119,29 @@ if [ -n "$vp_start" ]; then
     [ -e "${1:-.}/$tok" ] || vp_missing="$vp_missing $tok"
   done
   [ -z "$vp_missing" ] || warn "state.md: 'Verification path' names path(s) missing from the repo:$vp_missing — stale claim? re-run the commands and fix the section, don't just re-stamp the date"
+
+  # Run-date stamps: each entry records when it last actually ran. Strict
+  # mode (the Stop hook's ship-report path) requires the newest stamp to be
+  # from today — so a ship verdict rests on a baseline run this session, or
+  # on an explicit, dated 'not re-run' disclosure. A stamp is a claim about
+  # a run that happened; re-stamping without re-running is lying to the
+  # next session, which no mechanical check can catch.
+  vp_newest=$(sed -n "$((vp_start + 1)),${vp_end}p" "$STATE" \
+    | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort | tail -1 || true)
+  today=$(date +%F)
+  if [ -z "$vp_newest" ]; then
+    if [ "$strict" -eq 1 ]; then
+      fail "state.md: 'Verification path' has no run-date stamp — run the commands this session and stamp each entry (YYYY-MM-DD), or mark it 'not re-run ($today)'"
+    else
+      warn "state.md: 'Verification path' has no run-date stamp — stamp each entry with the date it last actually ran (YYYY-MM-DD); strict handoff requires a stamp from that day"
+    fi
+  elif [ "$vp_newest" != "$today" ]; then
+    if [ "$strict" -eq 1 ]; then
+      fail "state.md: 'Verification path' newest run-date stamp is $vp_newest, not today ($today) — re-run the verification commands this session and re-stamp, or mark them 'not re-run ($today)'; a ship verdict on an unrun baseline is the false-SHIP failure"
+    else
+      warn "state.md: 'Verification path' newest run-date stamp is $vp_newest — re-run the commands before trusting them (strict handoff requires a $today stamp)"
+    fi
+  fi
 fi
 
 if grep -q 'TODO-SDLC' "$STATE"; then

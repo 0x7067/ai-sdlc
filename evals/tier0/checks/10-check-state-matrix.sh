@@ -21,11 +21,39 @@ run_check_strict() { # run_check_strict <dir> -> sets CS_OUT, CS_CODE
 tmp_root=$(mktemp -d)
 trap 'rm -rf "$tmp_root"' EXIT
 
+append_xit_filler_lines() { # append_xit_filler_lines <file> <count>
+  local file="$1" count="$2" i
+  i=1
+  while [ "$i" -le "$count" ]; do
+    echo "[ ] Fixture line $i. #id=filler-$i" >> "$file"
+    i=$((i + 1))
+  done
+}
+
 # --- a. fully valid state ---------------------------------------------
 d="$tmp_root/valid"; write_valid_state_dir "$d"
 run_check "$d"
 assert_exit "check-state.valid.exit" "$CS_CODE" 0
 assert_contains "check-state.valid.ok" "$CS_OUT" "check-state: OK"
+
+# --- a2. all unresolved Xit statuses and supported priorities ------------
+d="$tmp_root/xit-valid"; write_valid_state_dir "$d"
+truncate_after_heading "$d/.ai-sdlc/state.md" "## Next"
+cat >> "$d/.ai-sdlc/state.md" <<'EOF'
+[ ] Queue normal work. #id=normal
+[@] ! Run important work. #id=active #owner=terra
+[?] !! Resolve the milestone decision. #id=decision #needs=user
+EOF
+run_check "$d"
+assert_exit "check-state.xit-valid.exit" "$CS_CODE" 0
+assert_contains "check-state.xit-valid.ok" "$CS_OUT" "check-state: OK"
+
+# --- a3. a settled project may have an empty Next list -------------------
+d="$tmp_root/xit-empty"; write_valid_state_dir "$d"
+truncate_after_heading "$d/.ai-sdlc/state.md" "## Next"
+run_check "$d"
+assert_exit "check-state.xit-empty.exit" "$CS_CODE" 0
+assert_contains "check-state.xit-empty.ok" "$CS_OUT" "check-state: OK"
 
 # --- b. state.md missing entirely --------------------------------------
 d="$tmp_root/missing-file"; mkdir -p "$d/.ai-sdlc"
@@ -66,7 +94,7 @@ assert_contains "check-state.todo-placeholder.msg" "$CS_OUT" "unfilled $(placeho
 
 # --- g. state.md hard cap (>120 lines) -----------------------------------
 d="$tmp_root/hard-cap"; write_valid_state_dir "$d"
-append_filler_lines "$d/.ai-sdlc/state.md" 110
+append_xit_filler_lines "$d/.ai-sdlc/state.md" 110
 run_check "$d"
 lines=$(wc -l < "$d/.ai-sdlc/state.md" | tr -d ' ')
 if [ "$lines" -le 120 ]; then
@@ -79,7 +107,7 @@ assert_contains "check-state.hard-cap.msg" "$CS_OUT" "hard cap 120"
 d="$tmp_root/warn-zone"; write_valid_state_dir "$d"
 base_lines=$(wc -l < "$d/.ai-sdlc/state.md" | tr -d ' ')
 want=80
-append_filler_lines "$d/.ai-sdlc/state.md" "$((want - base_lines))"
+append_xit_filler_lines "$d/.ai-sdlc/state.md" "$((want - base_lines))"
 run_check "$d"
 lines=$(wc -l < "$d/.ai-sdlc/state.md" | tr -d ' ')
 if [ "$lines" -le 60 ] || [ "$lines" -gt 120 ]; then
@@ -99,13 +127,66 @@ run_check "$d"
 assert_exit "check-state.stale-updated.exit" "$CS_CODE" 0
 assert_contains "check-state.stale-updated.warn" "$CS_OUT" "modified more than 24h after"
 
+# --- i2. 'Verification path' stamp older than today ----------------------
+d="$tmp_root/vp-stale"; write_valid_state_dir "$d"
+set_line "$d/.ai-sdlc/state.md" 11 "Fixture verification path: none, synthetic fixture (last ran 2020-01-01)."
+run_check "$d"
+assert_exit "check-state.vp-stale.exit" "$CS_CODE" 0
+assert_contains "check-state.vp-stale.warn" "$CS_OUT" "re-run the commands before trusting them"
+run_check_strict "$d"
+assert_exit "check-state.vp-stale.strict-exit" "$CS_CODE" 1
+assert_contains "check-state.vp-stale.strict-msg" "$CS_OUT" "newest run-date stamp is 2020-01-01, not today"
+
+# --- i3. 'Verification path' has no run-date stamp at all -----------------
+d="$tmp_root/vp-no-stamp"; write_valid_state_dir "$d"
+set_line "$d/.ai-sdlc/state.md" 11 "Fixture verification path: none, never dated."
+run_check "$d"
+assert_exit "check-state.vp-no-stamp.exit" "$CS_CODE" 0
+assert_contains "check-state.vp-no-stamp.warn" "$CS_OUT" "has no run-date stamp"
+run_check_strict "$d"
+assert_exit "check-state.vp-no-stamp.strict-exit" "$CS_CODE" 1
+assert_contains "check-state.vp-no-stamp.strict-msg" "$CS_OUT" "has no run-date stamp"
+
 # --- j. 'Next' references external state (PR/deploy/other agent) --------
 d="$tmp_root/next-external"; write_valid_state_dir "$d"
 truncate_after_heading "$d/.ai-sdlc/state.md" "## Next"
-echo "1. Wait for PR #42 to merge, then continue." >> "$d/.ai-sdlc/state.md"
+echo "[ ] Wait for PR #42 to merge, then continue. #id=external" >> "$d/.ai-sdlc/state.md"
 run_check "$d"
 assert_exit "check-state.next-external.exit" "$CS_CODE" 0
 assert_contains "check-state.next-external.warn" "$CS_OUT" "references external state"
+
+# --- j2. legacy/non-Xit Next line ----------------------------------------
+d="$tmp_root/next-legacy"; write_valid_state_dir "$d"
+truncate_after_heading "$d/.ai-sdlc/state.md" "## Next"
+echo "1. Legacy numbered task." >> "$d/.ai-sdlc/state.md"
+run_check "$d"
+assert_exit "check-state.next-legacy.exit" "$CS_CODE" 1
+assert_contains "check-state.next-legacy.msg" "$CS_OUT" "invalid Xit task item"
+
+# --- j3. unsupported priority token -------------------------------------
+for priority in '!!!' '..!'; do
+  slug=$(printf '%s' "$priority" | tr '.!' 'di')
+  d="$tmp_root/next-priority-$slug"; write_valid_state_dir "$d"
+  truncate_after_heading "$d/.ai-sdlc/state.md" "## Next"
+  echo "[ ] $priority Invalid priority. #id=bad-priority" >> "$d/.ai-sdlc/state.md"
+  run_check "$d"
+  assert_exit "check-state.next-priority.$slug.exit" "$CS_CODE" 1
+  assert_contains "check-state.next-priority.$slug.msg" "$CS_OUT" "invalid Xit task item"
+done
+
+# --- j4. terminal tasks are advisory while working, strict at handoff ---
+d="$tmp_root/next-terminal"; write_valid_state_dir "$d"
+truncate_after_heading "$d/.ai-sdlc/state.md" "## Next"
+cat >> "$d/.ai-sdlc/state.md" <<'EOF'
+[x]  Verified completed task. #id=done #verify=fixture-check
+[~] Superseded task. #id=old #after=done
+EOF
+run_check "$d"
+assert_exit "check-state.next-terminal.exit" "$CS_CODE" 0
+assert_contains "check-state.next-terminal.warn" "$CS_OUT" "terminal [x]/[~] item(s) remain"
+run_check_strict "$d"
+assert_exit "check-state.next-terminal.strict-exit" "$CS_CODE" 1
+assert_contains "check-state.next-terminal.strict-msg" "$CS_OUT" "remove them before handoff"
 
 # --- k. journal.md malformed entry header (hyphen, not em dash) ---------
 d="$tmp_root/journal-bad-header"; write_valid_state_dir "$d"

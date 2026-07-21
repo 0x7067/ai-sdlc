@@ -10,11 +10,11 @@
 #   bash evals/tier0/checks/40-surface-budget.sh --print-actual
 # and paste its output here, with a note in the commit message about why.
 
-skill:sdlc-start        554
-skill:sdlc-finish       560
-skill:sdlc-core         189
-hook:lifecycle-gate     107
+skill:sdlc-start        592
+skill:sdlc-finish       712
+skill:sdlc-core         178
+hook:lifecycle-gate     145
 hook:handoff-gate       59
-agents-md:snippet       133
-ref:standard-md         500
-ref:state-spec-md       823
+agents-md:snippet       163
+ref:standard-md         519
+ref:state-spec-md       1061

@@ -30,7 +30,9 @@ the bar and the model decides how to clear it.
 The handoff medium is two committed files per project:
 `.ai-sdlc/state.md` (current truth, <60 lines) and `.ai-sdlc/journal.md`
 (append-only session log), so any future session — any model, any harness —
-can cold-start from the repo alone.
+can cold-start from the repo alone. Agent plans and `state.md` `Next` use the
+Xit task profile defined in `references/STATE-SPEC.md`; no parallel task file
+is created by default.
 
 ## Install
 
@@ -103,7 +105,7 @@ repo tracks to one of those axes. Two gates keep the proxies honest:
 
 - `bash evals/tier0/run.sh` — deterministic, seconds, no model calls. Run
   after any change to `skills/`, `hooks/`, or `scripts/`. `--self-test`
-  seeds 7 mutations and asserts the suite catches them.
+  seeds 8 mutations and asserts the suite catches them.
 - `bash evals/tier1/run.sh` — model-in-the-loop scenarios graded on
   outcomes (resumption Q&A, stale-state trap, false-SHIP honesty,
   overhead), with a control-vs-sdlc A/B mode. `--dry-run` is free;

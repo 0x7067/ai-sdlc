@@ -33,7 +33,8 @@ The active milestone or task, and where it stands.
 
 ## Verification path
 How to prove the project works: build/test/run commands that are known
-to pass (or known to fail, marked as such).
+to pass (or known to fail, marked as such), each stamped with the date
+it last actually ran (YYYY-MM-DD).
 
 ## Decisions
 Standing decisions with a one-line why each. Only decisions a future
@@ -44,8 +45,36 @@ Non-obvious traps: flaky tests, files that look dead but aren't,
 env quirks, ordering constraints.
 
 ## Next
-Ordered, concrete next steps. Each one small enough to start cold.
+[ ] One concrete, cold-startable outcome. #id=task-1 #verify="command proving completion"
 ```
+
+### Xit task-item profile
+
+`Next` is empty or one [Xit 1.1](https://github.com/jotaen/xit/blob/main/Specification.md) item per line:
+
+```
+[status] [priority ]imperative outcome [tags] [-> due date]
+```
+
+- Statuses: `[ ]` queued, `[@]` active, `[x]` verified, `[~]` terminal, `[?]`
+  needs decision.
+- Priorities: none normal, `!` important, `!!` milestone-blocking; dots unused.
+- Tags: `#id`, `#owner`, `#after`, `#blocked-by`, `#needs`, and `#verify`.
+- Use `-> YYYY-MM-DD` for deadlines, never estimates.
+
+One `[@]` per owner; `[x]` only after `#verify`. At handoff, journal/remove
+`[x]` and `[~]`. Keep state/journal separate; no `tasks.xit` unless canonical.
+
+### Verification-path run stamps
+
+Every `Verification path` entry carries the date it last actually ran.
+Strict `check-state.sh` (which the Stop hook runs on every ship report)
+requires the newest stamp in the section to be from that same day: re-run
+the commands and re-stamp them, or mark an entry `not re-run (YYYY-MM-DD)`
+with today's date — a disclosed gap on record beats implied coverage. A
+stamp is a claim about a run that happened, never a decoration:
+re-stamping without re-running is exactly the drift this check exists to
+surface.
 
 ### History — compaction target (tool-managed)
 

@@ -1,6 +1,6 @@
 ---
 name: sdlc-start
-description: Start-of-work discipline for project repos: orientation before the first substantive task of a session, and planning whenever a task is multi-step, risky, ambiguous, or touches config that propagates beyond this machine. Execution is governed by sdlc-core.
+description: "Start-of-work discipline for project repos: orientation before the first substantive task of a session, and planning whenever a task is multi-step, risky, ambiguous, or touches config that propagates beyond this machine. Execution is governed by sdlc-core."
 ---
 
 # sdlc-start — orient, then plan
@@ -43,7 +43,9 @@ written, which is not the same as true now.
 ## Objective 2 — Plan, when the work is non-trivial
 
 Small, reversible, obvious edits go straight to the change — planning
-ceremony there is pure overhead. Everything else deserves a plan recorded
+ceremony there is pure overhead. (That exemption covers the planning,
+never the claim: declaring the result done, at any diff size, goes
+through `sdlc-finish`.) Everything else deserves a plan recorded
 in `.ai-sdlc/state.md` before source files change. A plan is done when it
 records:
 
@@ -56,6 +58,9 @@ records:
   assumption and keep moving.
 - **A verification path per step** — each step stoppable, each provable,
   so a killed session loses one step, not the plan.
+- **The Xit task profile** — record plan items under `state.md` `Next` using
+  `STATE-SPEC.md`; use `[@]` only for active work and `[x]` only after its
+  `#verify` proof has run.
 
 Ground every step in files you have actually opened. A plan built on an
 imagined codebase reads fine and fails on contact.
@@ -64,9 +69,9 @@ imagined codebase reads fine and fails on contact.
 
 No skill scripts execution — the standard governs it: root cause over
 patch, smallest coherent change that fully solves the problem, and the
-verification ladder (`../sdlc-core/references/STANDARD.md`, §4). When the
-change is done, or the session is ending with anything nontrivial changed,
-pick up `sdlc-finish`.
+verification ladder (`../sdlc-core/references/STANDARD.md`, §4). Before
+claiming the change is done — at any diff size — or when the session is
+ending with anything nontrivial changed, pick up `sdlc-finish`.
 
 ## Pointers
 

@@ -152,7 +152,7 @@ Fixture goal: exercise check-state.sh against a conformant state.md.
 Fixture now: nothing real, this is a tier0 test fixture.
 
 ## Verification path
-Fixture verification path: none, this is a synthetic fixture.
+Fixture verification path: none, synthetic fixture (last ran $(date +%F)).
 
 ## Decisions
 None yet.
@@ -161,7 +161,7 @@ None yet.
 None known.
 
 ## Next
-1. Fixture next step.
+[ ] Complete the fixture next step. #id=fixture-next #verify=fixture-check
 EOF
   cat > "$dir/.ai-sdlc/journal.md" <<EOF
 # Journal
@@ -190,7 +190,7 @@ Fixture goal: exercise a sdlc-core script against a conformant state.md.
 Fixture now: nothing real, this is a tier0 test fixture.
 
 ## Verification path
-Fixture verification path: none, this is a synthetic fixture.
+Fixture verification path: none, synthetic fixture (last ran $(date +%F)).
 
 ## Decisions
 None yet.
@@ -199,7 +199,7 @@ None yet.
 None known.
 
 ## Next
-1. Fixture next step.
+[ ] Complete the fixture next step. #id=fixture-next #verify=fixture-check
 EOF
 }
 
