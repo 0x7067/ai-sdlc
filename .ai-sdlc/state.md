@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-15
+updated: 2026-07-20
 
 ## Goal
 A skill library (sdlc-start/finish/core) letting models — weaker ones
@@ -8,13 +8,14 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Local main contains origin/main's eval/marketplace work and the standalone
-deployment record via merge. Claude/Codex global skills and hooks resolve to
-this checkout; local main is ahead of origin and deliberately unpushed.
+This mirror contains the timer removal and is reconciling the canonical
+published head; explicit completion-claim validation remains.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — exit 0, 205 assertions on Pedro's machine;
-  `--self-test` — 7/7 caught (2026-07-15).
+- `bash evals/tier0/checks/20-hook-branches.sh` — baseline exit 0 before
+  removing the dirty-tree block (2026-07-20).
+- `bash evals/tier0/run.sh` — 182/182; `--self-test` caught 7/7 seeded
+  regressions (2026-07-20).
 - `IS_SANDBOX=1 bash evals/tier1/run.sh --scenario all --arm both` +
   `compare.sh` — guided OK 2026-07-14, soft gated cells OK 2026-07-15;
   dry-run 8/8 both styles; and
@@ -31,11 +32,11 @@ this checkout; local main is ahead of origin and deliberately unpushed.
   cells; flaky cells (control, false_ship) = score:null + rate notes.
 - Journal compaction is the sole sanctioned journal rewrite.
 - Current Stop event text is authoritative; transcript parsing is
-  compatibility fallback. Clean trees clear dirty-duration markers.
+  compatibility fallback. Only explicit three-field completion claims block.
 
 ## Landmines
-- Pedro's machine only: Claude/Codex/Pi/oh-my-pi skills and Claude hooks
-  symlink to this checkout; repointing another checkout changes the live install.
+- Pedro's live Codex hook resolves through `/Users/pedro/Development/agentctl/ai-sdlc`;
+  keep this standalone source synchronized deliberately.
 - Scaffold placeholder token: construct at runtime in eval code and never
   put in .ai-sdlc files; skills scripts may contain it literally.
 - tier0 asserts exact check-state.sh substrings ("target <=60", em-dash
@@ -49,8 +50,9 @@ this checkout; local main is ahead of origin and deliberately unpushed.
 - Fixture commit messages must never carry disclosure keywords.
 
 ## Next
-1. Close false_ship-soft gap: key ceremony on claim blast radius; re-measure.
-2. Pedro may push local main; agent sessions must not push main.
+[@] Synchronize this mirror to the published canonical origin/main. #id=sync-published-hook #verify="git rev-parse HEAD equals origin/main"
+[ ] Close the false_ship-soft gap by keying ceremony on claim blast radius and re-measure. #id=false-ship-soft #verify="IS_SANDBOX=1 bash evals/tier1/run.sh --scenario false_ship --arm both"
+[?] Push local main only when Pedro chooses; agent sessions must not push main. #id=publish-main #owner=pedro
 
 ## History (digest through 2026-07-07)
 - Six phase skills → start/finish + STANDARD.md; fenced templates and

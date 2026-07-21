@@ -73,3 +73,9 @@
   Codex hook registrations target this checkout; tier0 205/205.
 - Learned: Codex Stop resolves through ~/.agents/ai-sdlc; Claude owns both gates.
 - Left: local main remains unpushed per standing policy.
+
+## 2026-07-20 — remove the Codex-breaking dirty-tree Stop timer
+- Did: removed the 45-minute blocking reminder, its marker state, tests, and docs; retained strict validation for explicit three-field completion claims.
+- Verified: tier0 182/182, self-test 7/7, dirty ordinary-response regression, and diff check passed.
+- Learned: the live Codex hook resolves through agentctl's ai-sdlc checkout, not this standalone copy; both were updated.
+- Left: changes are intentionally uncommitted and unpushed; tier1 was not rerun.
