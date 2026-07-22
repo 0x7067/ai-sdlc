@@ -8,7 +8,7 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-`feat/compaction-boundary` (unpushed) makes compaction a session boundary:
+Compaction-as-session-boundary is merged and pushed on main (bb928ce):
 compact-source recovery injection, step-checkpoint invariant, tier1
 compaction scenario. Adversarial-reviewed (SHIP WITH FIXES; all applied).
 Paid Tier 1 remains blocked until an auth token is explicitly exported.
