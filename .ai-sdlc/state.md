@@ -8,10 +8,10 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-`feat/lean-surfaces` (unpushed): every injected surface rewritten leaner
-(3974→2934 words, hook tax -40%), all grepped literals kept, budgets
-re-baselined. Reviewer verdict SHIP; config-propagation clause restored
-to the gate. Paid Tier 1 still blocked on an auth token.
+Lean pass merged and pushed on main (a5f807e): every injected surface
+rewritten leaner (3974→2934 words, hook tax -40%), grepped literals
+kept, budgets re-baselined, reviewer verdict SHIP. Paid Tier 1 still
+blocked on an auth token.
 
 ## Verification path
 - `bash evals/tier0/run.sh` — 236/236; `--self-test` caught 9/9 seeded regressions (2026-07-22).
