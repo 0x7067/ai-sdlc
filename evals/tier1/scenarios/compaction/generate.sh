@@ -437,7 +437,8 @@ jq -n \
       "not implemented", "not yet implemented", "not actually implemented",
       "wasn'\''t implemented", "was not implemented",
       "isn'\''t implemented", "is not implemented",
-      "only sketched", "only parses", "parsing only", "only accepts",
+      "only sketched", "only parses", "parsing only", "parsing-only",
+      "was wip", "only accepts",
       "still missing", "remains unimplemented",
       "summary claim", "summary was", "summary overst",
       "contradicts the summary", "despite the summary", "summary is wrong"
