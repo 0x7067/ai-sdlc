@@ -5,22 +5,19 @@ description: "Shared foundation for the sdlc-* skill library: the engineering st
 
 # sdlc-core
 
-Foundation for the sdlc lifecycle skills (`sdlc-start`, `sdlc-finish`). It
-holds the two things they share, so neither skill restates them:
+Foundation shared by `sdlc-start` and `sdlc-finish`:
 
-- `references/STANDARD.md` — the engineering standard: what "done well" means
-  for any change, regardless of which model executes it. Read it once per
-  session before doing substantive work under any sdlc-* skill; it is short
-  by design.
-- `references/STATE-SPEC.md` — the format of a project's `.ai-sdlc/state.md`
-  and `.ai-sdlc/journal.md`, the handoff medium between sessions. Read it
+- `references/STANDARD.md` — the engineering standard: what "done well"
+  means for any change. Read it once per session before substantive work
+  under any sdlc-* skill.
+- `references/STATE-SPEC.md` — the format of `.ai-sdlc/state.md` and
+  `.ai-sdlc/journal.md`, the handoff medium between sessions. Read it
   before reading or writing either file.
 
 Portability: sibling skills reference these files as
-`~/.agents/skills/sdlc-core/...`. When the library is installed elsewhere,
-resolve them from the skills root instead — `sdlc-core/` is always a sibling
-directory of the invoking skill.
+`~/.agents/skills/sdlc-core/...`; when the library is installed elsewhere,
+`sdlc-core/` is always a sibling of the invoking skill's directory.
 
-Precedence: repo-local instructions (AGENTS.md, CLAUDE.md) and explicit user
-instructions override this standard where they conflict. The standard fills
-gaps; it does not fight the repo.
+Precedence: repo-local instructions (AGENTS.md, CLAUDE.md) and explicit
+user instructions override the standard. It fills gaps; it does not fight
+the repo.

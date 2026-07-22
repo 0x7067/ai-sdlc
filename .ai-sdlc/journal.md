@@ -178,3 +178,16 @@
 - Learned: headless -p sessions always start source=startup, so tier1 can
   only grade artifact-driven recovery; the injection itself is tier0's job.
 - Left: committed on feat/compaction-boundary, unpushed; no paid tier1 run.
+
+## 2026-07-22 — lean pass over every injected surface
+- Did: rewrote both hook texts, the three SKILL.md files, STANDARD.md,
+  STATE-SPEC.md, and the agents-md snippet to state each instruction once
+  and cut rationale (3974->2934 words, -26%; per-session hook tax -40%);
+  budgets re-baselined to the new actuals.
+- Verified: tier0 236/236; self-test 9/9; tier1 dry-run 10/10 guided and
+  10/10 soft, grading identical to the pre-lean contract; reviewer said
+  SHIP — its one minor fixed by restoring the config clause to the gate.
+- Learned: line-wrapping silently breaks coherence needles — grepped
+  literals must stay contiguous on one line.
+- Left: committed on feat/lean-surfaces, unpushed; prose behavioral
+  neutrality is unproven until the paid tier1 A/B runs.

@@ -1,6 +1,6 @@
 # Project State Spec
 
-The handoff medium between sessions. Lives inside each project repo:
+The handoff medium between sessions, inside each project repo:
 
 ```
 .ai-sdlc/
@@ -8,25 +8,24 @@ The handoff medium between sessions. Lives inside each project repo:
 └── journal.md   # append-only session log — entries never edited
 ```
 
-Both are committed to the repo (they are project knowledge, not scratch).
-If the repo's conventions forbid committing them, gitignore them and note
-that in state.md itself.
+Both are committed (project knowledge, not scratch). If the repo's
+conventions forbid committing them, gitignore them and note that in
+state.md itself.
 
 When work ships through a pull request, these artifacts travel with the
-implementation on the same pull request and describe its intended settled
-state before final CI and merge. Amend the original branch when they become
-stale; do not create a follow-up AI-SDLC-only pull request just to repair the
-handoff. Post-merge readback belongs in the final report unless it uncovers a
-substantive new defect.
+implementation on the same pull request and describe its settled state
+before final CI and merge; amend the original branch when they go stale.
+Never create a follow-up AI-SDLC-only pull request just to repair a
+handoff. Post-merge readback belongs in the final report unless it
+uncovers a substantive new defect.
 
 ## state.md — current truth
 
-Keep it under 60 lines (hard cap 120 — the hygiene check below fails past
-it). It is read at the start of every session, so every
-stale line costs trust and every extra line costs tokens. Overwrite freely;
-history lives in the journal. Write clipped bullets, not prose — if a line
-isn't a decision, a trap, a command, or a next step, cut it. 60 is a
-ceiling, not a budget; most projects fit in half that.
+Keep it under 60 lines (hard cap 120 — the hygiene check fails past it).
+Every session reads it at start: stale lines cost trust, extra lines cost
+tokens. Overwrite freely; history lives in the journal. Clipped bullets
+only — a line that isn't a decision, a trap, a command, or a next step
+gets cut.
 
 ```markdown
 # Project State
@@ -39,17 +38,15 @@ What this project is trying to become, in 2-4 sentences.
 The active milestone or task, and where it stands.
 
 ## Verification path
-How to prove the project works: build/test/run commands that are known
-to pass (or known to fail, marked as such), each stamped with the date
-it last actually ran (YYYY-MM-DD).
+Build/test/run commands that prove the project works (or are known to
+fail, marked as such), each stamped with the date it last actually ran.
 
 ## Decisions
-Standing decisions with a one-line why each. Only decisions a future
-session could plausibly re-litigate.
+Standing decisions a future session could re-litigate, one-line why each.
 
 ## Landmines
-Non-obvious traps: flaky tests, files that look dead but aren't,
-env quirks, ordering constraints.
+Non-obvious traps: flaky tests, files that look dead but aren't, env
+quirks, ordering constraints.
 
 ## Next
 [ ] One concrete, cold-startable outcome. #id=task-1 #verify="command proving completion"
@@ -63,50 +60,41 @@ env quirks, ordering constraints.
 [status] [priority ]imperative outcome [tags] [-> due date]
 ```
 
-- Statuses: `[ ]` queued, `[@]` active, `[x]` verified, `[~]` terminal, `[?]`
-  needs decision.
-- Priorities: none normal, `!` important, `!!` milestone-blocking; dots unused.
-- Tags: `#id`, `#owner`, `#after`, `#blocked-by`, `#needs`, and `#verify`.
-- Use `-> YYYY-MM-DD` for deadlines, never estimates.
+- Statuses: `[ ]` queued, `[@]` active, `[x]` verified, `[~]` terminal,
+  `[?]` needs decision.
+- Priorities: none normal, `!` important, `!!` milestone-blocking.
+- Tags: `#id`, `#owner`, `#after`, `#blocked-by`, `#needs`, `#verify`.
+  Deadlines `-> YYYY-MM-DD`, never estimates.
 
-One `[@]` per owner; `[x]` only after `#verify`. At handoff, journal/remove
-`[x]` and `[~]`. Keep state/journal separate; no `tasks.xit` unless canonical.
-
-Statuses move at step boundaries during execution, not only at handoff:
-when a step's `#verify` proof runs, flip it to `[x]` then. The invariant —
-state.md is never more than one completed step stale — is what lets an
-interrupted session (context compaction, crash, kill) resume from this
-file instead of from a lossy summary.
+One `[@]` per owner. Statuses move at step boundaries during execution,
+not only at handoff: flip a step to `[x]` when its `#verify` proof runs.
+Keeping state.md never more than one completed step stale is what lets an
+interrupted session (compaction, crash, kill) resume from this file
+instead of a lossy summary. At handoff, journal and remove `[x]`/`[~]`
+items. Keep state/journal separate; no `tasks.xit` unless canonical.
 
 ### Verification-path run stamps
 
-Every `Verification path` entry carries the date it last actually ran.
-Strict `check-state.sh` (which the Stop hook runs on every ship report)
-requires the newest stamp in the section to be from that same day: re-run
-the commands and re-stamp them, or mark an entry `not re-run (YYYY-MM-DD)`
-with today's date — a disclosed gap on record beats implied coverage. A
-stamp is a claim about a run that happened, never a decoration:
-re-stamping without re-running is exactly the drift this check exists to
-surface.
+Every entry carries the date it last actually ran. Strict check-state.sh
+(run by the Stop hook on every ship report) requires the newest stamp in
+the section to be from that same day: re-run and re-stamp, or mark an
+entry `not re-run (YYYY-MM-DD)` with today's date — a disclosed gap
+beats implied coverage. A stamp is a claim about a run that happened;
+re-stamping without re-running is exactly the drift this check surfaces.
 
 ### History — compaction target (tool-managed)
 
-`compact-journal.sh` appends or updates a `## History (digest through
-YYYY-MM-DD)` section here when it folds old journal entries. It is the one
-section a session doesn't hand-author: the script writes the header,
-carries the previous digest's bullets forward verbatim, and adds one
-`TODO-SDLC` placeholder for the newly folded entries, which the model then
-fills in. `sdlc-start` reads this section at orientation time — a digest
-belongs wherever state.md lives, since that's the file every session
-actually reads back.
+`compact-journal.sh` writes or updates a `## History (digest through
+YYYY-MM-DD)` section here when it folds old journal entries: it carries
+the previous digest's bullets forward verbatim and leaves one TODO-SDLC
+placeholder for the newly folded entries, which the model then fills in.
+This is the one section a session never hand-authors.
 
 ## journal.md — append-only log
 
-One entry per working session, appended at the end. Never edit old entries.
-Entries are telegrams, not narratives: a handful of terse bullets, each an
-outcome or a surprise. Aim for ~8 lines (the hygiene check warns past 12,
-newest entry only); if an entry runs long, it is recording process instead
-of findings.
+One entry per working session, appended at the end; never edit old
+entries. Telegrams, not narratives — aim for ~8 lines (the hygiene check
+warns past 12, newest entry only):
 
 ```markdown
 ## YYYY-MM-DD — <one-line summary>
@@ -118,70 +106,43 @@ of findings.
 
 ### Compaction — the only sanctioned journal rewrite
 
-Entries are never edited, but the journal must not grow without bound. At
-handoff, when journal.md exceeds ~200 lines, fold every entry except the
-newest 5 into a digest — merging any previous digest's bullets in — and
-write it to state.md's `## History (digest through YYYY-MM-DD)` section
-(replacing any prior one there), not into journal.md itself: a digest left
-in the journal is never read back. journal.md keeps only the newest 5
-entries, byte-for-byte untouched:
-
-```markdown
-## History (digest through YYYY-MM-DD)
-- <one line per durable learning or outcome from the folded entries;
-  drop anything already captured in state.md or the repo>
-```
+When journal.md exceeds ~200 lines at handoff, fold every entry except
+the newest 5 into the `## History` digest in state.md (merging any
+previous digest's bullets); journal.md keeps only the newest 5 entries,
+byte-for-byte untouched. A digest left in the journal is never read back
+— it belongs in state.md.
 
 ## Scripts and hygiene checks
 
-`check-state.sh` validates this spec mechanically — required sections, the
-`updated:` date, size caps, journal entry headers — and reports when
-compaction is due. Run advisory checks while working, then strict checks at
-handoff:
+`check-state.sh` validates this spec mechanically — advisory while
+working, strict at handoff:
 
 ```
-bash ~/.agents/skills/sdlc-core/scripts/check-state.sh
-bash ~/.agents/skills/sdlc-core/scripts/check-state.sh --strict
+bash ~/.agents/skills/sdlc-core/scripts/check-state.sh [--strict] [repo-dir]
 ```
 
-(fallback: the `scripts/` directory inside the `sdlc-core/` sibling of the
-calling skill's directory). Both forms accept an optional repo directory;
-`--strict` must precede it. In advisory mode, state.md over 60 lines and
-journal.md over 200 lines WARN and exit 0; in strict mode those
-overdue-compaction conditions FAIL and exit 1. State.md over the 120-line hard
-cap always FAILs. Each FAIL line names a violation to fix before handoff
-completes.
+(fallback: the `scripts/` directory inside the `sdlc-core/` sibling of
+the calling skill's directory; `--strict` must precede the optional repo
+dir). Advisory mode WARNs at state.md over 60 lines or journal.md over
+200; strict mode FAILs those. state.md over the 120-line hard cap always
+FAILs. Each FAIL line names a violation to fix before handoff completes.
 
-Sibling scripts in the same directory do the other mechanical work, so no
-session hand-builds these formats:
+Sibling scripts do the rest of the mechanical work: `orient.sh` (session
+orientation, scaffolds `.ai-sdlc/` on first use), `scaffold-state.sh`
+(state.md skeleton, refuses to overwrite), `compact-journal.sh` (the
+History fold above), `diff-inventory.sh` (read-only working-tree
+inventory).
 
-- `orient.sh [repo-dir]` — one-command session orientation for
-  `sdlc-start`: git snapshot, state.md, newest 3 journal entries, the
-  drift check (advisory here, blocking at handoff), and the Orientation
-  fill-in block. Scaffolds `.ai-sdlc/` on first use.
-- `scaffold-state.sh [repo-dir]` — creates the state.md skeleton with
-  today's `updated:` line; refuses to overwrite an existing file.
-- `compact-journal.sh [repo-dir]` — performs the Compaction fold above:
-  trims journal.md to the newest 5 entries byte-for-byte, writes the
-  digest (carrying the previous one's bullets forward) into state.md's
-  `## History` section, and prints the folded entries as the source to
-  summarize.
-- `diff-inventory.sh [base-ref]` — read-only working-tree inventory
-  (branch, status, diff stats, untracked files, stashes) for
-  sdlc-finish (validation and handoff).
-
-`TODO-SDLC` is the contract between scripts and model: every judgment slot
-a script cannot fill is marked with it, and check-state.sh FAILs while any
-remains — likewise while a `journal.md.bak` left by compact-journal.sh
-exists — so a half-finished artifact cannot pass handoff.
+`TODO-SDLC` is the scripts↔model contract: every judgment slot a script
+cannot fill is marked with it, and check-state.sh FAILs while any remains
+— likewise while a `journal.md.bak` left by compact-journal.sh exists —
+so a half-finished artifact cannot pass handoff.
 
 ## Rules
 
-- **state.md must never contradict the repo.** When code and state.md
-  disagree, the code is right — fix state.md and note the drift in the
-  journal.
-- Convert every relative date ("yesterday", "last week") to an absolute
-  date before writing.
+- **state.md must never contradict the repo.** When they disagree, the
+  code is right — fix state.md and note the drift in the journal.
+- Absolute dates only; convert "yesterday"/"last week" before writing.
 - Do not duplicate what the repo already records (README, AGENTS.md, git
-  history). State files hold what is *not* derivable from the code.
+  history); state files hold what is not derivable from the code.
 - No secrets, tokens, or credentials — these files are committed.

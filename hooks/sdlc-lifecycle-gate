@@ -2,13 +2,12 @@
 # SessionStart hook: inject the SDLC lifecycle gate in project repos.
 # Emits nothing outside git repos (global-config sessions, scratch dirs).
 #
-# source=compact swaps the routing text for compaction recovery: mid-task
-# the standard "start the lifecycle" text is a no-op (the summary says
-# orientation already happened), while the thing that is actually true —
-# the conversation above is now a paraphrase, not evidence — goes unsaid.
-# Every other source, and any input we cannot parse, gets the standard
-# gate: a wrong recovery injection at real session start would be worse
-# than a redundant standard one after compaction.
+# source=compact swaps the routing text for compaction recovery — mid-task
+# the standard text is a no-op while the true fact (the conversation is
+# now a paraphrase, not evidence) goes unsaid. Every other source, and any
+# input we cannot parse, gets the standard gate: a wrong recovery
+# injection at real session start would be worse than a redundant
+# standard one after compaction.
 [ "${AI_SDLC_SCRATCH:-}" = "1" ] && exit 0
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 
@@ -20,20 +19,19 @@ fi
 if [ "$session_source" = "compact" ]; then
   cat <<'COMPACT_EOF'
 SDLC COMPACTION RECOVERY (installed policy):
-Your context was just compacted: the conversation above is now a summary — a paraphrase, not evidence. Before continuing:
+Context was just compacted: the conversation above is now a summary — a paraphrase, not evidence.
 1. Re-read .ai-sdlc/state.md and the in-flight plan; where they contradict the summary, the files win.
-2. Do not build on a pre-compaction claim (a passing test, a completed step) without re-establishing it — re-run the command now.
-3. If work completed before compaction is not yet recorded in state.md (task statuses, run stamps), checkpoint it there before starting new work.
-The lifecycle still applies: Skill(sdlc-start) to re-plan if the goal is no longer clear, Skill(sdlc-finish) before any done/ship claim.
+2. Re-run the command before building on any pre-compaction claim (a passing test, a completed step).
+3. Checkpoint completed-but-unrecorded work in state.md before starting new work.
+Skill(sdlc-finish) still gates any done or ship claim.
 COMPACT_EOF
   exit 0
 fi
 
 cat <<'EOF'
 SDLC LIFECYCLE (installed policy):
-1. Invoke Skill(sdlc-start) before the first substantive task of the session, and again to plan any multi-step or risky change. Small, reversible, obvious edits may go straight to the change.
-2. Execution is governed by the engineering standard (sdlc-core/references/STANDARD.md): root cause over patch, smallest coherent change, verification ladder.
-3. Invoke Skill(sdlc-finish) before claiming any change is done, verified, or ready to ship — however small the edit — and before the session ends if anything changed; it is what makes the project resumable by the next session.
-Scale ceremony with blast radius, not file count. The carve-out in (1) exempts the edit, never the claim: a done/ship verdict is high blast radius by itself — the next session builds on it unchecked — and so is config that propagates to other agents/machines, even when the diff is small.
+1. Invoke Skill(sdlc-start) before the first substantive task, and to plan any multi-step or risky change. Small, reversible, obvious edits may skip the planning — never the claim. Config that propagates to other agents or machines is never a small edit.
+2. Execute to the engineering standard: sdlc-core/references/STANDARD.md.
+3. Invoke Skill(sdlc-finish) before claiming anything is done, verified, or ready to ship — the claim triggers it, at any diff size — and before ending a session that changed anything.
 Plugin installs namespace the skills: ai-sdlc:sdlc-start, ai-sdlc:sdlc-finish.
 EOF
