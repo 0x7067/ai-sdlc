@@ -240,13 +240,14 @@ append_filler_lines() {
 
 # --- extraction for the surface-budget gate --------------------------------
 
-# extract_heredoc_body <file> — body of the first `cat <<DELIM ... DELIM`
-# heredoc in <file> (used for hooks/sdlc-lifecycle-gate's emitted text).
+# extract_heredoc_body <file> <delim> — body of the `cat <<'DELIM' ... DELIM`
+# heredoc with that exact delimiter (hooks/sdlc-lifecycle-gate emits two:
+# EOF for the standard gate, COMPACT_EOF for the compaction-recovery text).
 extract_heredoc_body() {
-  local f="$1" start end
-  start=$(grep -n '^cat <<' "$f" | head -1 | cut -d: -f1)
+  local f="$1" d="$2" start end
+  start=$(grep -nF "cat <<'$d'" "$f" | head -1 | cut -d: -f1)
   [ -n "$start" ] || return 1
-  end=$(awk -v s="$start" 'NR>s && /^EOF$/{print NR; exit}' "$f")
+  end=$(awk -v s="$start" -v d="$d" 'NR>s && $0==d {print NR; exit}' "$f")
   [ -n "$end" ] || return 1
   sed -n "$((start + 1)),$((end - 1))p" "$f"
 }

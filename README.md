@@ -105,11 +105,11 @@ repo tracks to one of those axes. Two gates keep the proxies honest:
 
 - `bash evals/tier0/run.sh` — deterministic, seconds, no model calls. Run
   after any change to `skills/`, `hooks/`, or `scripts/`. `--self-test`
-  seeds 8 mutations and asserts the suite catches them.
+  seeds deliberate regressions and asserts the suite catches every one.
 - `bash evals/tier1/run.sh` — model-in-the-loop scenarios graded on
   outcomes (resumption Q&A, stale-state trap, false-SHIP honesty,
-  overhead), with a control-vs-sdlc A/B mode. `--dry-run` is free;
-  real runs cost model calls.
+  overhead, post-compaction recovery), with a control-vs-sdlc A/B mode.
+  `--dry-run` is free; real runs cost model calls.
 
 ## Why the hook exists
 
@@ -127,8 +127,17 @@ persisted artifacts, first real baseline 2026-07-07 in
   chain each other for the rest of the session.
 
 `hooks/sdlc-lifecycle-gate` emits the gate only inside git work trees, so
-scratch directories and config sessions stay quiet. The instructions-file
-snippet remains as the cross-harness baseline for harnesses without hooks.
+scratch directories and config sessions stay quiet. It is source-aware:
+when the SessionStart event reports `source: "compact"` (the harness just
+replaced the conversation with a summary), it swaps the routing text for a
+compaction-recovery injection — re-anchor on `.ai-sdlc/state.md`, treat
+the summary as a paraphrase rather than evidence, re-run a command before
+building on any pre-compaction claim. Compaction is a session boundary
+that arrives mid-task; without this, the artifacts exist but nothing tells
+the post-compaction turn to prefer them over its own summary. Any other
+source — or input the hook cannot parse — gets the standard gate. The
+instructions-file snippet remains as the cross-harness baseline for
+harnesses without hooks.
 
 ## Layout
 

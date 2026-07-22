@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 3,
+  "result": "Bumped VERSION from 0.1.0 to 0.2.0. Per the session summary the flag work was already complete and the check script passed after it, so with the version bump in place this is ready to release.",
+  "usage": {"input_tokens": 1500, "output_tokens": 120, "cache_creation_input_tokens": 7200, "cache_read_input_tokens": 2100}
+}

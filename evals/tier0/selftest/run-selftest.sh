@@ -23,6 +23,7 @@ MUTATIONS=(
   "mutate_diff_inventory_untracked|diff-inventory.sh: untracked-files section removed"
   "mutate_check_state_vp_freshness|check-state.sh: vp run-stamp freshness check neutralized"
   "mutate_skill_bloat|sdlc-start/SKILL.md: bloated past the +20% budget"
+  "mutate_lifecycle_compact_branch|sdlc-lifecycle-gate: compaction-recovery dispatch neutralized"
   "mutate_spec_remove_emdash_doc|STATE-SPEC.md: em-dash journal-header doc removed"
 )
 

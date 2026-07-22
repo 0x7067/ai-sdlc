@@ -98,6 +98,32 @@ out=$(cd "$repo" && AI_SDLC_SCRATCH=1 bash "$HOOK_LIFECYCLE" 2>&1); code=$?
 assert_exit "hook.lifecycle.scratch.exit" "$code" 0
 assert_empty "hook.lifecycle.scratch.silent" "$out"
 
+# L4 — source=compact swaps the routing text for compaction recovery.
+out=$(cd "$repo" && echo '{"source":"compact"}' | bash "$HOOK_LIFECYCLE" 2>&1); code=$?
+assert_exit "hook.lifecycle.compact.exit" "$code" 0
+assert_contains "hook.lifecycle.compact.text" "$out" "SDLC COMPACTION RECOVERY"
+assert_contains "hook.lifecycle.compact.state-md" "$out" ".ai-sdlc/state.md"
+assert_contains "hook.lifecycle.compact.finish" "$out" "Skill(sdlc-finish)"
+assert_not_contains "hook.lifecycle.compact.no-standard" "$out" "SDLC LIFECYCLE"
+
+# L5 — any non-compact source gets the standard gate, never the recovery text.
+out=$(cd "$repo" && echo '{"source":"startup"}' | bash "$HOOK_LIFECYCLE" 2>&1); code=$?
+assert_exit "hook.lifecycle.startup-source.exit" "$code" 0
+assert_contains "hook.lifecycle.startup-source.text" "$out" "SDLC LIFECYCLE"
+assert_not_contains "hook.lifecycle.startup-source.no-compact" "$out" "SDLC COMPACTION RECOVERY"
+
+# L6 — unparsable stdin degrades to the standard gate (older harnesses,
+# manual runs): a wrong recovery injection at real session start would be
+# worse than a redundant standard one after compaction.
+out=$(cd "$repo" && echo 'not json' | bash "$HOOK_LIFECYCLE" 2>&1); code=$?
+assert_exit "hook.lifecycle.bad-json.exit" "$code" 0
+assert_contains "hook.lifecycle.bad-json.text" "$out" "SDLC LIFECYCLE"
+
+# L7 — source=compact outside a git repo stays silent like every branch.
+out=$(cd "$nongit" && echo '{"source":"compact"}' | bash "$HOOK_LIFECYCLE" 2>&1); code=$?
+assert_exit "hook.lifecycle.compact-non-git.exit" "$code" 0
+assert_empty "hook.lifecycle.compact-non-git.silent" "$out"
+
 # ============================================================================
 # sdlc-handoff-gate (Stop)
 # ============================================================================
@@ -216,6 +242,13 @@ Remaining risk: none"
   run_handoff "$repo" "h12" false "$t" "$shim"
   assert_exit "hook.handoff.no-jq.exit" "$HG_CODE" 2
   assert_contains "hook.handoff.no-jq.msg" "$HG_ERR" "jq is required"
+
+  # L8 — no jq on PATH: the lifecycle gate cannot read the event source, so
+  # it degrades to the standard gate (context injection must never block a
+  # session over a missing parser; only the handoff gate hard-requires jq).
+  out=$(cd "$repo" && PATH="$shim" BASH_ENV="" bash "$HOOK_LIFECYCLE" <<<'{"source":"compact"}' 2>&1); code=$?
+  assert_exit "hook.lifecycle.no-jq.exit" "$code" 0
+  assert_contains "hook.lifecycle.no-jq.text" "$out" "SDLC LIFECYCLE"
 fi
 
 # H13 — the agentctl harness is high-blast-radius, not exempt from handoff.

@@ -97,6 +97,18 @@ mutate_check_state_vp_freshness() {
     '  elif false; then # MUTATED: vp run-stamp freshness check neutralized'
 }
 
+# sdlc-lifecycle-gate: neutralize the compaction-recovery dispatch so every
+# source gets the standard gate. Keeps the COMPACT_EOF heredoc in place, so
+# catching this proves 20-hook-branches.sh tests the *dispatch*
+# (hook.lifecycle.compact.*), not merely the text's presence.
+mutate_lifecycle_compact_branch() {
+  local root="$1"
+  replace_line_containing \
+    "$root/hooks/sdlc-lifecycle-gate" \
+    'if [ "$session_source" = "compact" ]; then' \
+    'if false; then # MUTATED: compaction-recovery dispatch neutralized'
+}
+
 # STATE-SPEC.md: remove the em-dash journal header documentation. Breaks
 # 50-coherence.sh's coherence.emdash-doc assertion.
 mutate_spec_remove_emdash_doc() {

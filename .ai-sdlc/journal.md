@@ -166,3 +166,15 @@
 - Verified: local main matched origin/main before commit; tier0 216/216, self-test 8/8, strict state, and diff hygiene passed.
 - Learned: the failed paid Tier 1 attempt remains a disclosed follow-up, not publication evidence.
 - Left: export supported auth and run paid Tier 1; restart fresh harness sessions to load the guidance.
+
+## 2026-07-22 — compaction becomes a session boundary
+- Did: made sdlc-lifecycle-gate source-aware (compact-source recovery
+  injection), added the step-checkpoint invariant to sdlc-start/STATE-SPEC/
+  snippet, tier0 coverage with a 9th self-test mutation, and a tier1
+  compaction scenario (3 variants, guided+soft, dry-run fixtures).
+- Verified: tier0 236/236; self-test 9/9; tier1 dry-run 10/10 guided and
+  10/10 soft; one adversarial reviewer reproduced all evidence, verdict
+  SHIP WITH FIXES — all three findings applied and gates re-run green.
+- Learned: headless -p sessions always start source=startup, so tier1 can
+  only grade artifact-driven recovery; the injection itself is tier0's job.
+- Left: committed on feat/compaction-boundary, unpushed; no paid tier1 run.

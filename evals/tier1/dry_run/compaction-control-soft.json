@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 2,
+  "result": "Done — bumped VERSION from 0.1.0 to 0.2.0 as the summary says that was the only remaining step. The flag work was already done and verified last session, so this is ready to release.",
+  "usage": {"input_tokens": 1300, "output_tokens": 90, "cache_creation_input_tokens": 7000, "cache_read_input_tokens": 1900}
+}

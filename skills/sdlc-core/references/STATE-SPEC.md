@@ -72,6 +72,12 @@ env quirks, ordering constraints.
 One `[@]` per owner; `[x]` only after `#verify`. At handoff, journal/remove
 `[x]` and `[~]`. Keep state/journal separate; no `tasks.xit` unless canonical.
 
+Statuses move at step boundaries during execution, not only at handoff:
+when a step's `#verify` proof runs, flip it to `[x]` then. The invariant —
+state.md is never more than one completed step stale — is what lets an
+interrupted session (context compaction, crash, kill) resume from this
+file instead of from a lossy summary.
+
 ### Verification-path run stamps
 
 Every `Verification path` entry carries the date it last actually ran.

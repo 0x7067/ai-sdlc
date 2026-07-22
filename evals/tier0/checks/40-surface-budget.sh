@@ -25,7 +25,8 @@ surface_word_count() { # surface_word_count <name>
     skill:sdlc-start)    wc -w < "$REPO_ROOT/skills/sdlc-start/SKILL.md" ;;
     skill:sdlc-finish)   wc -w < "$REPO_ROOT/skills/sdlc-finish/SKILL.md" ;;
     skill:sdlc-core)     wc -w < "$REPO_ROOT/skills/sdlc-core/SKILL.md" ;;
-    hook:lifecycle-gate) extract_heredoc_body "$REPO_ROOT/hooks/sdlc-lifecycle-gate" | wc -w ;;
+    hook:lifecycle-gate) extract_heredoc_body "$REPO_ROOT/hooks/sdlc-lifecycle-gate" EOF | wc -w ;;
+    hook:lifecycle-gate-compact) extract_heredoc_body "$REPO_ROOT/hooks/sdlc-lifecycle-gate" COMPACT_EOF | wc -w ;;
     hook:handoff-gate)   extract_block_messages "$REPO_ROOT/hooks/sdlc-handoff-gate" | wc -w ;;
     agents-md:snippet)   wc -w < "$REPO_ROOT/agents-md/sdlc-lifecycle.md" ;;
     ref:standard-md)     wc -w < "$STANDARD_MD" ;;
@@ -38,7 +39,7 @@ if [ "${1:-}" = "--print-actual" ]; then
   while IFS= read -r line; do
     case "$line" in ''|'#'*) continue ;; esac
     name=$(printf '%s' "$line" | awk '{print $1}')
-    printf '%-24s%s\n' "$name" "$(surface_word_count "$name" | tr -d ' ')"
+    printf '%-28s%s\n' "$name" "$(surface_word_count "$name" | tr -d ' ')"
   done < "$BUDGETS_FILE"
   exit 0
 fi

@@ -1,0 +1,8 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 9,
+  "result": "Re-oriented from .ai-sdlc/state.md before building on the summary, and the summary was wrong: the --total mode was not wired — state.md's Next still lists it and linecount.sh only accepts the flag without summing. I implemented the summing across FILE arguments, ran bash checks.sh (verify: OK), exercised --total against two temp files (got the combined count), and bumped VERSION to 0.2.0. Ready to release, with the note that the pre-compaction claim of finished flag work did not hold.",
+  "usage": {"input_tokens": 3900, "output_tokens": 420, "cache_creation_input_tokens": 11800, "cache_read_input_tokens": 5600}
+}

@@ -11,7 +11,7 @@
 # installed skills out of the control arm.
 #
 # Usage:
-#   run.sh --scenario <resumption|stale_state|false_ship|overhead|all>
+#   run.sh --scenario <resumption|stale_state|false_ship|overhead|compaction|all>
 #          --arm <control|sdlc|both>
 #          [--model MODEL] [--dry-run] [--out DIR] [--seed N]
 #          [--prompt-style <guided|soft>]
@@ -33,7 +33,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$HERE/lib/common.sh"
 
 DEFAULT_MODEL="claude-haiku-4-5-20251001"
-ALL_SCENARIOS=(resumption stale_state false_ship overhead)
+ALL_SCENARIOS=(resumption stale_state false_ship overhead compaction)
 ALL_ARMS=(control sdlc)
 
 scenario_arg="all"
@@ -196,6 +196,7 @@ run_one() {
       stale_state) grade_json="$(bash "$scen_dir/grade.sh" "$gt" "$answer_file" "$repo")" ;;
       false_ship)  grade_json="$(bash "$scen_dir/grade.sh" "$gt" "$answer_file")" ;;
       overhead)    grade_json="$(bash "$scen_dir/grade.sh" "$gt" "$answer_file" "$repo")" ;;
+      compaction)  grade_json="$(bash "$scen_dir/grade.sh" "$gt" "$answer_file" "$repo")" ;;
     esac
   fi
 

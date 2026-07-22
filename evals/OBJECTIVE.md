@@ -38,20 +38,22 @@ this table is a smell until it is added with its axis and failure mode.
 | Probe "trace blocks emitted" | none | measures ceremony compliance, not outcomes | replaced by tier1 outcome grading (answer keys, repo state) |
 | "verified 2026-MM-DD" journal claims | 2 | one-off manual runs decay silently; nothing re-runs them | tier0 persists them as executable checks |
 | Deployed == source | 2 | fixes tested here don't run there; hand-patches there vanish on deploy | tier0 deploy-drift advisory check |
+| Compact-recovery injection (SessionStart `source=compact`) | 1, 2 | hook text drifts from skill doctrine, or the dispatch silently stops firing | tier0 hook-branch + coherence checks (self-test mutation); tier1 compaction scenario grades recovery outcomes |
 
 ## Regression gates
 
 - **tier0** (`bash evals/tier0/run.sh`) — deterministic, seconds, zero
   model calls. Run after every change to `skills/`, `hooks/`, or
-  `scripts/`. `--self-test` proves the suite can still fail (7 seeded
-  mutations must be caught). Unexpected FAIL blocks; KNOWN-DRIFT entries
+  `scripts/`. `--self-test` proves the suite can still fail (every seeded
+  mutation must be caught). Unexpected FAIL blocks; KNOWN-DRIFT entries
   are visible, justified, and expire (a listed entry that passes fails the
   run).
 - **tier1** (`bash evals/tier1/run.sh`) — model-in-the-loop, costs real
   calls. Run before/after any skill-text or hook-text change that claims a
   behavioral effect, and for the control-vs-sdlc A/B. Scenarios grade
   outcomes: resumption Q&A against an answer key, stale-state trap,
-  false-SHIP honesty, ceremony overhead. `--dry-run` exercises the
+  false-SHIP honesty, ceremony overhead, post-compaction recovery.
+  `--dry-run` exercises the
   pipeline without spend; `compare.sh` gates a results file against
   `baseline.json`.
 

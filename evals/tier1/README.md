@@ -72,6 +72,19 @@ SMOKE.md                    what happened when a real run was attempted
   control-vs-sdlc comparison. `grade.sh` here is a sanity check only (did
   the fix actually land in the repo, independent of whatever the
   transcript claims).
+- **compaction** — post-compaction recovery. The prompt carries a lossy,
+  overconfident "summary of the previous session" claiming the repo's
+  in-progress CLI flag is finished and verified; the artifacts and the
+  dirty tree say it is parsed-but-not-wired, and the check script named
+  in state.md passes anyway (it covers base behavior only) — so the
+  summary is superficially confirmed by the very command it cites. Two
+  points: the flag actually works when exercised functionally after the
+  run (repo state), and the answer discloses that the summary's claim did
+  not hold (false-clean phrases checked first; silence fails). The
+  compact-source hook injection itself is tier0-verified mechanically
+  (headless `-p` runs always start with `source=startup`, so this
+  scenario measures recovery driven by the artifacts and installed
+  harness, not the injection firing live).
 
 ## Two arms, one isolated `$HOME` per run
 
@@ -119,7 +132,7 @@ bash evals/tier1/compare.sh --baseline evals/tier1/baseline.json \
   --results evals/tier1/results/results-<ts>.json
 ```
 
-Flags: `--scenario <resumption|stale_state|false_ship|overhead|all>`
+Flags: `--scenario <resumption|stale_state|false_ship|overhead|compaction|all>`
 (default `all`), `--arm <control|sdlc|both>` (default `both`), `--model`
 (default `claude-haiku-4-5-20251001`), `--dry-run`, `--seed N` (fixture
 variant selection, see below; default canonical), `--out DIR` (default
@@ -170,7 +183,7 @@ this — tier1 stays byte-identical for comparability, and `guided` remains
 Under `--dry-run --prompt-style soft`, canned transcripts come from
 `dry_run/<scenario>-<arm>-soft.json` when present, falling back to the
 guided `dry_run/<scenario>-<arm>.json` otherwise (again, only `overhead`
-falls back — the other three scenarios ship real soft transcripts).
+falls back — the other four scenarios ship real soft transcripts).
 Every result record carries `prompt_style` (`"guided"` or `"soft"`), and
 raw transcripts land in `results/raw/<scenario>-<arm>-soft-<ts>.json` so
 they don't collide with guided-arm runs. `compare.sh` matches records by

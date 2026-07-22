@@ -129,3 +129,32 @@ for surface in "$REPO_ROOT/skills/sdlc-finish/SKILL.md" "$STATE_SPEC_MD"; do
     fail "coherence.pr-self-contained.$surface_slug" "$(basename "$surface") must require the same pull request and forbid a follow-up AI-SDLC-only pull request"
   fi
 done
+
+# --- C13: the compaction-recovery injection is backed by live doctrine ----
+# The compact branch of sdlc-lifecycle-gate re-anchors sessions on
+# .ai-sdlc/state.md and calls the summary "a paraphrase, not evidence";
+# hook wording and skill doctrine are one atomic edit, like C5-C7.
+compact_body=$(extract_heredoc_body "$HOOK_LIFECYCLE" COMPACT_EOF)
+if [ -n "$compact_body" ]; then
+  pass "coherence.compact-branch-present" "sdlc-lifecycle-gate carries the COMPACT_EOF recovery heredoc"
+else
+  fail "coherence.compact-branch-present" "sdlc-lifecycle-gate has no COMPACT_EOF heredoc — the compaction-recovery branch is gone or renamed (rename the budget surface and this check atomically)"
+fi
+if printf '%s' "$compact_body" | grep -qF -- ".ai-sdlc/state.md"; then
+  pass "coherence.compact-state-md" "the recovery injection re-anchors on .ai-sdlc/state.md"
+else
+  fail "coherence.compact-state-md" "the compaction-recovery injection never names .ai-sdlc/state.md — recovery without the artifact is just another summary"
+fi
+for needle in "a paraphrase, not evidence" "one completed step stale"; do
+  slug=$(printf '%s' "$needle" | tr -c '[:alnum:]' '-' | tr '[:upper:]' '[:lower:]' | sed -E 's/-+/-/g; s/^-|-$//g')
+  if live_surfaces_contain "$needle"; then
+    pass "coherence.compact-doctrine.$slug" "'$needle' is taught by a live surface"
+  else
+    fail "coherence.compact-doctrine.$slug" "the compaction-recovery contract depends on '$needle' but no live surface (sdlc-start/sdlc-finish/sdlc-core SKILL.md, STANDARD.md, STATE-SPEC.md) teaches it"
+  fi
+done
+if printf '%s' "$compact_body" | grep -qF -- "a paraphrase, not evidence"; then
+  pass "coherence.compact-hook-phrase" "the recovery injection states the paraphrase-not-evidence contract"
+else
+  fail "coherence.compact-hook-phrase" "the compaction-recovery injection dropped 'a paraphrase, not evidence' — hook text and doctrine must change atomically"
+fi

@@ -56,8 +56,11 @@ records:
   chose, and why. If a fork would materially change the outcome and only
   the user can resolve it, ask (STANDARD §8); otherwise state your working
   assumption and keep moving.
-- **A verification path per step** — each step stoppable, each provable,
-  so a killed session loses one step, not the plan.
+- **A verification path per step** — each step stoppable, each provable.
+  Checkpoint as you execute: when a step completes, flip its Xit status
+  and stamp its verify in state.md *then*, not at handoff — state.md is
+  never more than one completed step stale, so whatever interrupts the
+  session (compaction, crash, kill) loses one step, not the plan.
 - **The Xit task profile** — record plan items under `state.md` `Next` using
   `STATE-SPEC.md`; use `[@]` only for active work and `[x]` only after its
   `#verify` proof has run.
@@ -72,6 +75,18 @@ patch, smallest coherent change that fully solves the problem, and the
 verification ladder (`../sdlc-core/references/STANDARD.md`, §4). Before
 claiming the change is done — at any diff size — or when the session is
 ending with anything nontrivial changed, pick up `sdlc-finish`.
+
+## After compaction
+
+Context compaction is a session boundary that arrives mid-task: the
+conversation is replaced by a summary — a paraphrase, not evidence, and
+never a substitute for the artifacts. Re-orient from the files, where
+`.ai-sdlc/state.md` and the in-flight plan win wherever the summary
+disagrees, and re-establish any pre-compaction claim (a passing test, a
+completed step) by re-running its command before building on it. The
+checkpoint discipline above is what makes this cheap: if statuses and run
+stamps were kept current at step boundaries, recovery is reading one
+file, not re-deriving the session.
 
 ## Pointers
 

@@ -1,5 +1,5 @@
 # Project State
-updated: 2026-07-20
+updated: 2026-07-22
 
 ## Goal
 A skill library (sdlc-start/finish/core) letting models — weaker ones
@@ -8,13 +8,15 @@ Scripts absorb what scripts can, skills stay advice-shaped; Claude Code
 plugin or install.sh; STANDARD.md governs execution.
 
 ## Now
-Main carries the PR self-containment rule and Tier 0 guard. Paid Tier 1
-remains blocked until an auth token is explicitly exported.
+`feat/compaction-boundary` (unpushed) makes compaction a session boundary:
+compact-source recovery injection, step-checkpoint invariant, tier1
+compaction scenario. Adversarial-reviewed (SHIP WITH FIXES; all applied).
+Paid Tier 1 remains blocked until an auth token is explicitly exported.
 
 ## Verification path
-- `bash evals/tier0/run.sh` — 216/216; `--self-test` caught 8/8 seeded regressions (2026-07-20).
-- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — 8/8 scenario-arm runs completed without errors (2026-07-20); not a paid behavioral evaluation.
-- `bash skills/sdlc-core/scripts/check-state.sh --strict` — OK (2026-07-20).
+- `bash evals/tier0/run.sh` — 236/236; `--self-test` caught 9/9 seeded regressions (2026-07-22).
+- `bash evals/tier1/run.sh --dry-run --scenario all --arm both` — 10/10 scenario-arm runs, guided and soft, without errors (2026-07-22); not a paid behavioral evaluation.
+- `bash skills/sdlc-core/scripts/check-state.sh --strict` — OK (2026-07-22).
 
 ## Decisions
 - Routing is the SessionStart hook's job; frontmatter stays untouched.
@@ -30,6 +32,7 @@ remains blocked until an auth token is explicitly exported.
 - Current Stop event text is authoritative; transcript parsing is
   compatibility fallback. Only explicit three-field completion claims block.
 - Xit owns task-item syntax only; state/current truth and journal/history remain separate.
+- Compaction is a session boundary: SessionStart source=compact swaps in recovery text; execution keeps state.md <=1 completed step stale.
 
 ## Landmines
 - Pedro's global agent skills and Claude hooks symlink here; edits change the live install.
@@ -44,9 +47,11 @@ remains blocked until an auth token is explicitly exported.
 - Root tier1 needs IS_SANDBOX=1; --seed is ignored in dry-run (canonical).
 - GitHub-added marketplaces need the explicit github source; tier0 pins it.
 - Fixture commit messages must never carry disclosure keywords.
+- Lifecycle-gate heredoc delimiters (EOF/COMPACT_EOF) are load-bearing: budget and coherence extraction key on them — rename only with 40/50 checks atomically.
+- Headless `claude -p` always starts source=startup; tier1 compaction grades artifact-driven recovery, never the live compact injection (tier0 owns that).
 
 ## Next
-[?] Export Tier 1 auth, then run the guided control-vs-SDLC evaluation. #id=paid-tier1 #owner=pedro #needs="CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY" #verify="bash evals/tier1/run.sh --scenario all --arm both"
+[?] Export Tier 1 auth, then run the guided control-vs-SDLC evaluation (now incl. compaction cells; fold trusted scores into baseline.json). #id=paid-tier1 #owner=pedro #needs="CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY" #verify="bash evals/tier1/run.sh --scenario all --arm both"
 [ ] Restart fresh harness sessions so they load the merged claim-blast-radius and run-stamp guidance. #id=restart-harnesses #owner=pedro #verify="fresh sessions expose current sdlc-start/core/finish"
 
 ## History (digest through 2026-07-07)

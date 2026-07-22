@@ -1,8 +1,33 @@
 #!/usr/bin/env bash
 # SessionStart hook: inject the SDLC lifecycle gate in project repos.
 # Emits nothing outside git repos (global-config sessions, scratch dirs).
+#
+# source=compact swaps the routing text for compaction recovery: mid-task
+# the standard "start the lifecycle" text is a no-op (the summary says
+# orientation already happened), while the thing that is actually true —
+# the conversation above is now a paraphrase, not evidence — goes unsaid.
+# Every other source, and any input we cannot parse, gets the standard
+# gate: a wrong recovery injection at real session start would be worse
+# than a redundant standard one after compaction.
 [ "${AI_SDLC_SCRATCH:-}" = "1" ] && exit 0
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+
+session_source=""
+if [ ! -t 0 ] && command -v jq >/dev/null 2>&1; then
+  session_source=$(cat 2>/dev/null | jq -r '.source // empty | strings' 2>/dev/null || true)
+fi
+
+if [ "$session_source" = "compact" ]; then
+  cat <<'COMPACT_EOF'
+SDLC COMPACTION RECOVERY (installed policy):
+Your context was just compacted: the conversation above is now a summary — a paraphrase, not evidence. Before continuing:
+1. Re-read .ai-sdlc/state.md and the in-flight plan; where they contradict the summary, the files win.
+2. Do not build on a pre-compaction claim (a passing test, a completed step) without re-establishing it — re-run the command now.
+3. If work completed before compaction is not yet recorded in state.md (task statuses, run stamps), checkpoint it there before starting new work.
+The lifecycle still applies: Skill(sdlc-start) to re-plan if the goal is no longer clear, Skill(sdlc-finish) before any done/ship claim.
+COMPACT_EOF
+  exit 0
+fi
 
 cat <<'EOF'
 SDLC LIFECYCLE (installed policy):
